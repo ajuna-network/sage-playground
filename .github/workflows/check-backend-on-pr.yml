@@ -1,0 +1,114 @@
+name: "Check Backend on Pull Request"
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+    paths:
+      - "backend/**/*.rs"
+      - "backend/**/Cargo.toml"
+      - "backend/**/Cargo.lock"
+      - "backend/rust-toolchain.toml"
+      - "backend/rustfmt.toml"
+      - ".github/workflows/*.yml"
+  push:
+    branches:
+      - develop
+
+# Ensures only one build is run per branch, unless pushing to develop
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/develop' && github.run_number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_ARGS: ${{ github.ref == 'refs/heads/develop' && '--release' || '' }}
+  CARGO_TERM_COLOR: always
+  SKIP_WASM_BUILD: 1
+  RUST_NIGHTLY_VERSION: 2024-11-19
+
+defaults:
+  run:
+    working-directory: "backend"
+
+jobs:
+  fmt:
+    if: ${{ !startsWith(github.head_ref, 'release/') }}
+    name: Rustfmt
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install nightly toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          targets: "wasm32-unknown-unknown"
+          components: "rustfmt"
+          toolchain: "nightly-${{env.RUST_NIGHTLY_VERSION}}"
+
+        # some settings are only available in nightly.
+      - run: cargo +nightly-$RUST_NIGHTLY_VERSION fmt --all -- --check
+
+  lint:
+    if: ${{ !startsWith(github.head_ref, 'release/') }}
+    name: Clippy
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./../.github/scripts/free_disk_space.sh
+      - run: sudo apt-get install -y protobuf-compiler
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-lint-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-lint-
+      - run: cargo clippy --all-features --all-targets ${{ env.CARGO_ARGS }} -- -D warnings
+
+  test:
+    if: ${{ !startsWith(github.head_ref, 'release/') }}
+    name: Test
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./../.github/scripts/free_disk_space.sh
+      - run: sudo apt-get install -y protobuf-compiler
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-test-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-test-
+      - run: cargo test --all-features --all-targets ${{ env.CARGO_ARGS }}
+
+  check-wasm:
+    if: ${{ !startsWith(github.head_ref, 'release/') }}
+    name: Check WASM build
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./../.github/scripts/free_disk_space.sh
+      - run: sudo apt-get install -y protobuf-compiler
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/backend/.cargo/bin/
+            ~/backend/.cargo/registry/index/
+            ~/backend/.cargo/registry/cache/
+            ~/backend/.cargo/git/db/
+            ~/backend/target/
+          key: ${{ runner.os }}-cargo-lint-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-lint-
+      - run: ./scripts/run_for_all_no_std_crates.sh check --no-default-features --target=wasm32-unknown-unknown
