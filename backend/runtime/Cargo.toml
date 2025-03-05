@@ -111,6 +111,8 @@ std = [
 	"pallet-ajuna-tournament/std",
 	"pallet-sage/std",
 	"sage-api/std",
+	"game-battle-mogs/std",
+	"game-casino-jam/std",
 ]
 
 runtime-benchmarks = [

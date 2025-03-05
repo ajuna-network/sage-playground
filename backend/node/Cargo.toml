@@ -67,6 +67,7 @@ std = [
 	"frame-system/std",
 	"frame-metadata-hash-extension/std",
 	"pallet-transaction-payment/std",
+	"sc-executor/std",
 	"sp-api/std",
 	"sp-block-builder/std",
 	"sp-consensus-aura/std",
