@@ -1,0 +1,107 @@
+name: "Check Backend on Pull Request"
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+    paths:
+      - "backend/**/*.rs"
+      - "backend/**/Cargo.toml"
+      - "backend/**/Cargo.lock"
+      - "backend/rust-toolchain.toml"
+      - "backend/rustfmt.toml"
+      - ".github/workflows/*.yml"
+  push:
+    branches:
+      - develop
+
+# Ensures only one build is run per branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  SKIP_WASM_BUILD: 1
+  RUST_NIGHTLY_VERSION: 2024-11-19
+
+defaults:
+  run:
+    working-directory: "backend"
+
+jobs:
+  fmt:
+    if: ${{ !startsWith(github.head_ref, 'release/') }}
+    name: Rustfmt
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install nightly toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          targets: "wasm32-unknown-unknown"
+          components: "rustfmt"
+          toolchain: "nightly-${{env.RUST_NIGHTLY_VERSION}}"
+
+        # some settings are only available in nightly.
+      - run: cargo +nightly-$RUST_NIGHTLY_VERSION fmt --all -- --check
+
+  lint:
+    if: ${{ !startsWith(github.head_ref, 'release/') }}
+    name: Clippy
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install -y protobuf-compiler
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: "cache-clippy"
+      - run: cargo clippy --all-features --all-targets -- -D warnings
+
+  test:
+    if: ${{ !startsWith(github.head_ref, 'release/') }}
+    name: Test
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install -y protobuf-compiler
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: "cache-test"
+      - run: cargo test --all-features --all-targets
+
+  check-wasm:
+    if: ${{ !startsWith(github.head_ref, 'release/') }}
+    name: Check WASM build
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install -y protobuf-compiler
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: "cache-check-wasm"
+      - run: ./scripts/run_for_all_no_std_crates.sh check --no-default-features --target=wasm32-unknown-unknown
+
+  check-features:
+    if: ${{ !startsWith(github.head_ref, 'release/') }}
+    name: Check feature propagation
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install -y protobuf-compiler
+      - name: Install toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "stable"
+      - name: Install Zepter
+        run: cargo install zepter -f --locked
+      - run: zepter --version
+      - name: Run Zepter checks
+        run: zepter run check
