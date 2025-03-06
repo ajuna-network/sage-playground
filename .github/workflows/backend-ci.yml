@@ -60,7 +60,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: "cache-clippy"
-      - run: cargo clippy --all-features --all-target-- -D warnings
+      - run: cargo clippy --all-features --all-targets -- -D warnings
 
   test:
     if: ${{ !startsWith(github.head_ref, 'release/') }}
