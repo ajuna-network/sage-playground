@@ -16,13 +16,12 @@ on:
     branches:
       - develop
 
-# Ensures only one build is run per branch, unless pushing to develop
+# Ensures only one build is run per branch
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/develop' && github.run_number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  CARGO_ARGS: ${{ github.ref == 'refs/heads/develop' && '--release' || '' }}
   CARGO_TERM_COLOR: always
   SKIP_WASM_BUILD: 1
   RUST_NIGHTLY_VERSION: 2024-11-19
@@ -57,19 +56,11 @@ jobs:
     continue-on-error: false
     steps:
       - uses: actions/checkout@v4
-      - run: ./../.github/scripts/free_disk_space.sh
       - run: sudo apt-get install -y protobuf-compiler
-      - uses: actions/cache@v4
+      - uses: Swatinem/rust-cache@v2
         with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-lint-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-lint-
-      - run: cargo clippy --all-features --all-targets ${{ env.CARGO_ARGS }} -- -D warnings
+          shared-key: "cache-clippy"
+      - run: cargo clippy --all-features --all-target-- -D warnings
 
   test:
     if: ${{ !startsWith(github.head_ref, 'release/') }}
@@ -78,19 +69,11 @@ jobs:
     continue-on-error: false
     steps:
       - uses: actions/checkout@v4
-      - run: ./../.github/scripts/free_disk_space.sh
       - run: sudo apt-get install -y protobuf-compiler
-      - uses: actions/cache@v4
+      - uses: Swatinem/rust-cache@v2
         with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-test-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-test-
-      - run: cargo test --all-features --all-targets ${{ env.CARGO_ARGS }}
+          shared-key: "cache-test"
+      - run: cargo test --all-features --all-targets
 
   check-wasm:
     if: ${{ !startsWith(github.head_ref, 'release/') }}
@@ -99,16 +82,26 @@ jobs:
     continue-on-error: false
     steps:
       - uses: actions/checkout@v4
-      - run: ./../.github/scripts/free_disk_space.sh
       - run: sudo apt-get install -y protobuf-compiler
-      - uses: actions/cache@v4
+      - uses: Swatinem/rust-cache@v2
         with:
-          path: |
-            ~/backend/.cargo/bin/
-            ~/backend/.cargo/registry/index/
-            ~/backend/.cargo/registry/cache/
-            ~/backend/.cargo/git/db/
-            ~/backend/target/
-          key: ${{ runner.os }}-cargo-lint-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-lint-
+          shared-key: "cache-check-wasm"
       - run: ./scripts/run_for_all_no_std_crates.sh check --no-default-features --target=wasm32-unknown-unknown
+
+  check-features:
+    if: ${{ !startsWith(github.head_ref, 'release/') }}
+    name: Check feature propagation
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install -y protobuf-compiler
+      - name: Install toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "stable"
+      - name: Install Zepter
+        run: cargo install zepter -f --locked
+      - run: zepter --version
+      - name: Run Zepter checks
+        run: zepter run check
