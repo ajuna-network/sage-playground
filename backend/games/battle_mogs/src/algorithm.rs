@@ -180,9 +180,6 @@ impl Breeding {
 		let mut left_dna = [0u8; 32];
 		let mut right_dna = [0u8; 32];
 
-		let (l1, l2) = left_dna.split_at_mut(16);
-		let (r1, r2) = right_dna.split_at_mut(16);
-
 		let (left_indexes, right_indexes) = match breed_type {
 			BreedType::DomDom => ((0..16, 16..32), (0..16, 16..32)),
 			BreedType::DomRez => ((0..16, 16..32), (16..32, 0..16)),
@@ -190,10 +187,10 @@ impl Breeding {
 			BreedType::RezRez => ((16..32, 0..16), (16..32, 0..16)),
 		};
 
-		l1.copy_from_slice(&left_source_dna[left_indexes.0]);
-		l2.copy_from_slice(&left_source_dna[left_indexes.1]);
-		r1.copy_from_slice(&right_source_dna[right_indexes.0]);
-		r2.copy_from_slice(&right_source_dna[right_indexes.1]);
+		left_dna[0..16].copy_from_slice(&left_source_dna[left_indexes.0]);
+		left_dna[16..32].copy_from_slice(&left_source_dna[left_indexes.1]);
+		right_dna[0..16].copy_from_slice(&right_source_dna[right_indexes.0]);
+		right_dna[16..32].copy_from_slice(&right_source_dna[right_indexes.1]);
 
 		[left_dna, right_dna]
 	}
