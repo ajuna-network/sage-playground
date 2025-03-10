@@ -63,7 +63,7 @@ where
 			RarityType::Common,
 			MogwaiGeneration::First,
 			RarityType::Common,
-			random_hash_1.as_ref(),
+			&random_hash_1.0,
 		);
 		let rarity = RarityType::from(((max_rarity as u8) << 4) + rarity as u8);
 

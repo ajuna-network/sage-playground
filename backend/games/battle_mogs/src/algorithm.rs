@@ -383,7 +383,7 @@ impl Breeding {
 			for i in 0..max_rarity {
 				if rand[i as usize] > prob {
 					result = i;
-					break
+					break;
 				}
 			}
 		}
@@ -436,33 +436,30 @@ impl Generation {
 		input_rarity_1: RarityType,
 		input_generation_2: MogwaiGeneration,
 		input_rarity_2: RarityType,
-		random_hash: &[u8],
+		random_hash: &[u8; 32],
 	) -> (RarityType, MogwaiGeneration, RarityType) {
-		let mut resulting_gen = MogwaiGeneration::default();
-		let mut resulting_rarity = RarityType::default();
 
-		if random_hash.len() >= 12 {
-			let base_rarity = (input_rarity_1 as u16 + input_rarity_2 as u16).saturating_sub(2) / 2;
+		let base_rarity = (input_rarity_1 as u16 + input_rarity_2 as u16).saturating_sub(2) / 2;
 
-			let slice = unsafe { &*(&random_hash[0..6] as *const [u8] as *const [u8; 6]) };
-			let (out_rarity_1, out_gen_1) =
-				Self::compute_next_generation_and_rarity(input_generation_1, input_rarity_1, slice);
+		let mut rarity_1_input_hash: [u8; 6] = [0u8; 6];
+		rarity_1_input_hash.copy_from_slice(&random_hash[0..6]);
+		let (out_rarity_1, out_gen_1) =
+			Self::compute_next_generation_and_rarity(input_generation_1, input_rarity_1, &rarity_1_input_hash);
 
-			let slice = unsafe { &*(&random_hash[6..12] as *const [u8] as *const [u8; 6]) };
-			let (out_rarity_2, out_gen_2) =
-				Self::compute_next_generation_and_rarity(input_generation_2, input_rarity_2, slice);
+		let mut rarity_2_input_hash: [u8; 6] = [0u8; 6];
+		rarity_2_input_hash.copy_from_slice(&random_hash[6..12]);
+		let (out_rarity_2, out_gen_2) =
+			Self::compute_next_generation_and_rarity(input_generation_2, input_rarity_2, &rarity_2_input_hash);
 
-			resulting_gen = MogwaiGeneration::coerce_from(
-				(out_gen_1 as u16 + out_gen_2 as u16 + base_rarity) / 2,
-			);
+		let resulting_gen =
+			MogwaiGeneration::coerce_from((out_gen_1 as u16 + out_gen_2 as u16 + base_rarity) / 2);
 
-			resulting_rarity = RarityType::from(
-				((out_rarity_1 as u16 +
-					out_rarity_2 as u16 +
-					((input_rarity_1 as u16 + input_rarity_2 as u16) / 2)) /
-					2) % 5,
-			)
-		}
+		let resulting_rarity = RarityType::from(
+			((out_rarity_1 as u16 +
+				out_rarity_2 as u16 +
+				((input_rarity_1 as u16 + input_rarity_2 as u16) / 2)) /
+				2) % 5,
+		);
 
 		let max_rarity = RarityType::from(
 			(6 + ((input_rarity_1 as u16 + input_rarity_2 as u16) / 2_u16) / 2) % 5,
