@@ -338,7 +338,10 @@ where
 				}
 
 				// Now we spin the machine!
-				let hash = Sage::random_hash(b"casino_gamble").0;
+
+				// The hash is static for the duration of one block per bandit_id. So it does not
+				// make sense for a player to play more than once per block on one bandit.
+				let hash = Sage::random_hash(&(bandit_id, b"casino_gamble").encode()).0;
 				let full_spins = {
 					let maybe_full_spins = CasinoJamUtils::spins(
 						spin_times as u8,
