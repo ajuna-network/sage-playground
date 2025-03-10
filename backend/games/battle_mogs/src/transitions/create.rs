@@ -69,7 +69,7 @@ where
 
 		let breed_type = BreedType::calculate_breed_type::<BlockNumber>(block_number);
 
-		let final_dna = Breeding::pairing(breed_type, & random_dna_1.0, &random_dna_2.0);
+		let final_dna = Breeding::pairing(breed_type, &random_dna_1.0, &random_dna_2.0);
 
 		let mogwai =
 			MogwaiVariant { dna: final_dna, generation: next_gen, rarity, phase: PhaseType::Bred };
