@@ -187,10 +187,10 @@ impl Breeding {
 		let mut right_dna: MaybeUninit<[u8; 32]> = MaybeUninit::uninit();
 
 		let (left_indexes, right_indexes) = match breed_type {
-			BreedType::DomDom => ((0..16, 16..32), (0..16, 16..16)),
+			BreedType::DomDom => ((0..16, 16..32), (0..16, 16..32)),
 			BreedType::DomRez => ((0..16, 16..32), (16..32, 0..16)),
-			BreedType::RezDom => ((16..32, 0..16), (16..32, 0..16)),
-			BreedType::RezRez => ((16..32, 0..16), (0..16, 16..32)),
+			BreedType::RezDom => ((16..32, 0..16), (0..16, 16..32)),
+			BreedType::RezRez => ((16..32, 0..16), (16..32, 0..16)),
 		};
 
 		unsafe {
@@ -477,6 +477,86 @@ impl Generation {
 #[cfg(test)]
 mod test {
 	use super::*;
+
+	mod pairing {
+		use super::*;
+
+		#[test]
+		fn pairing_dom_dom_works() {
+			let breed_type = BreedType::DomDom;
+
+			let left_dna: [u8; 32] = core::array::from_fn(|i| i as u8 + 1); // [1..32]
+			let right_dna = core::array::from_fn(|i| i as u8 + 33); // [33..64]
+
+			let result = Breeding::pairing(breed_type, &left_dna, &right_dna);
+
+			assert_eq!(result[0], left_dna);
+			assert_eq!(result[1], right_dna);
+		}
+
+		#[test]
+		fn pairing_dom_rez_works() {
+			let breed_type = BreedType::DomRez;
+
+			let left_dna: [u8; 32] = core::array::from_fn(|i| i as u8 + 1); // [1..32]
+			let right_dna = core::array::from_fn(|i| i as u8 + 33); // [33..64]
+
+			let result = Breeding::pairing(breed_type, &left_dna, &right_dna);
+
+			assert_eq!(result[0], left_dna);
+			assert_eq!(
+				result[1],
+				[
+					49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 33, 34, 35, 36,
+					37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48
+				]
+			);
+		}
+
+		#[test]
+		fn pairing_rez_dom_works() {
+			let breed_type = BreedType::RezDom;
+
+			let left_dna: [u8; 32] = core::array::from_fn(|i| i as u8 + 1); // [1..32]
+			let right_dna = core::array::from_fn(|i| i as u8 + 33); // [33..64]
+
+			let result = Breeding::pairing(breed_type, &left_dna, &right_dna);
+
+			assert_eq!(
+				result[0],
+				[
+					17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 1, 2, 3, 4, 5,
+					6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+				]
+			);
+			assert_eq!(result[1], right_dna);
+		}
+
+		#[test]
+		fn pairing_rez_rez_works() {
+			let breed_type = BreedType::RezRez;
+
+			let left_dna: [u8; 32] = core::array::from_fn(|i| i as u8 + 1); // [1..32]
+			let right_dna = core::array::from_fn(|i| i as u8 + 33); // [33..64]
+
+			let result = Breeding::pairing(breed_type, &left_dna, &right_dna);
+
+			assert_eq!(
+				result[0],
+				[
+					17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 1, 2, 3, 4, 5,
+					6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+				]
+			);
+			assert_eq!(
+				result[1],
+				[
+					49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 33, 34, 35, 36,
+					37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48
+				]
+			);
+		}
+	}
 
 	mod segmenting {
 		use super::*;
