@@ -183,8 +183,11 @@ impl Breeding {
 		left_source_dna: &[u8; 32],
 		right_source_dna: &[u8; 32],
 	) -> [[u8; 32]; 2] {
-		let mut left_dna: MaybeUninit<[u8; 32]> = MaybeUninit::uninit();
-		let mut right_dna: MaybeUninit<[u8; 32]> = MaybeUninit::uninit();
+		let mut left_dna = [0u8; 32];
+		let mut right_dna = [0u8; 32];
+
+		let (l1, l2) = left_dna.split_at_mut(16);
+		let (r1, r2) = right_dna.split_at_mut(16);
 
 		let (left_indexes, right_indexes) = match breed_type {
 			BreedType::DomDom => ((0..16, 16..32), (0..16, 16..32)),
@@ -193,17 +196,12 @@ impl Breeding {
 			BreedType::RezRez => ((16..32, 0..16), (16..32, 0..16)),
 		};
 
-		unsafe {
-			let l_dna_ptr = left_dna.as_mut_ptr() as *mut u8;
-			let r_dna_ptr = right_dna.as_mut_ptr() as *mut u8;
+		l1.copy_from_slice(&left_source_dna[left_indexes.0]);
+		l2.copy_from_slice(&left_source_dna[left_indexes.1]);
+		r1.copy_from_slice(&right_source_dna[right_indexes.0]);
+		r2.copy_from_slice(&right_source_dna[right_indexes.1]);
 
-			copy_nonoverlapping(left_source_dna[left_indexes.0].as_ptr(), l_dna_ptr, 16);
-			copy_nonoverlapping(left_source_dna[left_indexes.1].as_ptr(), l_dna_ptr.add(16), 16);
-			copy_nonoverlapping(right_source_dna[right_indexes.0].as_ptr(), r_dna_ptr, 16);
-			copy_nonoverlapping(right_source_dna[right_indexes.1].as_ptr(), r_dna_ptr.add(16), 16);
-
-			[left_dna.assume_init(), right_dna.assume_init()]
-		}
+		[left_dna, right_dna]
 	}
 
 	pub fn segmenting(input_dna: [[u8; 32]; 2], block_hash: [u8; 32]) -> [[u8; 32]; 2] {
