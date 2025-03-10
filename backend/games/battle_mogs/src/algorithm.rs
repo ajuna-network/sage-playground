@@ -162,8 +162,8 @@ impl Breeding {
 		let (left_indexes, right_indexes) = match breed_type {
 			BreedType::DomDom => ((0..8, 8..16), (0..8, 8..16)),
 			BreedType::DomRez => ((0..8, 8..16), (8..16, 0..8)),
-			BreedType::RezDom => ((8..16, 0..8), (8..16, 0..8)),
-			BreedType::RezRez => ((8..16, 0..8), (0..8, 8..16)),
+			BreedType::RezDom => ((8..16, 0..8), (0..8, 8..16)),
+			BreedType::RezRez => ((8..16, 0..8), (8..16, 0..8)),
 		};
 
 		unsafe {
@@ -438,18 +438,23 @@ impl Generation {
 		input_rarity_2: RarityType,
 		random_hash: &[u8; 32],
 	) -> (RarityType, MogwaiGeneration, RarityType) {
-
 		let base_rarity = (input_rarity_1 as u16 + input_rarity_2 as u16).saturating_sub(2) / 2;
 
 		let mut rarity_1_input_hash: [u8; 6] = [0u8; 6];
 		rarity_1_input_hash.copy_from_slice(&random_hash[0..6]);
-		let (out_rarity_1, out_gen_1) =
-			Self::compute_next_generation_and_rarity(input_generation_1, input_rarity_1, &rarity_1_input_hash);
+		let (out_rarity_1, out_gen_1) = Self::compute_next_generation_and_rarity(
+			input_generation_1,
+			input_rarity_1,
+			&rarity_1_input_hash,
+		);
 
 		let mut rarity_2_input_hash: [u8; 6] = [0u8; 6];
 		rarity_2_input_hash.copy_from_slice(&random_hash[6..12]);
-		let (out_rarity_2, out_gen_2) =
-			Self::compute_next_generation_and_rarity(input_generation_2, input_rarity_2, &rarity_2_input_hash);
+		let (out_rarity_2, out_gen_2) = Self::compute_next_generation_and_rarity(
+			input_generation_2,
+			input_rarity_2,
+			&rarity_2_input_hash,
+		);
 
 		let resulting_gen =
 			MogwaiGeneration::coerce_from((out_gen_1 as u16 + out_gen_2 as u16 + base_rarity) / 2);
@@ -473,6 +478,68 @@ impl Generation {
 mod test {
 	use super::*;
 
+	mod morph {
+		use super::*;
+
+		#[test]
+		fn morphing_dom_dom_works() {
+			let breed_type = BreedType::DomDom;
+
+			let left_dna = core::array::from_fn(|i| i as u8 + 1); // [1..32]
+			let right_dna = core::array::from_fn(|i| i as u8 + 17); // [33..64]
+
+			let result = Breeding::morph(breed_type, &left_dna, &right_dna);
+
+			assert_eq!(result[0..16], left_dna);
+			assert_eq!(result[16..32], right_dna);
+		}
+
+		#[test]
+		fn morphing_dom_rez_works() {
+			let breed_type = BreedType::DomRez;
+
+			let left_dna = core::array::from_fn(|i| i as u8 + 1); // [1..32]
+			let right_dna = core::array::from_fn(|i| i as u8 + 17); // [33..64]
+
+			let result = Breeding::morph(breed_type, &left_dna, &right_dna);
+
+			assert_eq!(result[0..16], left_dna);
+			assert_eq!(
+				result[16..32],
+				[25, 26, 27, 28, 29, 30, 31, 32, 17, 18, 19, 20, 21, 22, 23, 24]
+			);
+		}
+
+		#[test]
+		fn morphing_rez_dom_works() {
+			let breed_type = BreedType::RezDom;
+
+			let left_dna = core::array::from_fn(|i| i as u8 + 1); // [1..32]
+			let right_dna = core::array::from_fn(|i| i as u8 + 17); // [33..64]
+
+			let result = Breeding::morph(breed_type, &left_dna, &right_dna);
+
+			assert_eq!(result[0..16], [9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8]);
+			assert_eq!(result[16..32], right_dna);
+		}
+
+		#[test]
+		fn morphing_rez_rez_works() {
+			let breed_type = BreedType::RezRez;
+
+			let left_dna = core::array::from_fn(|i| i as u8 + 1); // [1..32]
+			let right_dna = core::array::from_fn(|i| i as u8 + 17); // [33..64]
+
+			let result = Breeding::morph(breed_type, &left_dna, &right_dna);
+
+			assert_eq!(result[0..16], [9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8]);
+			assert_eq!(
+				result[16..32],
+				[25, 26, 27, 28, 29, 30, 31, 32, 17, 18, 19, 20, 21, 22, 23, 24]
+			);
+		}
+	}
+
 	mod pairing {
 		use super::*;
 
@@ -480,7 +547,7 @@ mod test {
 		fn pairing_dom_dom_works() {
 			let breed_type = BreedType::DomDom;
 
-			let left_dna: [u8; 32] = core::array::from_fn(|i| i as u8 + 1); // [1..32]
+			let left_dna = core::array::from_fn(|i| i as u8 + 1); // [1..32]
 			let right_dna = core::array::from_fn(|i| i as u8 + 33); // [33..64]
 
 			let result = Breeding::pairing(breed_type, &left_dna, &right_dna);
