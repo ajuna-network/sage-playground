@@ -167,7 +167,7 @@ impl Breeding {
 		final_dna[0..8].copy_from_slice(&left_source_dna[left_indexes.0]);
 		final_dna[8..16].copy_from_slice(&left_source_dna[left_indexes.1]);
 		final_dna[16..24].copy_from_slice(&right_source_dna[right_indexes.0]);
-		final_dna[24.. 32].copy_from_slice(&right_source_dna[right_indexes.1]);
+		final_dna[24..32].copy_from_slice(&right_source_dna[right_indexes.1]);
 
 		final_dna
 	}
