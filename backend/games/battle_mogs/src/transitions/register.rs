@@ -27,10 +27,7 @@ use crate::asset::achievement_table::{AchievementState, AchievementTable};
 use frame_support::pallet_prelude::*;
 use parity_scale_codec::Codec;
 use sp_core::H256;
-use sp_runtime::{
-	traits::{AtLeast32BitUnsigned, BlockNumber as BlockNumberT, Member},
-	SaturatedConversion,
-};
+use sp_runtime::traits::{AtLeast32BitUnsigned, BlockNumber as BlockNumberT, Member};
 
 impl<AccountId, BlockNumber, Balance, Sage> BattleMogsTransition<AccountId, BlockNumber, Sage>
 where
@@ -75,7 +72,7 @@ where
 		};
 
 		let block_number = Sage::get_current_block_number();
-		let table_id = Self::new_asset_id(b"mogwai_id", block_number.saturated_into());
+		let table_id = Self::new_asset_id()?;
 
 		let asset = BattleMogsAsset {
 			id: table_id,

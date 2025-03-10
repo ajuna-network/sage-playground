@@ -26,6 +26,7 @@ use ajuna_payment_handler::{
 };
 use ajuna_primitives::{
 	asset_manager::{AssetFundsManager, AssetInspector, AssetManager},
+	next_asset_id_provider::IncrementingAssetIdProvider,
 	sage_api::SageApi,
 	season_manager::{SeasonConfig, SeasonManager},
 };
@@ -122,6 +123,7 @@ pub type SageBattleMogsInstance = pallet_sage::Instance2;
 impl pallet_sage::Config<SageBattleMogsInstance> for Runtime {
 	type PalletId = SageBattleMogsId;
 	type SageGameTransition = BattleMogsGameTransition;
+	type NextAssetIdProvider = IncrementingAssetIdProvider<BattleMogsAssetId>;
 	type SeasonHandler = SageBattleMogsSeasons;
 	type FeeHandler = BattleMogsFeeHandler;
 	type TransferFunds = TransferFungibleAssets<TransferWithdraw, FungiblesAssetId>;

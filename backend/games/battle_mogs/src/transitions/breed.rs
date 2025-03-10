@@ -78,8 +78,7 @@ where
 
 		let mut table_asset = Self::get_owned_achievement_table(owner, table_id)?;
 
-		let mogwai_nonce = mogwai_id_1.saturating_add(*mogwai_id_2) % 31;
-		let mogwai_id = Self::new_asset_id(b"breed_mogwai", mogwai_nonce);
+		let mogwai_id = Self::new_asset_id()?;
 		let next_gen_hash = Sage::random_hash(b"breed_next_gen").0;
 
 		let (rarity, next_gen, max_rarity) = Generation::next_gen(
