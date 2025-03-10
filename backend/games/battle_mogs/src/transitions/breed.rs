@@ -79,7 +79,11 @@ where
 		let mut table_asset = Self::get_owned_achievement_table(owner, table_id)?;
 
 		let mogwai_id = Self::new_asset_id()?;
-		let next_gen_hash = Sage::random_hash(b"breed_next_gen").0;
+
+		// `next_gen_hash` is static for the duration of one block per unique
+		// owner/mogwai_id pair.
+		let subject = (owner, mogwai_id, b"breed_next_gen").encode();
+		let next_gen_hash = Sage::random_hash(&subject).0;
 
 		let (rarity, next_gen, max_rarity) = Generation::next_gen(
 			mogwai_1.generation,

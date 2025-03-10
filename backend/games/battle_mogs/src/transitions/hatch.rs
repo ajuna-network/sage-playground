@@ -70,7 +70,9 @@ where
 		let mogwai = asset.as_mogwai()?;
 		ensure!(mogwai.phase == PhaseType::Bred, BattleMogsError::from(MOGWAI_NOT_IN_BRED_PHASE));
 
-		let block_hash = Sage::random_hash(b"mogwai_hatch").0;
+		// `block_hash` is static for the duration of one block per unique owner, mogwai_id pair.
+		let subject = (owner, mogwai_id, b"mogwai_hatch").encode();
+		let block_hash = Sage::random_hash(&subject).0;
 		let (dna, rarity) = Self::segment_and_bake(mogwai, block_hash);
 
 		mogwai.phase = PhaseType::Hatched;

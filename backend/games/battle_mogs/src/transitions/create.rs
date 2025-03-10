@@ -55,8 +55,11 @@ where
 		let block_number = Sage::get_current_block_number();
 		let mogwai_id = Self::new_asset_id()?;
 
-		let random_dna_1 = Sage::random_hash(b"create_mogwai");
-		let random_dna_2 = Sage::random_hash(b"extend_mogwai");
+		// random_dna_1/2 are static for the duration of one block for a specific account.
+		// We could include the `mogwai_id` in the subject to enable creating multiple different
+		// mogwais per block for one owner, but we want to prevent bot farming.
+		let random_dna_1 = Sage::random_hash(&(owner, b"create_mogwai").encode());
+		let random_dna_2 = Sage::random_hash(&(owner, b"extend_mogwai").encode());
 
 		let (rarity, next_gen, max_rarity) = Generation::next_gen(
 			MogwaiGeneration::First,
