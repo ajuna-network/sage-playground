@@ -195,7 +195,7 @@ impl Breeding {
 		[left_dna, right_dna]
 	}
 
-	pub fn segmenting(input_dna: [[u8; 32]; 2], block_hash: [u8; 32]) -> [[u8; 32]; 2] {
+	pub fn segmenting(input_dna: [[u8; 32]; 2], random_hash: [u8; 32]) -> [[u8; 32]; 2] {
 		let stats_segment = &input_dna[0];
 		let visuals_segment = &input_dna[1];
 
@@ -223,8 +223,8 @@ impl Breeding {
 			let stats_bit = Binary::get_bit_at(stats_segment_2_1[byte_index], bit_index);
 			let visuals_bit = Binary::get_bit_at(visuals_segment_1_1[byte_index], bit_index);
 
-			let block_hash_bit_1 = Binary::get_bit_at(block_hash[byte_index], bit_index);
-			let block_hash_bit_2 = Binary::get_bit_at(block_hash[j / 8], (j % 8) as u8);
+			let random_hash_bit_1 = Binary::get_bit_at(random_hash[byte_index], bit_index);
+			let random_hash_bit_2 = Binary::get_bit_at(random_hash[j / 8], (j % 8) as u8);
 
 			let half_i = i / 2;
 			let mut stats_half_byte: u8 = output_stats[half_i];
@@ -240,12 +240,12 @@ impl Breeding {
 
 			match (stats_bit, visuals_bit) {
 				(true, false) => {
-					if block_hash_bit_1 {
+					if random_hash_bit_1 {
 						stats_half_byte =
 							Binary::copy_bits(stats_half_byte, stats_segment_byte, mask_side); // A+ as 4
 						stats_half_byte = Binary::add_one(stats_half_byte, mask_side);
 						visuals_half_byte = Binary::copy_bits(visuals_half_byte, 0x44, mask_side);
-					} else if !block_hash_bit_2 {
+					} else if !random_hash_bit_2 {
 						stats_half_byte =
 							Binary::copy_bits(stats_half_byte, stats_segment_byte, mask_side); // A as A
 						visuals_half_byte = Binary::copy_bits(visuals_half_byte, 0xAA, mask_side);
@@ -259,12 +259,12 @@ impl Breeding {
 					}
 				},
 				(false, true) => {
-					if block_hash_bit_2 {
+					if random_hash_bit_2 {
 						stats_half_byte =
 							Binary::copy_bits(stats_half_byte, visuals_segment_byte, mask_side); // 8
 						visuals_half_byte = Binary::copy_bits(visuals_half_byte, 0x88, mask_side);
 						stats_half_byte = Binary::add_one(stats_half_byte, mask_side);
-					} else if !block_hash_bit_1 {
+					} else if !random_hash_bit_1 {
 						stats_half_byte =
 							Binary::copy_bits(stats_half_byte, visuals_segment_byte, mask_side); // B
 						visuals_half_byte = Binary::copy_bits(visuals_half_byte, 0xBB, mask_side);
@@ -278,7 +278,7 @@ impl Breeding {
 					}
 				},
 				(false, false) => {
-					if !block_hash_bit_1 && !block_hash_bit_2 {
+					if !random_hash_bit_1 && !random_hash_bit_2 {
 						if !stats_bit & visuals_bit {
 							stats_half_byte = Binary::copy_bits(
 								stats_half_byte,
@@ -298,11 +298,11 @@ impl Breeding {
 								Binary::copy_bits(visuals_half_byte, 0x00, mask_side);
 							stats_half_byte = Binary::sub_one(stats_half_byte, mask_side);
 						}
-					} else if block_hash_bit_1 && block_hash_bit_2 {
+					} else if random_hash_bit_1 && random_hash_bit_2 {
 						stats_half_byte =
-							Binary::copy_bits(stats_half_byte, !block_hash[i % 32], mask_side); // !blk as E
+							Binary::copy_bits(stats_half_byte, !random_hash[i % 32], mask_side); // !blk as E
 						visuals_half_byte = Binary::copy_bits(visuals_half_byte, 0xEE, mask_side);
-					} else if block_hash_bit_1 {
+					} else if random_hash_bit_1 {
 						stats_half_byte =
 							Binary::copy_bits(stats_half_byte, stats_segment_byte, mask_side); // A
 						visuals_half_byte = Binary::copy_bits(visuals_half_byte, 0xAA, mask_side);
@@ -313,7 +313,7 @@ impl Breeding {
 					}
 				},
 				(true, true) => {
-					if block_hash_bit_1 && block_hash_bit_2 {
+					if random_hash_bit_1 && random_hash_bit_2 {
 						stats_half_byte = Binary::copy_bits(
 							stats_half_byte,
 							stats_segment_byte | visuals_segment_byte,
@@ -321,11 +321,11 @@ impl Breeding {
 						); // |+ as C
 						stats_half_byte = Binary::add_one(stats_half_byte, mask_side);
 						visuals_half_byte = Binary::copy_bits(visuals_half_byte, 0xCC, mask_side);
-					} else if !block_hash_bit_1 && !block_hash_bit_2 {
+					} else if !random_hash_bit_1 && !random_hash_bit_2 {
 						stats_half_byte =
-							Binary::copy_bits(stats_half_byte, block_hash[i % 32], mask_side); // blk as F
+							Binary::copy_bits(stats_half_byte, random_hash[i % 32], mask_side); // blk as F
 						visuals_half_byte = Binary::copy_bits(visuals_half_byte, 0xFF, mask_side);
-					} else if block_hash_bit_1 {
+					} else if random_hash_bit_1 {
 						stats_half_byte =
 							Binary::copy_bits(stats_half_byte, stats_segment_byte, mask_side); // A
 						visuals_half_byte = Binary::copy_bits(visuals_half_byte, 0xAA, mask_side);
@@ -343,7 +343,7 @@ impl Breeding {
 			// recombination
 			if mask_side == BitMaskSide::Right {
 				if stats_byte == 0xFF || stats_byte == 0x00 {
-					stats_byte &= block_hash[i % 32];
+					stats_byte &= random_hash[i % 32];
 					visuals_byte = 0x33;
 				}
 				output_stats[i / 2] = stats_byte;

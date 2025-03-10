@@ -72,8 +72,8 @@ where
 
 		// `block_hash` is static for the duration of one block per unique owner, mogwai_id pair.
 		let subject = (owner, mogwai_id, b"mogwai_hatch").encode();
-		let block_hash = Sage::random_hash(&subject).0;
-		let (dna, rarity) = Self::segment_and_bake(mogwai, block_hash);
+		let random_hash = Sage::random_hash(&subject).0;
+		let (dna, rarity) = Self::segment_and_bake(mogwai, random_hash);
 
 		mogwai.phase = PhaseType::Hatched;
 		mogwai.rarity = rarity;
