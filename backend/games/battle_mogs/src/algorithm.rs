@@ -19,8 +19,6 @@ use crate::{
 	transitions::BreedType,
 };
 
-use sp_std::{mem::MaybeUninit, ptr::copy_nonoverlapping};
-
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub(crate) enum BitMaskSide {
 	Left = 0,
@@ -157,7 +155,7 @@ impl Breeding {
 		left_source_dna: &[u8; 16],
 		right_source_dna: &[u8; 16],
 	) -> [u8; 32] {
-		let mut final_dna: MaybeUninit<[u8; 32]> = MaybeUninit::uninit();
+		let mut final_dna = [0u8; 32];
 
 		let (left_indexes, right_indexes) = match breed_type {
 			BreedType::DomDom => ((0..8, 8..16), (0..8, 8..16)),
@@ -166,16 +164,12 @@ impl Breeding {
 			BreedType::RezRez => ((8..16, 0..8), (8..16, 0..8)),
 		};
 
-		unsafe {
-			let dna_ptr = final_dna.as_mut_ptr() as *mut u8;
+		final_dna[0..8].copy_from_slice(&left_source_dna[left_indexes.0]);
+		final_dna[8..16].copy_from_slice(&left_source_dna[left_indexes.1]);
+		final_dna[16..24].copy_from_slice(&right_source_dna[right_indexes.0]);
+		final_dna[24.. 32].copy_from_slice(&right_source_dna[right_indexes.1]);
 
-			copy_nonoverlapping(left_source_dna[left_indexes.0].as_ptr(), dna_ptr, 8);
-			copy_nonoverlapping(left_source_dna[left_indexes.1].as_ptr(), dna_ptr.add(8), 8);
-			copy_nonoverlapping(right_source_dna[right_indexes.0].as_ptr(), dna_ptr.add(16), 8);
-			copy_nonoverlapping(right_source_dna[right_indexes.1].as_ptr(), dna_ptr.add(24), 8);
-
-			final_dna.assume_init()
-		}
+		final_dna
 	}
 
 	pub fn pairing(
