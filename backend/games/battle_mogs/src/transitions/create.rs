@@ -55,24 +55,21 @@ where
 		let block_number = Sage::get_current_block_number();
 		let mogwai_id = Self::new_asset_id()?;
 
-		let random_hash_1 = Sage::random_hash(b"create_mogwai");
-		let random_hash_2 = Sage::random_hash(b"extend_mogwai");
+		let random_dna_1 = Sage::random_hash(b"create_mogwai");
+		let random_dna_2 = Sage::random_hash(b"extend_mogwai");
 
 		let (rarity, next_gen, max_rarity) = Generation::next_gen(
 			MogwaiGeneration::First,
 			RarityType::Common,
 			MogwaiGeneration::First,
 			RarityType::Common,
-			&random_hash_1.0,
+			&random_dna_1.0,
 		);
 		let rarity = RarityType::from(((max_rarity as u8) << 4) + rarity as u8);
 
 		let breed_type = BreedType::calculate_breed_type::<BlockNumber>(block_number);
 
-		let dx = unsafe { &*(&random_hash_1.as_ref()[0..32] as *const [u8] as *const [u8; 32]) };
-		let dy = unsafe { &*(&random_hash_2.as_ref()[0..32] as *const [u8] as *const [u8; 32]) };
-
-		let final_dna = Breeding::pairing(breed_type, dx, dy);
+		let final_dna = Breeding::pairing(breed_type, & random_dna_1.0, &random_dna_2.0);
 
 		let mogwai =
 			MogwaiVariant { dna: final_dna, generation: next_gen, rarity, phase: PhaseType::Bred };
