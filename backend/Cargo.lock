@@ -96,7 +96,7 @@ dependencies = [
 [[package]]
 name = "ajuna-payment-handler"
 version = "0.15.0"
-source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=develop#0de4f4ee4e32f982e2315164ad0cf72e0bfcd0fc"
+source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=develop#e857c3343e5b609a3d6ba9ed5eef6d0b1221419a"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -112,7 +112,7 @@ dependencies = [
 [[package]]
 name = "ajuna-primitives"
 version = "0.15.0"
-source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=develop#0de4f4ee4e32f982e2315164ad0cf72e0bfcd0fc"
+source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=develop#e857c3343e5b609a3d6ba9ed5eef6d0b1221419a"
 dependencies = [
  "ajuna-payment-handler",
  "frame-support",
@@ -1941,7 +1941,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "33d852cb9b869c2a9b3df2f71a3074817f01e1844f839a144f5fcef059a4eb5d"
 dependencies = [
  "libc",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -1974,7 +1974,7 @@ dependencies = [
 [[package]]
 name = "example-transition"
 version = "0.15.0"
-source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=develop#0de4f4ee4e32f982e2315164ad0cf72e0bfcd0fc"
+source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=develop#e857c3343e5b609a3d6ba9ed5eef6d0b1221419a"
 dependencies = [
  "ajuna-primitives",
  "frame-support",
@@ -3522,7 +3522,7 @@ checksum = "e19b23d53f35ce9f56aebc7d1bb4e6ac1e9c0db7ac85c8d1760c04379edced37"
 dependencies = [
  "hermit-abi 0.4.0",
  "libc",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -5232,7 +5232,7 @@ checksum = "b15813163c1d831bf4a13c3610c05c0d03b39feb07f7e09fa234dac9b15aaf39"
 [[package]]
 name = "pallet-ajuna-affiliates"
 version = "0.15.0"
-source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=develop#0de4f4ee4e32f982e2315164ad0cf72e0bfcd0fc"
+source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=develop#e857c3343e5b609a3d6ba9ed5eef6d0b1221419a"
 dependencies = [
  "ajuna-primitives",
  "frame-benchmarking",
@@ -5249,7 +5249,7 @@ dependencies = [
 [[package]]
 name = "pallet-ajuna-seasons"
 version = "0.15.0"
-source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=develop#0de4f4ee4e32f982e2315164ad0cf72e0bfcd0fc"
+source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=develop#e857c3343e5b609a3d6ba9ed5eef6d0b1221419a"
 dependencies = [
  "ajuna-primitives",
  "frame-benchmarking",
@@ -5267,7 +5267,7 @@ dependencies = [
 [[package]]
 name = "pallet-ajuna-tournament"
 version = "0.15.0"
-source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=develop#0de4f4ee4e32f982e2315164ad0cf72e0bfcd0fc"
+source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=develop#e857c3343e5b609a3d6ba9ed5eef6d0b1221419a"
 dependencies = [
  "ajuna-primitives",
  "frame-benchmarking",
@@ -5387,7 +5387,7 @@ dependencies = [
 [[package]]
 name = "pallet-sage"
 version = "0.15.0"
-source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=develop#0de4f4ee4e32f982e2315164ad0cf72e0bfcd0fc"
+source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=develop#e857c3343e5b609a3d6ba9ed5eef6d0b1221419a"
 dependencies = [
  "ajuna-primitives",
  "example-transition",
@@ -6779,7 +6779,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.4.15",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -6880,7 +6880,7 @@ dependencies = [
 [[package]]
 name = "sage-api"
 version = "0.15.0"
-source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=develop#0de4f4ee4e32f982e2315164ad0cf72e0bfcd0fc"
+source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=develop#e857c3343e5b609a3d6ba9ed5eef6d0b1221419a"
 dependencies = [
  "ajuna-primitives",
  "frame-support",
@@ -9540,7 +9540,7 @@ dependencies = [
  "getrandom 0.3.1",
  "once_cell",
  "rustix 0.38.44",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -10731,7 +10731,7 @@ version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf221c93e13a30d793f7645a0e7762c55d169dbb0a49671918a2319d289b10bb"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]

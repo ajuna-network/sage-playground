@@ -112,9 +112,8 @@ where
 		HashOutput = H256,
 	>,
 {
-	pub(crate) fn new_asset_id(subject: &[u8], nonce: u64) -> BattleMogsId {
-		let hash = Sage::random_hash(subject).0;
-		u64::from_le_bytes(hash[24..32].try_into().unwrap()).saturating_add(nonce)
+	fn new_asset_id() -> Result<BattleMogsId, TransitionError> {
+		Sage::create_next_asset_id().ok_or(TransitionError::CouldNotCreateAssetId)
 	}
 
 	pub(crate) fn ensure_not_max_mogwais(account: &AccountId) -> Result<(), TransitionError> {

@@ -26,6 +26,7 @@ use ajuna_payment_handler::{
 };
 use ajuna_primitives::{
 	asset_manager::{AssetFundsManager, AssetInspector, AssetManager},
+	next_asset_id_provider::IncrementingAssetIdProvider,
 	sage_api::SageApi,
 	season_manager::{SeasonConfig, SeasonManager},
 };
@@ -121,6 +122,7 @@ pub type SageCasinoJamInstance = pallet_sage::Instance1;
 impl pallet_sage::Config<SageCasinoJamInstance> for Runtime {
 	type PalletId = SageCasinoJamId;
 	type SageGameTransition = CasinoJamGameTransition;
+	type NextAssetIdProvider = IncrementingAssetIdProvider<CasinoJamAssetId>;
 	type SeasonHandler = SageCasinoJamSeasons;
 	type FeeHandler = CasinoJamFeeHandler;
 	type TransferFunds = TransferFungibleAssets<TransferWithdraw, FungiblesAssetId>;

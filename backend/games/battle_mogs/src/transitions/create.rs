@@ -32,7 +32,6 @@ use parity_scale_codec::Codec;
 use sp_core::H256;
 use sp_runtime::{
 	traits::{AtLeast32BitUnsigned, BlockNumber as BlockNumberT, Member},
-	SaturatedConversion,
 };
 
 impl<AccountId, BlockNumber, Balance, Sage> BattleMogsTransition<AccountId, BlockNumber, Sage>
@@ -56,7 +55,7 @@ where
 		Self::ensure_not_max_mogwais(owner)?;
 
 		let block_number = Sage::get_current_block_number();
-		let mogwai_id = Self::new_asset_id(b"mogwai_id", block_number.saturated_into());
+		let mogwai_id = Self::new_asset_id()?;
 
 		let random_hash_1 = Sage::random_hash(b"create_mogwai");
 		let random_hash_2 = Sage::random_hash(b"extend_mogwai");
