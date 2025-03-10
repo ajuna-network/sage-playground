@@ -62,10 +62,14 @@ where
 
 		let block_number = Sage::get_current_block_number();
 		let breed_type = BreedType::calculate_breed_type(block_number);
-		let dx = unsafe { &*(&mogwai.dna[0][0..16] as *const [u8] as *const [u8; 16]) };
-		let dy = unsafe { &*(&mogwai.dna[0][16..32] as *const [u8] as *const [u8; 16]) };
 
-		mogwai.dna[0] = Breeding::morph(breed_type, dx, dy);
+		let mut dx = [0u8; 16];
+		dx.copy_from_slice(&mogwai.dna[0][0..16]);
+
+		let mut dy = [0u8; 16];
+		dy.copy_from_slice(&mogwai.dna[0][16..32]);
+
+		mogwai.dna[0] = Breeding::morph(breed_type, &dx, &dy);
 
 		let table = table_asset.as_achievement()?;
 		table.morpheus = table.morpheus.increase_by(1);
