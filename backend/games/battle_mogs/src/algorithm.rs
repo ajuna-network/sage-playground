@@ -19,8 +19,6 @@ use crate::{
 	transitions::BreedType,
 };
 
-use sp_std::{mem::MaybeUninit, ptr::copy_nonoverlapping};
-
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub(crate) enum BitMaskSide {
 	Left = 0,
@@ -157,25 +155,21 @@ impl Breeding {
 		left_source_dna: &[u8; 16],
 		right_source_dna: &[u8; 16],
 	) -> [u8; 32] {
-		let mut final_dna: MaybeUninit<[u8; 32]> = MaybeUninit::uninit();
+		let mut final_dna = [0u8; 32];
 
 		let (left_indexes, right_indexes) = match breed_type {
 			BreedType::DomDom => ((0..8, 8..16), (0..8, 8..16)),
 			BreedType::DomRez => ((0..8, 8..16), (8..16, 0..8)),
-			BreedType::RezDom => ((8..16, 0..8), (8..16, 0..8)),
-			BreedType::RezRez => ((8..16, 0..8), (0..8, 8..16)),
+			BreedType::RezDom => ((8..16, 0..8), (0..8, 8..16)),
+			BreedType::RezRez => ((8..16, 0..8), (8..16, 0..8)),
 		};
 
-		unsafe {
-			let dna_ptr = final_dna.as_mut_ptr() as *mut u8;
+		final_dna[0..8].copy_from_slice(&left_source_dna[left_indexes.0]);
+		final_dna[8..16].copy_from_slice(&left_source_dna[left_indexes.1]);
+		final_dna[16..24].copy_from_slice(&right_source_dna[right_indexes.0]);
+		final_dna[24..32].copy_from_slice(&right_source_dna[right_indexes.1]);
 
-			copy_nonoverlapping(left_source_dna[left_indexes.0].as_ptr(), dna_ptr, 8);
-			copy_nonoverlapping(left_source_dna[left_indexes.1].as_ptr(), dna_ptr.add(8), 8);
-			copy_nonoverlapping(right_source_dna[right_indexes.0].as_ptr(), dna_ptr.add(16), 8);
-			copy_nonoverlapping(right_source_dna[right_indexes.1].as_ptr(), dna_ptr.add(24), 8);
-
-			final_dna.assume_init()
-		}
+		final_dna
 	}
 
 	pub fn pairing(
@@ -183,30 +177,25 @@ impl Breeding {
 		left_source_dna: &[u8; 32],
 		right_source_dna: &[u8; 32],
 	) -> [[u8; 32]; 2] {
-		let mut left_dna: MaybeUninit<[u8; 32]> = MaybeUninit::uninit();
-		let mut right_dna: MaybeUninit<[u8; 32]> = MaybeUninit::uninit();
+		let mut left_dna = [0u8; 32];
+		let mut right_dna = [0u8; 32];
 
 		let (left_indexes, right_indexes) = match breed_type {
-			BreedType::DomDom => ((0..16, 16..32), (0..16, 16..16)),
+			BreedType::DomDom => ((0..16, 16..32), (0..16, 16..32)),
 			BreedType::DomRez => ((0..16, 16..32), (16..32, 0..16)),
-			BreedType::RezDom => ((16..32, 0..16), (16..32, 0..16)),
-			BreedType::RezRez => ((16..32, 0..16), (0..16, 16..32)),
+			BreedType::RezDom => ((16..32, 0..16), (0..16, 16..32)),
+			BreedType::RezRez => ((16..32, 0..16), (16..32, 0..16)),
 		};
 
-		unsafe {
-			let l_dna_ptr = left_dna.as_mut_ptr() as *mut u8;
-			let r_dna_ptr = right_dna.as_mut_ptr() as *mut u8;
+		left_dna[0..16].copy_from_slice(&left_source_dna[left_indexes.0]);
+		left_dna[16..32].copy_from_slice(&left_source_dna[left_indexes.1]);
+		right_dna[0..16].copy_from_slice(&right_source_dna[right_indexes.0]);
+		right_dna[16..32].copy_from_slice(&right_source_dna[right_indexes.1]);
 
-			copy_nonoverlapping(left_source_dna[left_indexes.0].as_ptr(), l_dna_ptr, 16);
-			copy_nonoverlapping(left_source_dna[left_indexes.1].as_ptr(), l_dna_ptr.add(16), 16);
-			copy_nonoverlapping(right_source_dna[right_indexes.0].as_ptr(), r_dna_ptr, 16);
-			copy_nonoverlapping(right_source_dna[right_indexes.1].as_ptr(), r_dna_ptr.add(16), 16);
-
-			[left_dna.assume_init(), right_dna.assume_init()]
-		}
+		[left_dna, right_dna]
 	}
 
-	pub fn segmenting(input_dna: [[u8; 32]; 2], block_hash: [u8; 32]) -> [[u8; 32]; 2] {
+	pub fn segmenting(input_dna: [[u8; 32]; 2], random_hash: [u8; 32]) -> [[u8; 32]; 2] {
 		let stats_segment = &input_dna[0];
 		let visuals_segment = &input_dna[1];
 
@@ -234,8 +223,8 @@ impl Breeding {
 			let stats_bit = Binary::get_bit_at(stats_segment_2_1[byte_index], bit_index);
 			let visuals_bit = Binary::get_bit_at(visuals_segment_1_1[byte_index], bit_index);
 
-			let block_hash_bit_1 = Binary::get_bit_at(block_hash[byte_index], bit_index);
-			let block_hash_bit_2 = Binary::get_bit_at(block_hash[j / 8], (j % 8) as u8);
+			let random_hash_bit_1 = Binary::get_bit_at(random_hash[byte_index], bit_index);
+			let random_hash_bit_2 = Binary::get_bit_at(random_hash[j / 8], (j % 8) as u8);
 
 			let half_i = i / 2;
 			let mut stats_half_byte: u8 = output_stats[half_i];
@@ -251,12 +240,12 @@ impl Breeding {
 
 			match (stats_bit, visuals_bit) {
 				(true, false) => {
-					if block_hash_bit_1 {
+					if random_hash_bit_1 {
 						stats_half_byte =
 							Binary::copy_bits(stats_half_byte, stats_segment_byte, mask_side); // A+ as 4
 						stats_half_byte = Binary::add_one(stats_half_byte, mask_side);
 						visuals_half_byte = Binary::copy_bits(visuals_half_byte, 0x44, mask_side);
-					} else if !block_hash_bit_2 {
+					} else if !random_hash_bit_2 {
 						stats_half_byte =
 							Binary::copy_bits(stats_half_byte, stats_segment_byte, mask_side); // A as A
 						visuals_half_byte = Binary::copy_bits(visuals_half_byte, 0xAA, mask_side);
@@ -270,12 +259,12 @@ impl Breeding {
 					}
 				},
 				(false, true) => {
-					if block_hash_bit_2 {
+					if random_hash_bit_2 {
 						stats_half_byte =
 							Binary::copy_bits(stats_half_byte, visuals_segment_byte, mask_side); // 8
 						visuals_half_byte = Binary::copy_bits(visuals_half_byte, 0x88, mask_side);
 						stats_half_byte = Binary::add_one(stats_half_byte, mask_side);
-					} else if !block_hash_bit_1 {
+					} else if !random_hash_bit_1 {
 						stats_half_byte =
 							Binary::copy_bits(stats_half_byte, visuals_segment_byte, mask_side); // B
 						visuals_half_byte = Binary::copy_bits(visuals_half_byte, 0xBB, mask_side);
@@ -289,7 +278,7 @@ impl Breeding {
 					}
 				},
 				(false, false) => {
-					if !block_hash_bit_1 && !block_hash_bit_2 {
+					if !random_hash_bit_1 && !random_hash_bit_2 {
 						if !stats_bit & visuals_bit {
 							stats_half_byte = Binary::copy_bits(
 								stats_half_byte,
@@ -309,11 +298,11 @@ impl Breeding {
 								Binary::copy_bits(visuals_half_byte, 0x00, mask_side);
 							stats_half_byte = Binary::sub_one(stats_half_byte, mask_side);
 						}
-					} else if block_hash_bit_1 && block_hash_bit_2 {
+					} else if random_hash_bit_1 && random_hash_bit_2 {
 						stats_half_byte =
-							Binary::copy_bits(stats_half_byte, !block_hash[i % 32], mask_side); // !blk as E
+							Binary::copy_bits(stats_half_byte, !random_hash[i % 32], mask_side); // !blk as E
 						visuals_half_byte = Binary::copy_bits(visuals_half_byte, 0xEE, mask_side);
-					} else if block_hash_bit_1 {
+					} else if random_hash_bit_1 {
 						stats_half_byte =
 							Binary::copy_bits(stats_half_byte, stats_segment_byte, mask_side); // A
 						visuals_half_byte = Binary::copy_bits(visuals_half_byte, 0xAA, mask_side);
@@ -324,7 +313,7 @@ impl Breeding {
 					}
 				},
 				(true, true) => {
-					if block_hash_bit_1 && block_hash_bit_2 {
+					if random_hash_bit_1 && random_hash_bit_2 {
 						stats_half_byte = Binary::copy_bits(
 							stats_half_byte,
 							stats_segment_byte | visuals_segment_byte,
@@ -332,11 +321,11 @@ impl Breeding {
 						); // |+ as C
 						stats_half_byte = Binary::add_one(stats_half_byte, mask_side);
 						visuals_half_byte = Binary::copy_bits(visuals_half_byte, 0xCC, mask_side);
-					} else if !block_hash_bit_1 && !block_hash_bit_2 {
+					} else if !random_hash_bit_1 && !random_hash_bit_2 {
 						stats_half_byte =
-							Binary::copy_bits(stats_half_byte, block_hash[i % 32], mask_side); // blk as F
+							Binary::copy_bits(stats_half_byte, random_hash[i % 32], mask_side); // blk as F
 						visuals_half_byte = Binary::copy_bits(visuals_half_byte, 0xFF, mask_side);
-					} else if block_hash_bit_1 {
+					} else if random_hash_bit_1 {
 						stats_half_byte =
 							Binary::copy_bits(stats_half_byte, stats_segment_byte, mask_side); // A
 						visuals_half_byte = Binary::copy_bits(visuals_half_byte, 0xAA, mask_side);
@@ -354,7 +343,7 @@ impl Breeding {
 			// recombination
 			if mask_side == BitMaskSide::Right {
 				if stats_byte == 0xFF || stats_byte == 0x00 {
-					stats_byte &= block_hash[i % 32];
+					stats_byte &= random_hash[i % 32];
 					visuals_byte = 0x33;
 				}
 				output_stats[i / 2] = stats_byte;
@@ -385,7 +374,7 @@ impl Breeding {
 			for i in 0..max_rarity {
 				if rand[i as usize] > prob {
 					result = i;
-					break
+					break;
 				}
 			}
 		}
@@ -438,33 +427,35 @@ impl Generation {
 		input_rarity_1: RarityType,
 		input_generation_2: MogwaiGeneration,
 		input_rarity_2: RarityType,
-		random_hash: &[u8],
+		random_hash: &[u8; 32],
 	) -> (RarityType, MogwaiGeneration, RarityType) {
-		let mut resulting_gen = MogwaiGeneration::default();
-		let mut resulting_rarity = RarityType::default();
+		let base_rarity = (input_rarity_1 as u16 + input_rarity_2 as u16).saturating_sub(2) / 2;
 
-		if random_hash.len() >= 12 {
-			let base_rarity = (input_rarity_1 as u16 + input_rarity_2 as u16).saturating_sub(2) / 2;
+		let mut rarity_1_input_hash: [u8; 6] = [0u8; 6];
+		rarity_1_input_hash.copy_from_slice(&random_hash[0..6]);
+		let (out_rarity_1, out_gen_1) = Self::compute_next_generation_and_rarity(
+			input_generation_1,
+			input_rarity_1,
+			&rarity_1_input_hash,
+		);
 
-			let slice = unsafe { &*(&random_hash[0..6] as *const [u8] as *const [u8; 6]) };
-			let (out_rarity_1, out_gen_1) =
-				Self::compute_next_generation_and_rarity(input_generation_1, input_rarity_1, slice);
+		let mut rarity_2_input_hash: [u8; 6] = [0u8; 6];
+		rarity_2_input_hash.copy_from_slice(&random_hash[6..12]);
+		let (out_rarity_2, out_gen_2) = Self::compute_next_generation_and_rarity(
+			input_generation_2,
+			input_rarity_2,
+			&rarity_2_input_hash,
+		);
 
-			let slice = unsafe { &*(&random_hash[6..12] as *const [u8] as *const [u8; 6]) };
-			let (out_rarity_2, out_gen_2) =
-				Self::compute_next_generation_and_rarity(input_generation_2, input_rarity_2, slice);
+		let resulting_gen =
+			MogwaiGeneration::coerce_from((out_gen_1 as u16 + out_gen_2 as u16 + base_rarity) / 2);
 
-			resulting_gen = MogwaiGeneration::coerce_from(
-				(out_gen_1 as u16 + out_gen_2 as u16 + base_rarity) / 2,
-			);
-
-			resulting_rarity = RarityType::from(
-				((out_rarity_1 as u16 +
-					out_rarity_2 as u16 +
-					((input_rarity_1 as u16 + input_rarity_2 as u16) / 2)) /
-					2) % 5,
-			)
-		}
+		let resulting_rarity = RarityType::from(
+			((out_rarity_1 as u16 +
+				out_rarity_2 as u16 +
+				((input_rarity_1 as u16 + input_rarity_2 as u16) / 2)) /
+				2) % 5,
+		);
 
 		let max_rarity = RarityType::from(
 			(6 + ((input_rarity_1 as u16 + input_rarity_2 as u16) / 2_u16) / 2) % 5,
@@ -477,6 +468,148 @@ impl Generation {
 #[cfg(test)]
 mod test {
 	use super::*;
+
+	mod morph {
+		use super::*;
+
+		#[test]
+		fn morphing_dom_dom_works() {
+			let breed_type = BreedType::DomDom;
+
+			let left_dna = core::array::from_fn(|i| i as u8 + 1); // [1..32]
+			let right_dna = core::array::from_fn(|i| i as u8 + 17); // [33..64]
+
+			let result = Breeding::morph(breed_type, &left_dna, &right_dna);
+
+			assert_eq!(result[0..16], left_dna);
+			assert_eq!(result[16..32], right_dna);
+		}
+
+		#[test]
+		fn morphing_dom_rez_works() {
+			let breed_type = BreedType::DomRez;
+
+			let left_dna = core::array::from_fn(|i| i as u8 + 1); // [1..32]
+			let right_dna = core::array::from_fn(|i| i as u8 + 17); // [33..64]
+
+			let result = Breeding::morph(breed_type, &left_dna, &right_dna);
+
+			assert_eq!(result[0..16], left_dna);
+			assert_eq!(
+				result[16..32],
+				[25, 26, 27, 28, 29, 30, 31, 32, 17, 18, 19, 20, 21, 22, 23, 24]
+			);
+		}
+
+		#[test]
+		fn morphing_rez_dom_works() {
+			let breed_type = BreedType::RezDom;
+
+			let left_dna = core::array::from_fn(|i| i as u8 + 1); // [1..32]
+			let right_dna = core::array::from_fn(|i| i as u8 + 17); // [33..64]
+
+			let result = Breeding::morph(breed_type, &left_dna, &right_dna);
+
+			assert_eq!(result[0..16], [9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8]);
+			assert_eq!(result[16..32], right_dna);
+		}
+
+		#[test]
+		fn morphing_rez_rez_works() {
+			let breed_type = BreedType::RezRez;
+
+			let left_dna = core::array::from_fn(|i| i as u8 + 1); // [1..32]
+			let right_dna = core::array::from_fn(|i| i as u8 + 17); // [33..64]
+
+			let result = Breeding::morph(breed_type, &left_dna, &right_dna);
+
+			assert_eq!(result[0..16], [9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8]);
+			assert_eq!(
+				result[16..32],
+				[25, 26, 27, 28, 29, 30, 31, 32, 17, 18, 19, 20, 21, 22, 23, 24]
+			);
+		}
+	}
+
+	mod pairing {
+		use super::*;
+
+		#[test]
+		fn pairing_dom_dom_works() {
+			let breed_type = BreedType::DomDom;
+
+			let left_dna = core::array::from_fn(|i| i as u8 + 1); // [1..32]
+			let right_dna = core::array::from_fn(|i| i as u8 + 33); // [33..64]
+
+			let result = Breeding::pairing(breed_type, &left_dna, &right_dna);
+
+			assert_eq!(result[0], left_dna);
+			assert_eq!(result[1], right_dna);
+		}
+
+		#[test]
+		fn pairing_dom_rez_works() {
+			let breed_type = BreedType::DomRez;
+
+			let left_dna: [u8; 32] = core::array::from_fn(|i| i as u8 + 1); // [1..32]
+			let right_dna = core::array::from_fn(|i| i as u8 + 33); // [33..64]
+
+			let result = Breeding::pairing(breed_type, &left_dna, &right_dna);
+
+			assert_eq!(result[0], left_dna);
+			assert_eq!(
+				result[1],
+				[
+					49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 33, 34, 35, 36,
+					37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48
+				]
+			);
+		}
+
+		#[test]
+		fn pairing_rez_dom_works() {
+			let breed_type = BreedType::RezDom;
+
+			let left_dna: [u8; 32] = core::array::from_fn(|i| i as u8 + 1); // [1..32]
+			let right_dna = core::array::from_fn(|i| i as u8 + 33); // [33..64]
+
+			let result = Breeding::pairing(breed_type, &left_dna, &right_dna);
+
+			assert_eq!(
+				result[0],
+				[
+					17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 1, 2, 3, 4, 5,
+					6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+				]
+			);
+			assert_eq!(result[1], right_dna);
+		}
+
+		#[test]
+		fn pairing_rez_rez_works() {
+			let breed_type = BreedType::RezRez;
+
+			let left_dna: [u8; 32] = core::array::from_fn(|i| i as u8 + 1); // [1..32]
+			let right_dna = core::array::from_fn(|i| i as u8 + 33); // [33..64]
+
+			let result = Breeding::pairing(breed_type, &left_dna, &right_dna);
+
+			assert_eq!(
+				result[0],
+				[
+					17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 1, 2, 3, 4, 5,
+					6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+				]
+			);
+			assert_eq!(
+				result[1],
+				[
+					49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 33, 34, 35, 36,
+					37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48
+				]
+			);
+		}
+	}
 
 	mod segmenting {
 		use super::*;
