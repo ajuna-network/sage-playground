@@ -12,7 +12,7 @@ cargo build-sage-node
 ./target/release/sage-playground-node --dev
 ```
 
-Check [here](/backend/README.md) for more details on the backend.
+Check [here](/backend/README.md) for more details on the backend, also check the SAGE [book](https://wiki.ajuna.io/build-with-us/sage-substrate-asset-game-engine). 
 
 ## Frontend Quickstart
 
