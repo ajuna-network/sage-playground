@@ -2649,6 +2649,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "game-full-house-fury"
+version = "0.1.0"
+dependencies = [
+ "ajuna-primitives",
+ "frame-support",
+ "parity-scale-codec",
+ "sage-api",
+ "scale-info",
+ "sp-core",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "generic-array"
 version = "0.12.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
