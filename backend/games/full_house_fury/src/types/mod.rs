@@ -3,7 +3,7 @@ use sage_api::{traits::GetId, TransitionError};
 
 use crate::error::FuryError;
 use frame_support::pallet_prelude::{ConstU32, Decode, Encode, MaxEncodedLen, TypeInfo};
-use sp_runtime::traits::BlockNumber as BlockNumberT;
+use sp_runtime::traits::{BlockNumber as BlockNumberT, BlockNumber};
 
 pub type AssetId = u32;
 
@@ -25,6 +25,12 @@ pub struct BaseAsset<BlockNumber> {
 
 	/// Encoded furry asset.
 	pub fury_asset: BoundedVec<u8, ConstU32<MAX_ASSET_LEN>>,
+}
+
+impl<BlockNumber> GetId<AssetId> for BaseAsset<BlockNumber> {
+	fn get_id(&self) -> AssetId {
+		self.id
+	}
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
