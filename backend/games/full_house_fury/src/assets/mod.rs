@@ -22,7 +22,7 @@ pub struct BaseAsset<BlockNumber> {
 	pub asset_type: AssetType,
 
 	/// Encoded furry asset.
-	pub furry_asset: BoundedVec<u8, ConstU32<MAX_ASSET_LEN>>,
+	pub fury_asset: BoundedVec<u8, ConstU32<MAX_ASSET_LEN>>,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
