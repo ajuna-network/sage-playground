@@ -1,6 +1,5 @@
+use crate::{error::FurryError, types::card::CardIndex};
 use frame_support::pallet_prelude::{Decode, Encode, MaxEncodedLen, TypeInfo};
-use crate::assets::card::CardIndex;
-use crate::error::FurryError;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
 pub struct Game {

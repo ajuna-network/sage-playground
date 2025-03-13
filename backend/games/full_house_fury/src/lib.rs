@@ -2,5 +2,5 @@
 
 use frame_support::pallet_prelude::{Decode, Encode, MaxEncodedLen, TypeInfo};
 
-pub mod assets;
 pub mod error;
+pub mod types;

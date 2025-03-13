@@ -31,7 +31,7 @@ mod fee_handler {
 	pub type NativeAndAssets<Assets, AssetId> =
 		UnionOf<Balances, Assets, NativeFromLeft, NativeOrWithId<AssetId>, AccountId>;
 
-	/// Fee handler facilitating payment in the native currency and with whitelisted assets.
+	/// Fee handler facilitating payment in the native currency and with whitelisted types.
 	pub type SageFeeHandler<
 		Assets,
 		AssetId,

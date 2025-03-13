@@ -9,6 +9,7 @@ pub type AssetId = u32;
 
 pub const MAX_ASSET_LEN: u32 = 32;
 
+mod best_poker_hand;
 pub mod card;
 pub mod deck;
 mod game;
