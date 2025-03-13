@@ -9,10 +9,10 @@ pub type AssetId = u32;
 
 pub const MAX_ASSET_LEN: u32 = 32;
 
-mod best_poker_hand;
+pub mod best_poker_hand;
 pub mod card;
 pub mod deck;
-mod game;
+pub mod game;
 pub mod random_number_generator;
 
 #[derive(Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]

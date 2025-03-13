@@ -4,3 +4,4 @@ use frame_support::pallet_prelude::{Decode, Encode, MaxEncodedLen, TypeInfo};
 
 pub mod error;
 pub mod types;
+pub mod utils;

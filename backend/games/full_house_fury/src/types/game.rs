@@ -94,7 +94,7 @@ impl Player {
 #[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
 pub struct Attack {
 	pub hand: u32,
-	pub attack_type: PokerHand,
+	pub attack_type: Option<PokerHand>,
 	pub attack_score: u32,
 }
 
@@ -143,10 +143,8 @@ pub enum LevelState {
 	Score = 3,
 }
 
-#[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
 pub enum PokerHand {
-	#[default]
-	None = 0,
 	HighCard = 1,
 	Pair = 2,
 	TwoPair = 3,
