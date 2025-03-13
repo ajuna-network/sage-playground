@@ -35,7 +35,6 @@ impl<BlockNumber> GetId<AssetId> for BaseAsset<BlockNumber> {
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
 pub enum AssetType {
-	None = 0,
 	Tower = 1,
 	Deck = 2,
 	Game = 3,

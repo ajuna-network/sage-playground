@@ -19,7 +19,7 @@ pub struct Game {
 }
 
 impl Game {
-	fn new() -> Self {
+	pub fn new() -> Self {
 		Self {
 			game_sate: GameSate::Running,
 			level_state: LevelState::Preparation,

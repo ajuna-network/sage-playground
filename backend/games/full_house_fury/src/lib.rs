@@ -6,3 +6,4 @@ pub mod error;
 pub mod types;
 pub mod utils;
 pub mod transition;
+pub mod rules;

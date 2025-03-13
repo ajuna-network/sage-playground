@@ -1,7 +1,7 @@
+use sp_std::vec;
 use crate::{
     error::*,
 };
-
 use ajuna_primitives::{payment_handler::NativeId, sage_api::SageApi};
 use sage_api::{rules::*, traits::TransitionOutput, SageGameTransition, TransitionError};
 
@@ -16,7 +16,10 @@ use sp_runtime::{
     SaturatedConversion,
 };
 use sp_std::{marker::PhantomData, vec::Vec};
-use crate::types::{AssetId, BaseAsset};
+use crate::rules::ensure_account_has_no_asset_of_type;
+use crate::types::{AssetId, AssetType, BaseAsset};
+use crate::types::deck::Deck;
+use crate::types::game::Game;
 
 pub type TransitionConfig = ();
 
@@ -115,7 +118,7 @@ where
         match transition_id {
             TransitionIdentifier::Start => {
                 ensure_asset_length(asset_ids, 0)?;
-
+                ensure_account_has_no_asset_of_type::<_,_,Sage>(account_id, AssetType::Game)?;
             },
             _ => {}
         }
@@ -136,11 +139,35 @@ where
         let output = match transition_id {
             TransitionIdentifier::Start => {
                 let current_block = Sage::get_current_block_number();
+
+                let game = Game::new();
+                let deck = Deck::new_deck();
+
+                let game_asset = BaseAsset {
+                    id: Self::generate_asset_id()?,
+                    collection_id: 0,
+                    genesis: current_block,
+                    asset_type: AssetType::Game,
+                    fury_asset: game.encode().try_into().unwrap(),
+                };
+
+                let deck_asset = BaseAsset {
+                    id: Self::generate_asset_id()?,
+                    collection_id: 0,
+                    genesis: current_block,
+                    asset_type: AssetType::Deck,
+                    fury_asset: deck.encode().try_into().unwrap(),
+                };
+
+                vec![
+                   TransitionOutput::Minted(game_asset),
+                   TransitionOutput::Minted(deck_asset),
+                ]
                 }
-            _ => {}
+            _ => Default::default()
         };
 
-        Ok(Default::default())
+        Ok(output   )
     }
 }
 
