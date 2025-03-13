@@ -9,7 +9,9 @@ pub type AssetId = u32;
 
 pub const MAX_ASSET_LEN: u32 = 32;
 
-mod card;
+pub mod card;
+pub mod deck;
+pub mod random_number_generator;
 
 #[derive(Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
 pub struct BaseAsset<BlockNumber> {
@@ -30,7 +32,6 @@ pub enum AssetType {
 	Deck = 2,
 	Game = 3,
 }
-
 
 pub enum PokerHand {
 	None = 0,
