@@ -1,4 +1,4 @@
-use crate::{error::FurryError, types::card::CardIndex};
+use crate::{error::FuryError, types::card::CardIndex};
 use frame_support::pallet_prelude::{Decode, Encode, MaxEncodedLen, TypeInfo};
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
@@ -99,22 +99,22 @@ pub struct Attack {
 }
 
 impl Attack {
-	pub fn get_card(&self, hand_position: u8) -> Result<CardIndex, FurryError> {
+	pub fn get_card(&self, hand_position: u8) -> Result<CardIndex, FuryError> {
 		if hand_position > 4 {
-			return Err(FurryError::InvalidHandPosition);
+			return Err(FuryError::InvalidHandPosition);
 		}
 
 		let bit_offset = hand_position * 6;
 		Ok(((self.hand >> bit_offset) & 0x3F) as CardIndex)
 	}
 
-	pub fn set_card(&mut self, hand_position: u8, card_index: CardIndex) -> Result<(), FurryError> {
+	pub fn set_card(&mut self, hand_position: u8, card_index: CardIndex) -> Result<(), FuryError> {
 		if hand_position > 4 {
-			return Err(FurryError::InvalidHandPosition);
+			return Err(FuryError::InvalidHandPosition);
 		}
 
 		if card_index > 51 {
-			return Err(FurryError::InvalidHandPosition);
+			return Err(FuryError::InvalidHandPosition);
 		}
 
 		let bit_offset = hand_position * 6;

@@ -1,5 +1,5 @@
 use crate::{
-	error::FurryError,
+	error::FuryError,
 	types::{card::CardIndex, random_number_generator::RandomNumberGenerator},
 };
 use frame_support::pallet_prelude::{Decode, Encode, MaxEncodedLen, TypeInfo};
@@ -41,9 +41,9 @@ impl Deck {
 		&mut self,
 		card_index: CardIndex,
 		card_state: bool,
-	) -> Result<(), FurryError> {
+	) -> Result<(), FuryError> {
 		if card_index > self.max_deck_size {
-			return Err(FurryError::InvalidCardIndex);
+			return Err(FuryError::InvalidCardIndex);
 		};
 
 		if card_state {
@@ -56,30 +56,30 @@ impl Deck {
 	}
 
 	/// Adds a card to the deck and returns an error if that card is already present.
-	fn add_card_to_deck(&mut self, card_index: CardIndex) -> Result<(), FurryError> {
+	fn add_card_to_deck(&mut self, card_index: CardIndex) -> Result<(), FuryError> {
 		if !self.get_card_state(card_index) {
 			self.set_card_in_deck(card_index, true)?;
 			self.deck_size = self.deck_size + 1;
 			Ok(())
 		} else {
-			Err(FurryError::CardAlreadyInDeck)
+			Err(FuryError::CardAlreadyInDeck)
 		}
 	}
 
 	/// Removes a card to the deck and returns an error if that card the card is not present.
-	fn remove_card_from_deck(&mut self, card_index: CardIndex) -> Result<(), FurryError> {
+	fn remove_card_from_deck(&mut self, card_index: CardIndex) -> Result<(), FuryError> {
 		if self.get_card_state(card_index) {
 			self.set_card_in_deck(card_index, false)?;
 			self.deck_size = self.deck_size - 1;
 			Ok(())
 		} else {
-			Err(FurryError::CardNotInDeck)
+			Err(FuryError::CardNotInDeck)
 		}
 	}
 
-	pub fn draw(&mut self, hand_size: u8, random_hash: H256) -> Result<(), FurryError> {
+	pub fn draw(&mut self, hand_size: u8, random_hash: H256) -> Result<(), FuryError> {
 		if hand_size > HAND_LIMIT_SIZE {
-			return Err(FurryError::InvalidHandSize)
+			return Err(FuryError::InvalidHandSize)
 		}
 
 		let mut current_count = self.hand.cards_count();
@@ -103,19 +103,19 @@ impl Deck {
 	pub fn draw_card(
 		&mut self,
 		rng: &mut RandomNumberGenerator<BlakeTwo256>,
-	) -> Result<CardIndex, FurryError> {
+	) -> Result<CardIndex, FuryError> {
 		if self.deck_size == 0 {
-			return Err(FurryError::DeckIsEmpty)
+			return Err(FuryError::DeckIsEmpty)
 		};
 
-		let card_index = random_set_bit(self.deck, rng).ok_or(FurryError::DeckIsEmpty)?;
+		let card_index = random_set_bit(self.deck, rng).ok_or(FuryError::DeckIsEmpty)?;
 
 		Ok(card_index)
 	}
 
-	pub fn set_hand(&mut self, hand_position: u8, card_index: CardIndex) -> Result<(), FurryError> {
+	pub fn set_hand(&mut self, hand_position: u8, card_index: CardIndex) -> Result<(), FuryError> {
 		if card_index > self.max_deck_size && card_index != HAND_EMPTY_SLOT {
-			return Err(FurryError::InvalidCardIndex);
+			return Err(FuryError::InvalidCardIndex);
 		}
 
 		self.hand.set_hand_card(hand_position, card_index)
@@ -141,9 +141,9 @@ impl Hand {
 		&mut self,
 		hand_position: u8,
 		card_index: CardIndex,
-	) -> Result<(), FurryError> {
+	) -> Result<(), FuryError> {
 		if hand_position > HAND_LIMIT_SIZE {
-			return Err(FurryError::InvalidHandPosition);
+			return Err(FuryError::InvalidHandPosition);
 		}
 
 		let bit_offset = hand_position * 6;
@@ -155,9 +155,9 @@ impl Hand {
 		Ok(())
 	}
 
-	fn get_hand_card(&self, hand_position: u8) -> Result<u8, FurryError> {
+	fn get_hand_card(&self, hand_position: u8) -> Result<u8, FuryError> {
 		if hand_position > HAND_LIMIT_SIZE {
-			return Err(FurryError::InvalidHandPosition);
+			return Err(FuryError::InvalidHandPosition);
 		}
 
 		let hand_value = self.hand;

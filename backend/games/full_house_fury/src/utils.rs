@@ -1,4 +1,4 @@
-use crate::error::FurryError;
+use crate::error::FuryError;
 use crate::types::game::PokerHand;
 
 pub const COLLECTION_ID: u8 = 1;
@@ -25,9 +25,9 @@ pub fn is_straight(straight_ranks: &[u8], max_rank: u8, min_rank: u8) -> bool {
 	count == 5 && max_rank - min_rank == 4
 }
 
-pub fn evaluate(card_indexes: &[u8]) -> Result<(PokerHand, u16), FurryError> {
+pub fn evaluate(card_indexes: &[u8]) -> Result<(PokerHand, u16), FuryError> {
 	if card_indexes.is_empty() || card_indexes.len() > 5 {
-		return Err(FurryError::InvalidHandSize)
+		return Err(FuryError::InvalidHandSize)
 	}
 
 	let mut rank_counts = [0u8; 14];
@@ -40,7 +40,7 @@ pub fn evaluate(card_indexes: &[u8]) -> Result<(PokerHand, u16), FurryError> {
 
 	for (i, &index) in card_indexes.iter().enumerate() {
 		if index > 51 {
-			return Err(FurryError::InvalidHandSize)
+			return Err(FuryError::InvalidHandSize)
 		}
 		let rank = (index % 13) + 1;
 		let suit = index / 13;

@@ -1,4 +1,4 @@
-use crate::error::FurryError;
+use crate::error::FuryError;
 use frame_support::pallet_prelude::{Decode, Encode, MaxEncodedLen, TypeInfo};
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
@@ -10,11 +10,11 @@ pub struct CardAsset {
 pub type CardIndex = u8;
 
 impl TryFrom<u32> for CardAsset {
-	type Error = FurryError;
+	type Error = FuryError;
 
 	fn try_from(card_index: u32) -> Result<Self, Self::Error> {
 		if card_index > 51 {
-			return Err(FurryError::InvalidCardIndex);
+			return Err(FuryError::InvalidCardIndex);
 		}
 
 		Ok(Self {
@@ -50,7 +50,7 @@ impl Suit {
 }
 
 impl TryFrom<u32> for Suit {
-	type Error = FurryError;
+	type Error = FuryError;
 
 	fn try_from(value: u32) -> Result<Self, Self::Error> {
 		match value {
@@ -58,7 +58,7 @@ impl TryFrom<u32> for Suit {
 			1 => Ok(Suit::Diamonds),
 			2 => Ok(Suit::Hearts),
 			3 => Ok(Suit::Spades),
-			_ => Err(FurryError::InvalidSuit),
+			_ => Err(FuryError::InvalidSuit),
 		}
 	}
 }
@@ -101,7 +101,7 @@ impl Rank {
 }
 
 impl TryFrom<u32> for Rank {
-	type Error = FurryError;
+	type Error = FuryError;
 
 	fn try_from(value: u32) -> Result<Self, Self::Error> {
 		match value {
@@ -118,7 +118,7 @@ impl TryFrom<u32> for Rank {
 			11 => Ok(Rank::Jack),
 			12 => Ok(Rank::Queen),
 			13 => Ok(Rank::King),
-			_ => Err(FurryError::InvalidRank),
+			_ => Err(FuryError::InvalidRank),
 		}
 	}
 }

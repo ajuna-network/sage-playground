@@ -1,7 +1,7 @@
 use frame_support::BoundedVec;
 use sage_api::{traits::GetId, TransitionError};
 
-use crate::error::FurryError;
+use crate::error::FuryError;
 use frame_support::pallet_prelude::{ConstU32, Decode, Encode, MaxEncodedLen, TypeInfo};
 use sp_runtime::traits::BlockNumber as BlockNumberT;
 
