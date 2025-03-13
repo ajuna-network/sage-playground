@@ -7,6 +7,8 @@ pub struct CardAsset {
 	pub rank: Rank,
 }
 
+pub type CardIndex = u8;
+
 impl TryFrom<u32> for CardAsset {
 	type Error = FurryError;
 

@@ -11,6 +11,7 @@ pub const MAX_ASSET_LEN: u32 = 32;
 
 pub mod card;
 pub mod deck;
+mod game;
 pub mod random_number_generator;
 
 #[derive(Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
@@ -31,18 +32,4 @@ pub enum AssetType {
 	Tower = 1,
 	Deck = 2,
 	Game = 3,
-}
-
-pub enum PokerHand {
-	None = 0,
-	HighCard = 1,
-	Pair = 2,
-	TwoPair = 3,
-	ThreeOfAKind = 4,
-	Straight = 5,
-	Flush = 6,
-	FullHouse = 7,
-	FourOfAKind = 8,
-	StraightFlush = 9,
-	RoyalFlush = 10,
 }

@@ -2,6 +2,7 @@ use crate::{assets::random_number_generator::RandomNumberGenerator, error::Furry
 use frame_support::pallet_prelude::{Decode, Encode, MaxEncodedLen, TypeInfo};
 use sp_core::H256;
 use sp_runtime::traits::BlakeTwo256;
+use crate::assets::card::CardIndex;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
 pub struct Deck {
@@ -16,7 +17,6 @@ pub struct Deck {
 	pub hand: Hand,
 }
 
-type CardIndex = u8;
 
 pub const HAND_LIMIT_SIZE: u8 = 10;
 pub const HAND_EMPTY_SLOT: u8 = 63;
