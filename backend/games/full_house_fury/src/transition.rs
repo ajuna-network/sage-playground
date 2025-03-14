@@ -245,8 +245,32 @@ where
 
 				game.attack = Attack::create(&attack_cards).map_err(|e| TransitionError::Transition {code: 0})?;
 
+				game.boss.add_damage(game.attack.score);
 
-				Default::default()
+				game.player.decrease_endurance();
+
+
+				// Continue the game for as long both parties are alive
+				if game.boss.is_alive() && game.player.is_alive() {
+					game.level_state = LevelState::Battle;
+
+					game.round = game.round.saturating_add(1);
+
+
+					let subject = (&account_id, &game_id, &deck_id);
+					let random_hash = Sage::random_hash(subject.encode().as_slice());
+					deck.draw(game.player.hand_size, random_hash)
+						.map_err(|e| TransitionError::Transition {code: 0})?;
+
+				} else {
+					game.level_state = LevelState::Score;
+				}
+
+				if !game.player.is_alive() || (deck.deck_size + deck.hand.cards_count()) == 0 {
+					game.game_sate = GameState::Finished;
+				}
+
+				vec![TransitionOutput::Mutated(game_id, game_asset), TransitionOutput::Mutated(deck_id, deck_asset)]
 			},
 			TransitionIdentifier::Discard => Default::default(),
 			TransitionIdentifier::Score =>Default::default(),

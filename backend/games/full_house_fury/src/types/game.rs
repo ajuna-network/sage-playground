@@ -29,8 +29,8 @@ impl Game {
 			boss: Boss::new(100),
 			attack: Attack::default(),
 			player: Player {
-				max_player_endurance: 10,
-				player_endurance: 10,
+				max_endurance: 10,
+				endurance: 10,
 				discard: 3,
 				hand_size: 7,
 				max_player_health: 100,
@@ -56,6 +56,10 @@ impl Boss {
 		Self { max_health, damage: 0 }
 	}
 
+	pub fn add_damage(&mut self, damage: u32) {
+		self.damage = self.damage.saturating_add(damage);
+	}
+
 	pub fn health(&self) -> u32 {
 		self.max_health.saturating_sub(self.damage)
 	}
@@ -67,9 +71,9 @@ impl Boss {
 
 #[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
 pub struct Player {
-	pub max_player_endurance: u8,
+	pub max_endurance: u8,
 
-	pub player_endurance: u8,
+	pub endurance: u8,
 
 	pub discard: u8,
 
@@ -83,6 +87,23 @@ pub struct Player {
 }
 
 impl Player {
+	pub fn add_damage(&mut self, damage: u32) {
+		self.player_damage = self.player_damage.saturating_add(damage);
+	}
+
+	pub fn decrease_endurance(&mut self) {
+		if self.endurance > 0 {
+			self.endurance = self.endurance - 1;
+		} else {
+			self.add_damage(self.fatigue_damage);
+			self.increase_fatigue();
+		}
+	}
+
+	pub fn increase_fatigue(&mut self) {
+		self.fatigue_damage = self.fatigue_damage.saturating_mul(2);
+	}
+
 	pub fn health(&self) -> u32 {
 		self.max_player_health.saturating_sub(self.player_damage)
 	}
