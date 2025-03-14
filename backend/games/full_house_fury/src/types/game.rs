@@ -91,6 +91,10 @@ impl Player {
 		self.player_damage = self.player_damage.saturating_add(damage);
 	}
 
+	pub fn reset_endurance(&mut self) {
+		self.endurance = self.max_endurance;
+	}
+
 	pub fn decrease_endurance(&mut self) {
 		if self.endurance > 0 {
 			self.endurance = self.endurance - 1;

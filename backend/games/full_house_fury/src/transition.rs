@@ -16,7 +16,8 @@ use sp_runtime::{
 	SaturatedConversion,
 };
 use sp_std::{marker::PhantomData, vec::Vec};
-use crate::types::game::{Attack, GameState, LevelState};
+use crate::types::deck::Hand;
+use crate::types::game::{Attack, Boss, GameState, LevelState};
 
 pub type TransitionConfig = ();
 
@@ -133,7 +134,7 @@ where
 		transition_id: &TransitionIdentifier,
 		account_id: &AccountId,
 		mut assets: Vec<(AssetId, BaseAsset<BlockNumber>)>,
-		attack_positions: &HandPositions,
+		hand_positions: &HandPositions,
 		payment_asset: Option<Sage::FungiblesAssetId>,
 	) -> Result<Vec<TransitionOutput<AssetId, BaseAsset<BlockNumber>>>, TransitionError> {
 		let output = match transition_id {
@@ -225,7 +226,7 @@ where
 					return Err(TransitionError::Transition {code: 0});
 				}
 
-				let attack_positions = attack_positions.as_ref().ok_or_else(|| TransitionError::Transition { code: 0})?;
+				let attack_positions = hand_positions.as_ref().ok_or_else(|| TransitionError::Transition { code: 0})?;
 
 				let attack_cards = deck.hand.pick_multiple_cards(attack_positions)
 					.map_err(|_e| TransitionError::Transition {code: 0})?;
@@ -259,8 +260,68 @@ where
 
 				vec![TransitionOutput::Mutated(game_id, game_asset), TransitionOutput::Mutated(deck_id, deck_asset)]
 			},
-			TransitionIdentifier::Discard => Default::default(),
-			TransitionIdentifier::Score =>Default::default(),
+			TransitionIdentifier::Discard => {
+				let (game_id, game_asset) = assets.pop().ok_or_else(|| TransitionError::Transition { code: 0})?;
+				let mut game = Game::decode(&mut game_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::Transition { code: 0})?;
+
+				let (deck_id, deck_asset) = assets.pop().ok_or_else(|| TransitionError::Transition { code: 0})?;
+				let mut deck = Deck::decode(&mut deck_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::Transition { code: 0})?;
+
+				if game.game_sate != GameState::Running {
+					return Err(TransitionError::Transition {code: 0});
+				}
+
+				if game.level_state != LevelState::Battle {
+					return Err(TransitionError::Transition {code: 0});
+				}
+
+				if game.player.discard > 0 {
+					game.player.discard -= 1;
+				} else {
+					return Err(TransitionError::Transition {code: 0});
+				}
+
+
+				let discard_positions = hand_positions.as_ref().ok_or_else(|| TransitionError::Transition { code: 0})?;
+
+				// this step does also remove them from the hand, so we can simply ignore them.
+				let _discard_cards = deck.hand.pick_multiple_cards(discard_positions)
+					.map_err(|_e| TransitionError::Transition {code: 0})?;
+
+				// draw new cards for the discarded cards
+				let subject = (&account_id, &game_id, &deck_id);
+				let random_hash = Sage::random_hash(subject.encode().as_slice());
+				deck.draw(game.player.hand_size, random_hash).map_err(|_e| TransitionError::Transition {code: 0})?;
+
+				vec![TransitionOutput::Mutated(game_id, game_asset), TransitionOutput::Mutated(deck_id, deck_asset)]
+			},
+			TransitionIdentifier::Score => {
+				let (game_id, game_asset) = assets.pop().ok_or_else(|| TransitionError::Transition { code: 0})?;
+				let mut game = Game::decode(&mut game_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::Transition { code: 0})?;
+
+				let (deck_id, deck_asset) = assets.pop().ok_or_else(|| TransitionError::Transition { code: 0})?;
+				let mut deck = Deck::decode(&mut deck_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::Transition { code: 0})?;
+
+				game.clear_attack();
+
+				game.level = game.level.saturating_add(1);
+
+				game.boss = Boss {
+					// convert u8 to u32 to prevent early saturation.
+					max_health: (game.level as u32).saturating_pow(2).saturating_mul(100),
+					damage: 0,
+				};
+
+				// do not reset player health for now, but reset endurance
+				game.player.reset_endurance();
+
+				// reset deck and hand
+				deck = Deck::new_deck();
+
+				game.level_state = LevelState::Preparation;
+
+				vec![TransitionOutput::Mutated(game_id, game_asset), TransitionOutput::Mutated(deck_id, deck_asset)]
+			},
 		};
 
 		Ok(output)
