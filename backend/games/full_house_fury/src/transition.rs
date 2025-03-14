@@ -206,7 +206,7 @@ where
 				};
 
 				let subject = (&account_id, &game_id, &deck_id);
-				deck.draw(game.player.hand_size, Sage::random_hash(subject.encode().as_slice())).map_err(|e| TransitionError::Transition {code: 0})?;
+				deck.draw(game.player.hand_size, Sage::random_hash(subject.encode().as_slice())).map_err(|_e| TransitionError::Transition {code: 0})?;
 
 				vec![TransitionOutput::Mutated(game_id, game_asset), TransitionOutput::Mutated(deck_id, deck_asset)]
 			},
@@ -227,23 +227,10 @@ where
 
 				let attack_positions = attack_positions.as_ref().ok_or_else(|| TransitionError::Transition { code: 0})?;
 
-				if attack_positions.is_empty() || attack_positions.len() > 5 {
-					return Err(TransitionError::Transition {code: 0});
-				}
+				let attack_cards = deck.hand.pick_multiple_cards(attack_positions)
+					.map_err(|_e| TransitionError::Transition {code: 0})?;
 
-				let mut attack_cards = Vec::with_capacity(attack_positions.len());
-				for a in attack_positions.iter() {
-					if a > &10 {
-						return Err(TransitionError::Transition {code: 0});
-					}
-
-					// returns an error if the slot is empty for instance
-					let card = deck.hand.pick_hand_card(*a).map_err(|e| TransitionError::Transition {code: 0})?;
-
-					attack_cards.push(card)
-				}
-
-				game.attack = Attack::create(&attack_cards).map_err(|e| TransitionError::Transition {code: 0})?;
+				game.attack = Attack::create(&attack_cards).map_err(|_e| TransitionError::Transition {code: 0})?;
 
 				game.boss.add_damage(game.attack.score);
 

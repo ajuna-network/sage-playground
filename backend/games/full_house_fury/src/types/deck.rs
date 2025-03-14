@@ -5,6 +5,7 @@ use crate::{
 use frame_support::pallet_prelude::{Decode, Encode, MaxEncodedLen, TypeInfo};
 use sp_core::H256;
 use sp_runtime::traits::BlakeTwo256;
+use sp_std::vec::Vec;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
 pub struct Deck {
@@ -92,7 +93,7 @@ impl Deck {
 
 			if self.hand.is_hand_position_empty(hand_position) {
 				let drawn_card = self.draw_card(&mut rng)?;
-				self.hand.set_hand_card(hand_position, drawn_card)?;
+				self.hand.set_card(hand_position, drawn_card)?;
 				current_count = current_count + 1;
 			}
 		}
@@ -118,7 +119,7 @@ impl Deck {
 			return Err(FuryError::InvalidCardIndex);
 		}
 
-		self.hand.set_hand_card(hand_position, card_index)
+		self.hand.set_card(hand_position, card_index)
 	}
 }
 
@@ -137,7 +138,7 @@ impl Hand {
 		Self { hand }
 	}
 
-	pub fn set_hand_card(&mut self, hand_position: u8, card_index: CardIndex) -> Result<(), FuryError> {
+	pub fn set_card(&mut self, hand_position: u8, card_index: CardIndex) -> Result<(), FuryError> {
 		if hand_position > HAND_LIMIT_SIZE {
 			return Err(FuryError::InvalidHandPosition);
 		}
@@ -151,6 +152,24 @@ impl Hand {
 		Ok(())
 	}
 
+	pub fn pick_multiple_cards(&mut self, hand_positions: &[u8]) -> Result<Vec<CardIndex>, FuryError> {
+		if hand_positions.is_empty() || hand_positions.len() > 5 {
+			return Err(FuryError::TooManyCardsPicked);
+		}
+
+		let cards: Result<Vec<_>, FuryError> = hand_positions
+			.iter()
+			.map(|&a| {
+				if a > HAND_LIMIT_SIZE {
+					return Err(FuryError::InvalidHandPosition);
+				}
+				self.pick_hand_card(a)
+			})
+			.collect();
+
+		cards
+	}
+
 	/// Picks a card from the hand and marks the slot as empty afterwards
 	pub fn pick_hand_card(&mut self, hand_position: u8) -> Result<CardIndex, FuryError> {
 		let card_index = self.inspect_hand_card(hand_position)?;
@@ -159,7 +178,7 @@ impl Hand {
 			return Err(FuryError::HandSlotIsEmpty);
 		}
 
-		self.set_hand_card(hand_position, HAND_EMPTY_SLOT)?;
+		self.set_card(hand_position, HAND_EMPTY_SLOT)?;
 
 		Ok(card_index)
 	}

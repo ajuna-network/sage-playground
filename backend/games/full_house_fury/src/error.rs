@@ -8,4 +8,5 @@ pub enum FuryError {
 	InvalidHandPosition = 16,
 	InvalidHandSize = 17,
 	HandSlotIsEmpty = 18,
+	TooManyCardsPicked = 19,
 }

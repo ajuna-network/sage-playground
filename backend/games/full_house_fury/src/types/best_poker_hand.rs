@@ -1,6 +1,5 @@
 use crate::types::game::PokerHand;
 use frame_support::pallet_prelude::{ConstU32, Decode, Encode, MaxEncodedLen, TypeInfo};
-use sp_core::ConstU8;
 use sp_std::vec::Vec;
 
 #[derive(Clone, Debug, PartialEq, Eq, Encode, Decode, TypeInfo)]
