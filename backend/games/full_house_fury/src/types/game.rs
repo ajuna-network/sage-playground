@@ -1,9 +1,9 @@
 use crate::{error::FuryError, types::card::CardIndex};
 use frame_support::pallet_prelude::{Decode, Encode, MaxEncodedLen, TypeInfo};
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
+#[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
 pub struct Game {
-	pub game_sate: GameSate,
+	pub game_sate: GameState,
 
 	pub level_state: LevelState,
 
@@ -19,9 +19,9 @@ pub struct Game {
 }
 
 impl Game {
-	pub fn new() -> Self {
+	pub fn start_new() -> Self {
 		Self {
-			game_sate: GameSate::Running,
+			game_sate: GameState::Running,
 			level_state: LevelState::Preparation,
 			level: 1,
 			round: 0,
@@ -64,7 +64,7 @@ impl Boss {
 	}
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
+#[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
 pub struct Player {
 	pub max_player_endurance: u8,
 
@@ -128,15 +128,17 @@ impl Attack {
 	}
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
-pub enum GameSate {
+#[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
+pub enum GameState {
+	#[default]
 	None = 0,
 	Running = 1,
 	Finished = 2,
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
+#[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
 pub enum LevelState {
+	#[default]
 	None = 0,
 	Preparation = 1,
 	Battle = 2,

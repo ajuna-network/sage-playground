@@ -18,6 +18,8 @@ use sp_runtime::{
 	SaturatedConversion,
 };
 use sp_std::{marker::PhantomData, vec::Vec};
+use crate::types::game::{Attack, GameState, LevelState};
+use crate::types::game::GameState::Running;
 
 pub type TransitionConfig = ();
 
@@ -28,7 +30,7 @@ pub struct FullHouseFuryTransition<AccountId, BlockNumber, Sage> {
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
 pub enum TransitionIdentifier {
 	Start,
-	Play,
+	// Play,
 	Preparation,
 	Battle,
 	Discard,
@@ -137,7 +139,7 @@ where
 			TransitionIdentifier::Start => {
 				let current_block = Sage::get_current_block_number();
 
-				let game = Game::new();
+				let game = Game::start_new();
 				let deck = Deck::new_deck();
 
 				let game_asset = BaseAsset {
@@ -158,7 +160,58 @@ where
 
 				vec![TransitionOutput::Minted(game_asset), TransitionOutput::Minted(deck_asset)]
 			},
-			_ => Default::default(),
+			// TransitionIdentifier::Play => {
+				// let (game_id, game_asset) = assets.pop().ok_or_else(|| TransitionError::Transition { code: 0})?;
+				// let game = Game::decode(&mut game_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::Transition { code: 0})?;
+				//
+				// let (deck_id, deck_asset) = assets.pop().ok_or_else(|| TransitionError::Transition { code: 0})?;
+				// let deck = Game::decode(&mut deck_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::Transition { code: 0})?;
+				//
+				// if game.game_sate == GameSate::Running {
+				// 	return Ok(vec![TransitionOutput::Mutated(game_id, game_asset), TransitionOutput::Mutated(deck_id, deck_asset)]);
+				// }
+				//
+				// game.
+
+
+				// let game = assets.get(1).map(|a| Game::decode(|a.1.fury_asset.as_mut()))
+			// },
+			TransitionIdentifier::Preparation => {
+				let (game_id, game_asset) = assets.pop().ok_or_else(|| TransitionError::Transition { code: 0})?;
+				let mut game = Game::decode(&mut game_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::Transition { code: 0})?;
+
+				let (deck_id, deck_asset) = assets.pop().ok_or_else(|| TransitionError::Transition { code: 0})?;
+				let mut deck = Deck::decode(&mut deck_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::Transition { code: 0})?;
+
+				if game.game_sate != GameState::Running {
+					return Err(TransitionError::Transition {code: 0});
+				}
+
+				if game.level_state != LevelState::Preparation {
+					return Err(TransitionError::Transition {code: 0});
+				}
+
+				if game.level > 1 {
+					// todo: implement level preparation logic.
+				}
+
+				game.round = 1;
+				game.level_state = LevelState::Battle;
+
+				game.attack = Attack {
+					hand: 0,
+					attack_type: None,
+					attack_score: 0,
+				};
+
+				let subject = (&account_id, &game_id, &deck_id);
+				deck.draw(game.player.hand_size, Sage::random_hash(subject.encode().as_slice())).map_err(|e| TransitionError::Transition {code: 0})?;
+
+				vec![TransitionOutput::Mutated(game_id, game_asset), TransitionOutput::Mutated(deck_id, deck_asset)]
+			},
+			TransitionIdentifier::Battle => Default::default(),
+			TransitionIdentifier::Discard => Default::default(),
+			TransitionIdentifier::Score =>Default::default(),
 		};
 
 		Ok(output)
