@@ -129,7 +129,7 @@ pub struct Hand {
 }
 
 impl Hand {
-	fn new() -> Self {
+	pub fn new() -> Self {
 		let hand = (0..HAND_LIMIT_SIZE)
 			.map(|i| ((HAND_EMPTY_SLOT & 0x3F) as u64) << (i * 6))
 			.fold(0, |acc, x| acc | x);
@@ -137,7 +137,7 @@ impl Hand {
 		Self { hand }
 	}
 
-	fn set_hand_card(&mut self, hand_position: u8, card_index: CardIndex) -> Result<(), FuryError> {
+	pub fn set_hand_card(&mut self, hand_position: u8, card_index: CardIndex) -> Result<(), FuryError> {
 		if hand_position > HAND_LIMIT_SIZE {
 			return Err(FuryError::InvalidHandPosition);
 		}
@@ -151,7 +151,20 @@ impl Hand {
 		Ok(())
 	}
 
-	fn get_hand_card(&self, hand_position: u8) -> Result<u8, FuryError> {
+	/// Picks a card from the hand and marks the slot as empty afterwards
+	pub fn pick_hand_card(&mut self, hand_position: u8) -> Result<CardIndex, FuryError> {
+		let card_index = self.inspect_hand_card(hand_position)?;
+
+		if card_index == HAND_EMPTY_SLOT {
+			return Err(FuryError::HandSlotIsEmpty);
+		}
+
+		self.set_hand_card(hand_position, HAND_EMPTY_SLOT)?;
+
+		Ok(card_index)
+	}
+
+	pub fn inspect_hand_card(&self, hand_position: u8) -> Result<u8, FuryError> {
 		if hand_position > HAND_LIMIT_SIZE {
 			return Err(FuryError::InvalidHandPosition);
 		}
@@ -161,7 +174,7 @@ impl Hand {
 		Ok((hand_value >> bit_offset & 0x3F) as u8)
 	}
 
-	fn cards_count(&self) -> u8 {
+	pub fn cards_count(&self) -> u8 {
 		let mut count = 0;
 		for hand_position in 0..HAND_LIMIT_SIZE {
 			if self.is_hand_position_occupied(hand_position) {
@@ -173,14 +186,14 @@ impl Hand {
 	}
 
 	/// Swallows `hand_position` out of bounds errors and defaults to false in that case.
-	fn is_hand_position_empty(&self, hand_position: u8) -> bool {
-		self.get_hand_card(hand_position)
+	pub fn is_hand_position_empty(&self, hand_position: u8) -> bool {
+		self.inspect_hand_card(hand_position)
 			.map(|card_index| card_index == HAND_EMPTY_SLOT)
 			.unwrap_or(true)
 	}
 
 	/// Swallows `hand_position` out of bounds errors and defaults to true in that case.
-	fn is_hand_position_occupied(&self, hand_position: u8) -> bool {
+	pub fn is_hand_position_occupied(&self, hand_position: u8) -> bool {
 		!self.is_hand_position_empty(hand_position)
 	}
 }

@@ -7,10 +7,8 @@ use crate::{
 	rules::ensure_account_has_no_asset_of_type,
 	types::{deck::Deck, game::Game, AssetId, AssetType, BaseAsset},
 };
-use frame_support::{
-	pallet_prelude::{Decode, Encode, TypeInfo},
-	Parameter,
-};
+use frame_support::{pallet_prelude::{Decode, Encode, TypeInfo}, BoundedVec, Parameter};
+use frame_support::pallet_prelude::ConstU32;
 use parity_scale_codec::{Codec, MaxEncodedLen};
 use sp_core::H256;
 use sp_runtime::{
@@ -19,9 +17,11 @@ use sp_runtime::{
 };
 use sp_std::{marker::PhantomData, vec::Vec};
 use crate::types::game::{Attack, GameState, LevelState};
-use crate::types::game::GameState::Running;
 
 pub type TransitionConfig = ();
+
+/// The extra stands for the hand positions of the cards chosen for an attack.
+pub type HandPositions = Option<BoundedVec<u8, ConstU32<10>>>;
 
 pub struct FullHouseFuryTransition<AccountId, BlockNumber, Sage> {
 	_phantom: PhantomData<(AccountId, BlockNumber, Sage)>,
@@ -133,6 +133,7 @@ where
 		transition_id: &TransitionIdentifier,
 		account_id: &AccountId,
 		mut assets: Vec<(AssetId, BaseAsset<BlockNumber>)>,
+		attack_positions: &HandPositions,
 		payment_asset: Option<Sage::FungiblesAssetId>,
 	) -> Result<Vec<TransitionOutput<AssetId, BaseAsset<BlockNumber>>>, TransitionError> {
 		let output = match transition_id {
@@ -201,7 +202,7 @@ where
 				game.attack = Attack {
 					hand: 0,
 					attack_type: None,
-					attack_score: 0,
+					score: 0,
 				};
 
 				let subject = (&account_id, &game_id, &deck_id);
@@ -209,7 +210,44 @@ where
 
 				vec![TransitionOutput::Mutated(game_id, game_asset), TransitionOutput::Mutated(deck_id, deck_asset)]
 			},
-			TransitionIdentifier::Battle => Default::default(),
+			TransitionIdentifier::Battle => {
+				let (game_id, game_asset) = assets.pop().ok_or_else(|| TransitionError::Transition { code: 0})?;
+				let mut game = Game::decode(&mut game_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::Transition { code: 0})?;
+
+				let (deck_id, deck_asset) = assets.pop().ok_or_else(|| TransitionError::Transition { code: 0})?;
+				let mut deck = Deck::decode(&mut deck_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::Transition { code: 0})?;
+
+				if game.game_sate != GameState::Running {
+					return Err(TransitionError::Transition {code: 0});
+				}
+
+				if game.level_state != LevelState::Battle {
+					return Err(TransitionError::Transition {code: 0});
+				}
+
+				let attack_positions = attack_positions.as_ref().ok_or_else(|| TransitionError::Transition { code: 0})?;
+
+				if attack_positions.is_empty() || attack_positions.len() > 5 {
+					return Err(TransitionError::Transition {code: 0});
+				}
+
+				let mut attack_cards = Vec::with_capacity(attack_positions.len());
+				for a in attack_positions.iter() {
+					if a > &10 {
+						return Err(TransitionError::Transition {code: 0});
+					}
+
+					// returns an error if the slot is empty for instance
+					let card = deck.hand.pick_hand_card(*a).map_err(|e| TransitionError::Transition {code: 0})?;
+
+					attack_cards.push(card)
+				}
+
+				game.attack = Attack::create(&attack_cards).map_err(|e| TransitionError::Transition {code: 0})?;
+
+
+				Default::default()
+			},
 			TransitionIdentifier::Discard => Default::default(),
 			TransitionIdentifier::Score =>Default::default(),
 		};
@@ -239,17 +277,17 @@ where
 	type AccountId = AccountId;
 	type AssetId = AssetId;
 	type Asset = BaseAsset<BlockNumber>;
-	type Extra = ();
+	type Extra = HandPositions;
 	type PaymentFungible = Sage::FungiblesAssetId;
 
 	fn do_transition(
 		transition_id: &Self::TransitionId,
 		account_id: &Self::AccountId,
 		assets_ids: &[Self::AssetId],
-		_: &Self::Extra,
+		positions: &Self::Extra,
 		payment_asset: Option<Self::PaymentFungible>,
 	) -> Result<Vec<TransitionOutput<Self::AssetId, Self::Asset>>, TransitionError> {
 		let assets = Self::verify_transition_rules(transition_id, account_id, assets_ids)?;
-		Self::transition_assets(transition_id, account_id, assets, payment_asset)
+		Self::transition_assets(transition_id, account_id, assets, &positions, payment_asset)
 	}
 }

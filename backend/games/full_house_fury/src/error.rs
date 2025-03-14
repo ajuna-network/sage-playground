@@ -7,4 +7,5 @@ pub enum FuryError {
 	DeckIsEmpty = 15,
 	InvalidHandPosition = 16,
 	InvalidHandSize = 17,
+	HandSlotIsEmpty = 18,
 }

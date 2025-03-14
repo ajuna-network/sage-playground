@@ -1,5 +1,6 @@
 use crate::{error::FuryError, types::card::CardIndex};
 use frame_support::pallet_prelude::{Decode, Encode, MaxEncodedLen, TypeInfo};
+use crate::utils::evaluate;
 
 #[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
 pub struct Game {
@@ -39,7 +40,7 @@ impl Game {
 		}
 	}
 
-	fn clear_attack(&mut self) {
+	pub fn clear_attack(&mut self) {
 		self.attack = Attack::default();
 	}
 }
@@ -95,10 +96,29 @@ impl Player {
 pub struct Attack {
 	pub hand: u32,
 	pub attack_type: Option<PokerHand>,
-	pub attack_score: u32,
+	pub score: u32,
 }
 
 impl Attack {
+	pub fn create(cards: &[u8]) -> Result<Self, FuryError> {
+		if cards.len() > 5 {
+			return Err(FuryError::InvalidHandSize);
+		}
+
+		let mut attack = Attack::default();
+
+		for (i, c) in cards.iter().enumerate() {
+			attack.set_card(i as u8, *c)?
+		}
+
+		let (poker_hand, score) = evaluate(cards)?;
+
+		attack.attack_type = Some(poker_hand);
+		attack.score = score as u32;
+
+		Ok(attack)
+	}
+
 	pub fn get_card(&self, hand_position: u8) -> Result<CardIndex, FuryError> {
 		if hand_position > 4 {
 			return Err(FuryError::InvalidHandPosition);
