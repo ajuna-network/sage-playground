@@ -137,11 +137,7 @@ impl Hand {
 		Self { hand }
 	}
 
-	fn set_hand_card(
-		&mut self,
-		hand_position: u8,
-		card_index: CardIndex,
-	) -> Result<(), FuryError> {
+	fn set_hand_card(&mut self, hand_position: u8, card_index: CardIndex) -> Result<(), FuryError> {
 		if hand_position > HAND_LIMIT_SIZE {
 			return Err(FuryError::InvalidHandPosition);
 		}

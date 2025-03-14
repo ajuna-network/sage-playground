@@ -1,5 +1,4 @@
-use crate::error::FuryError;
-use crate::types::game::PokerHand;
+use crate::{error::FuryError, types::game::PokerHand};
 
 pub const COLLECTION_ID: u8 = 1;
 pub const BLOCKTIME_SEC: u8 = 6;

@@ -3,7 +3,7 @@
 use frame_support::pallet_prelude::{Decode, Encode, MaxEncodedLen, TypeInfo};
 
 pub mod error;
+pub mod rules;
+pub mod transition;
 pub mod types;
 pub mod utils;
-pub mod transition;
-pub mod rules;
