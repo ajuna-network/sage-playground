@@ -1,9 +1,6 @@
 use frame_support::BoundedVec;
-use sage_api::{traits::GetId, TransitionError};
-
-use crate::error::FuryError;
+use sage_api::{traits::GetId};
 use frame_support::pallet_prelude::{ConstU32, Decode, Encode, MaxEncodedLen, TypeInfo};
-use sp_runtime::traits::{BlockNumber as BlockNumberT, BlockNumber};
 
 pub type AssetId = u32;
 

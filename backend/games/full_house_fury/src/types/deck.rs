@@ -29,7 +29,7 @@ impl Deck {
 	}
 
 	/// Returns true if the card is in the deck, false otherwise.
-	fn get_card_state(&self, card_index: u8) -> bool {
+	pub fn get_card_state(&self, card_index: u8) -> bool {
 		if card_index > self.max_deck_size {
 			false
 		} else {
@@ -38,7 +38,7 @@ impl Deck {
 	}
 
 	/// Marks a card either as present in the deck or not.
-	fn set_card_in_deck(
+	pub fn set_card_in_deck(
 		&mut self,
 		card_index: CardIndex,
 		card_state: bool,
@@ -57,7 +57,7 @@ impl Deck {
 	}
 
 	/// Adds a card to the deck and returns an error if that card is already present.
-	fn add_card_to_deck(&mut self, card_index: CardIndex) -> Result<(), FuryError> {
+	pub fn add_card_to_deck(&mut self, card_index: CardIndex) -> Result<(), FuryError> {
 		if !self.get_card_state(card_index) {
 			self.set_card_in_deck(card_index, true)?;
 			self.deck_size = self.deck_size + 1;
@@ -68,7 +68,7 @@ impl Deck {
 	}
 
 	/// Removes a card to the deck and returns an error if that card the card is not present.
-	fn remove_card_from_deck(&mut self, card_index: CardIndex) -> Result<(), FuryError> {
+	pub fn remove_card_from_deck(&mut self, card_index: CardIndex) -> Result<(), FuryError> {
 		if self.get_card_state(card_index) {
 			self.set_card_in_deck(card_index, false)?;
 			self.deck_size = self.deck_size - 1;
