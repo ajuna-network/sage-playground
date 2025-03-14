@@ -21,7 +21,7 @@ pub struct BaseAsset<BlockNumber> {
 	pub asset_type: AssetType,
 
 	/// Encoded fury asset.
-	pub fury_asset: BoundedVec<u8, ConstU32<MAX_ASSET_LEN>>,
+	pub fury_asset: [u8; 32],
 }
 
 impl<BlockNumber> GetId<AssetId> for BaseAsset<BlockNumber> {
