@@ -92,17 +92,17 @@ game-battle-mogs = { path = "games/battle_mogs", default-features = false }
 game-casino-jam  = { path = "games/casino_jam", default-features = false }
 
 # Ajuna Primitives
-ajuna-payment-handler = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "develop", default-features = false }
-ajuna-primitives      = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "develop", default-features = false }
+ajuna-payment-handler = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/improve-transition-error", default-features = false }
+ajuna-primitives      = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/improve-transition-error", default-features = false }
 
 # Ajuna Pallets
-pallet-ajuna-affiliates = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "develop", default-features = false }
-pallet-ajuna-seasons    = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "develop", default-features = false }
-pallet-ajuna-tournament = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "develop", default-features = false }
+pallet-ajuna-affiliates = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/improve-transition-error", default-features = false }
+pallet-ajuna-seasons    = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/improve-transition-error", default-features = false }
+pallet-ajuna-tournament = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/improve-transition-error", default-features = false }
 
 # SAGE
-pallet-sage = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "develop", default-features = false }
-sage-api    = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "develop", default-features = false }
+pallet-sage = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/improve-transition-error", default-features = false }
+sage-api    = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/improve-transition-error", default-features = false }
 
 [profile.production]
 codegen-units = 1

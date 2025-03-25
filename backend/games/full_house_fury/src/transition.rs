@@ -14,6 +14,7 @@ use sp_runtime::{
 	traits::{AtLeast32BitUnsigned, BlockNumber as BlockNumberT, Member},
 };
 use sp_std::{marker::PhantomData, vec::Vec};
+use crate::error::FuryError;
 use crate::types::game::{Attack, Boss, GameState, LevelState};
 
 pub type TransitionConfig = ();
@@ -50,21 +51,13 @@ where
 		HashOutput = H256,
 	>,
 {
-	fn try_get_asset(asset_id: &AssetId) -> Result<BaseAsset<BlockNumber>, TransitionError> {
-		let asset = Sage::get_asset(asset_id)
-			// Fixme, this kind of error should be in handled in the api
-			.map_err(|_| TransitionError::Transition { code: 0 })?;
-
-		Ok(asset)
-	}
-
 	fn try_get_assets(
 		asset_ids: &[AssetId],
 	) -> Result<Vec<(AssetId, BaseAsset<BlockNumber>)>, TransitionError> {
 		asset_ids
 			.iter()
 			.copied()
-			.map(|asset_id| Ok((asset_id, Self::try_get_asset(&asset_id)?)))
+			.map(|asset_id| Ok((asset_id, Sage::get_asset(&asset_id)?)))
 			.collect::<Result<Vec<_>, _>>()
 	}
 
@@ -127,18 +120,18 @@ where
 				vec![TransitionOutput::Minted(game_asset), TransitionOutput::Minted(deck_asset)]
 			},
 			TransitionIdentifier::Preparation => {
-				let (game_id, mut game_asset) = assets.pop().ok_or_else(|| TransitionError::Transition { code: 0})?;
-				let mut game = Game::decode(&mut game_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::Transition { code: 0})?;
+				let (game_id, mut game_asset) = assets.pop().ok_or_else(|| TransitionError::AssetLength)?;
+				let mut game = Game::decode(&mut game_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::AssetCouldNotBeDecoded)?;
 
-				let (deck_id, mut deck_asset) = assets.pop().ok_or_else(|| TransitionError::Transition { code: 0})?;
-				let mut deck = Deck::decode(&mut deck_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::Transition { code: 0})?;
+				let (deck_id, mut deck_asset) = assets.pop().ok_or_else(|| TransitionError::AssetLength)?;
+				let mut deck = Deck::decode(&mut deck_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::AssetCouldNotBeDecoded)?;
 
 				if game.game_sate != GameState::Running {
-					return Err(TransitionError::Transition {code: 0});
+					return Err(FuryError::GameNotInRunningPhase.into());
 				}
 
 				if game.level_state != LevelState::Preparation {
-					return Err(TransitionError::Transition {code: 0});
+					return Err(FuryError::LevelStateIsNotPreparation.into());
 				}
 
 				if game.level > 1 {
@@ -158,17 +151,17 @@ where
 				deck.draw(game.player.hand_size, Sage::random_hash(subject.encode().as_slice())).map_err(|_e| TransitionError::Transition {code: 0})?;
 
 				// write back changes to assets
-				game_asset.fury_asset = game.encode().try_into().map_err(|_e| TransitionError::Transition { code: 0})?;
-				deck_asset.fury_asset = deck.encode().try_into().map_err(|_e| TransitionError::Transition { code: 0})?;
+				game_asset.fury_asset = game.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
+				deck_asset.fury_asset = deck.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
 
 				vec![TransitionOutput::Mutated(game_id, game_asset), TransitionOutput::Mutated(deck_id, deck_asset)]
 			},
 			TransitionIdentifier::Battle => {
-				let (game_id, mut game_asset) = assets.pop().ok_or_else(|| TransitionError::Transition { code: 0})?;
-				let mut game = Game::decode(&mut game_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::Transition { code: 0})?;
+				let (game_id, mut game_asset) = assets.pop().ok_or_else(|| TransitionError::AssetLength)?;
+				let mut game = Game::decode(&mut game_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::AssetCouldNotBeDecoded)?;
 
-				let (deck_id, mut deck_asset) = assets.pop().ok_or_else(|| TransitionError::Transition { code: 0})?;
-				let mut deck = Deck::decode(&mut deck_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::Transition { code: 0})?;
+				let (deck_id, mut deck_asset) = assets.pop().ok_or_else(|| TransitionError::AssetLength)?;
+				let mut deck = Deck::decode(&mut deck_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::AssetCouldNotBeDecoded)?;
 
 				if game.game_sate != GameState::Running {
 					return Err(TransitionError::Transition {code: 0});
@@ -178,12 +171,11 @@ where
 					return Err(TransitionError::Transition {code: 0});
 				}
 
-				let attack_positions = hand_positions.as_ref().ok_or_else(|| TransitionError::Transition { code: 0})?;
+				let attack_positions = hand_positions.as_ref().ok_or_else(|| FuryError::NoHandPositionsFound)?;
 
-				let attack_cards = deck.hand.pick_multiple_cards(attack_positions)
-					.map_err(|_e| TransitionError::Transition {code: 0})?;
+				let attack_cards = deck.hand.pick_multiple_cards(attack_positions)?;
 
-				game.attack = Attack::create(&attack_cards).map_err(|_e| TransitionError::Transition {code: 0})?;
+				game.attack = Attack::create(&attack_cards)?;
 
 				game.boss.add_damage(game.attack.score);
 
@@ -199,8 +191,7 @@ where
 
 					let subject = (&account_id, &game_id, &deck_id);
 					let random_hash = Sage::random_hash(subject.encode().as_slice());
-					deck.draw(game.player.hand_size, random_hash)
-						.map_err(|_e| TransitionError::Transition {code: 0})?;
+					deck.draw(game.player.hand_size, random_hash)?;
 
 				} else {
 					game.level_state = LevelState::Score;
@@ -211,54 +202,53 @@ where
 				}
 
 				// write back changes to assets
-				game_asset.fury_asset = game.encode().try_into().map_err(|_e| TransitionError::Transition { code: 0})?;
-				deck_asset.fury_asset = deck.encode().try_into().map_err(|_e| TransitionError::Transition { code: 0})?;
+				game_asset.fury_asset = game.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
+				deck_asset.fury_asset = deck.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
 
 				vec![TransitionOutput::Mutated(game_id, game_asset), TransitionOutput::Mutated(deck_id, deck_asset)]
 			},
 			TransitionIdentifier::Discard => {
-				let (game_id, mut game_asset) = assets.pop().ok_or_else(|| TransitionError::Transition { code: 0})?;
-				let mut game = Game::decode(&mut game_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::Transition { code: 0})?;
+				let (game_id, mut game_asset) = assets.pop().ok_or_else(|| TransitionError::AssetLength)?;
+				let mut game = Game::decode(&mut game_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::AssetCouldNotBeDecoded)?;
 
-				let (deck_id, mut deck_asset) = assets.pop().ok_or_else(|| TransitionError::Transition { code: 0})?;
-				let mut deck = Deck::decode(&mut deck_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::Transition { code: 0})?;
+				let (deck_id, mut deck_asset) = assets.pop().ok_or_else(|| TransitionError::AssetLength)?;
+				let mut deck = Deck::decode(&mut deck_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::AssetCouldNotBeDecoded)?;
 
 				if game.game_sate != GameState::Running {
-					return Err(TransitionError::Transition {code: 0});
+					return Err(FuryError::GameNotInRunningPhase)?;
 				}
 
 				if game.level_state != LevelState::Battle {
-					return Err(TransitionError::Transition {code: 0});
+					return Err(FuryError::LevelStateIsNotBattle)?;
 				}
 
 				if game.player.discard > 0 {
 					game.player.discard -= 1;
 				} else {
-					return Err(TransitionError::Transition {code: 0});
+					return Err(FuryError::DiscardLimitReached)?;
 				}
 
 				let discard_positions = hand_positions.as_ref().ok_or_else(|| TransitionError::Transition { code: 0})?;
 
 				// this step does also remove them from the hand, so we can simply ignore them.
-				let _discard_cards = deck.hand.pick_multiple_cards(discard_positions)
-					.map_err(|_e| TransitionError::Transition {code: 0})?;
+				let _discard_cards = deck.hand.pick_multiple_cards(discard_positions)?;
 
 				// draw new cards for the discarded cards
 				let subject = (&account_id, &game_id, &deck_id);
 				let random_hash = Sage::random_hash(subject.encode().as_slice());
-				deck.draw(game.player.hand_size, random_hash).map_err(|_e| TransitionError::Transition {code: 0})?;
+				deck.draw(game.player.hand_size, random_hash)?;
 
 				// write back changes to assets
-				game_asset.fury_asset = game.encode().try_into().map_err(|_e| TransitionError::Transition { code: 0})?;
-				deck_asset.fury_asset = deck.encode().try_into().map_err(|_e| TransitionError::Transition { code: 0})?;
+				game_asset.fury_asset = game.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
+				deck_asset.fury_asset = deck.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
 
 				vec![TransitionOutput::Mutated(game_id, game_asset), TransitionOutput::Mutated(deck_id, deck_asset)]
 			},
 			TransitionIdentifier::Score => {
-				let (game_id, mut game_asset) = assets.pop().ok_or_else(|| TransitionError::Transition { code: 0})?;
-				let mut game = Game::decode(&mut game_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::Transition { code: 0})?;
+				let (game_id, mut game_asset) = assets.pop().ok_or_else(|| TransitionError::AssetLength)?;
+				let mut game = Game::decode(&mut game_asset.fury_asset.as_slice()).map_err(|_e| TransitionError::AssetCouldNotBeDecoded)?;
 
-				let (deck_id, mut deck_asset) = assets.pop().ok_or_else(|| TransitionError::Transition { code: 0})?;
+				let (deck_id, mut deck_asset) = assets.pop().ok_or_else(|| TransitionError::AssetLength)?;
 
 				game.clear_attack();
 
@@ -279,8 +269,8 @@ where
 				game.level_state = LevelState::Preparation;
 
 				// write back changes to assets
-				game_asset.fury_asset = game.encode().try_into().map_err(|_e| TransitionError::Transition { code: 0})?;
-				deck_asset.fury_asset = deck.encode().try_into().map_err(|_e| TransitionError::Transition { code: 0})?;
+				game_asset.fury_asset = game.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
+				deck_asset.fury_asset = deck.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
 
 				vec![TransitionOutput::Mutated(game_id, game_asset), TransitionOutput::Mutated(deck_id, deck_asset)]
 			},
