@@ -2,20 +2,6 @@ use crate::types::{AssetId, AssetType, BaseAsset};
 use ajuna_primitives::sage_api::SageApi;
 use sage_api::TransitionError;
 
-pub(crate) fn ensure_asset_type_at<BlockNumber>(
-	assets: &[(AssetId, BaseAsset<BlockNumber>)],
-	asset_type: AssetType,
-	asset_index: usize,
-) -> Result<(), TransitionError> {
-	let (_, asset) = assets.get(asset_index).ok_or(TransitionError::Transition { code: 0 })?;
-
-	if asset.asset_type == asset_type {
-		Ok(())
-	} else {
-		Err(TransitionError::Transition { code: 0 })
-	}
-}
-
 fn account_has_no_asset<AccountId, BlockNumber, Sage, F>(
 	account_id: &AccountId,
 	filter_fn: F,
