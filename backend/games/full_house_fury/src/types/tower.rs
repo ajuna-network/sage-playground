@@ -137,7 +137,6 @@ impl Tower {
 		Ok(((self.multi_banes >> bane_index) & 3) as u8)
 	}
 
-
 	fn set_multi_bane(&mut self, bane_index: Index, bane_value: u8) -> Result<(), FuryError> {
 		if bane_index > 15 {
 			return Err(FuryError::InvalidMultiBaneIndex);
@@ -152,7 +151,7 @@ impl Tower {
 		Ok(())
 	}
 
-	fn get_all_boons(&self) -> Vec<(BonusType, Level)> {
+	pub fn get_all_boons(&self) -> Vec<(BonusType, Level)> {
 		let mut vec: Vec<(BonusType, Level)> = Vec::new();
 
 		for index in 0..32 {
@@ -176,7 +175,7 @@ impl Tower {
 		vec
 	}
 
-	fn get_all_banes(&self) -> Vec<(MalusType, Level)> {
+	pub fn get_all_banes(&self) -> Vec<(MalusType, Level)> {
 		let mut vec: Vec<(MalusType, Level)> = Vec::new();
 
 		for index in 0..32 {

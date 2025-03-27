@@ -2,7 +2,7 @@ use crate::types::{card::CardIndex, game::PokerHand};
 use frame_support::pallet_prelude::{Decode, Encode, TypeInfo};
 use sp_std::vec::Vec;
 
-#[derive(Debug, PartialEq, Eq, Encode, Decode, TypeInfo)]
+#[derive(Clone, Debug, PartialEq, Eq, Encode, Decode, TypeInfo)]
 pub enum EffectContext {
 	Modify(ModifyContext),
 	Attack(AttackContext),
