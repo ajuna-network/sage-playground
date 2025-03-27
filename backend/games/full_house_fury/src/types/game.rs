@@ -1,6 +1,5 @@
-use crate::{error::FuryError, types::card::CardIndex};
+use crate::{error::FuryError, types::card::CardIndex, utils::evaluate};
 use frame_support::pallet_prelude::{Decode, Encode, MaxEncodedLen, TypeInfo};
-use crate::utils::evaluate;
 
 #[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
 pub struct Game {

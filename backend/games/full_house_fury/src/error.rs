@@ -1,6 +1,5 @@
 use sage_api::TransitionError;
-use sp_core::Encode;
-use sp_core::Decode;
+use sp_core::{Decode, Encode};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Encode, Decode, PartialOrd, Ord)]
 pub enum FuryError {

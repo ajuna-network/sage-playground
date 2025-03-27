@@ -1,5 +1,5 @@
-use sage_api::{traits::GetId};
 use frame_support::pallet_prelude::{Decode, Encode, MaxEncodedLen, TypeInfo};
+use sage_api::traits::GetId;
 
 pub type AssetId = u32;
 

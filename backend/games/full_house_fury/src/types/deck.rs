@@ -152,7 +152,10 @@ impl Hand {
 		Ok(())
 	}
 
-	pub fn pick_multiple_cards(&mut self, hand_positions: &[u8]) -> Result<Vec<CardIndex>, FuryError> {
+	pub fn pick_multiple_cards(
+		&mut self,
+		hand_positions: &[u8],
+	) -> Result<Vec<CardIndex>, FuryError> {
 		if hand_positions.is_empty() || hand_positions.len() > 5 {
 			return Err(FuryError::TooManyCardsPicked);
 		}
