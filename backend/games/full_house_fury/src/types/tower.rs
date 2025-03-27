@@ -19,6 +19,7 @@ pub struct Tower {
 
 pub type Position = u8;
 pub type Index = u8;
+pub type Level = u8;
 
 impl Tower {
 	pub fn new() -> Tower {
@@ -70,6 +71,14 @@ impl Tower {
 		Ok(())
 	}
 
+	fn get_single_boon(&self, boon_index: Index) -> Result<u8, FuryError> {
+		if boon_index > 31 {
+			return Err(FuryError::InvalidSingleBoonIndex);
+		};
+
+		Ok(((self.single_boons >> boon_index) & 1) as u8)
+	}
+
 	fn set_single_boon(&mut self, boon_index: Index, boon_value: bool) -> Result<(), FuryError> {
 		if boon_index > 31 {
 			return Err(FuryError::InvalidSingleBoonIndex);
@@ -78,6 +87,14 @@ impl Tower {
 		self.single_boons =
 			(self.single_boons & !(1 << boon_index)) | ((boon_value as u32) << boon_index);
 		Ok(())
+	}
+
+	fn get_multi_boon(&self, boon_index: Index) -> Result<u8, FuryError> {
+		if boon_index > 15 {
+			return Err(FuryError::InvalidMultiBoonIndex);
+		};
+
+		Ok(((self.multi_boons >> boon_index) & 3) as u8)
 	}
 
 	fn set_multi_boon(&mut self, boon_index: Index, boon_value: u8) -> Result<(), FuryError> {
@@ -94,6 +111,14 @@ impl Tower {
 		Ok(())
 	}
 
+	fn get_single_bane(&self, bane_index: Index) -> Result<u8, FuryError> {
+		if bane_index > 31 {
+			return Err(FuryError::InvalidSingleBaneIndex);
+		};
+
+		Ok(((self.single_banes >> bane_index) & 1) as u8)
+	}
+
 	fn set_single_bane(&mut self, bane_index: Index, bane_value: bool) -> Result<(), FuryError> {
 		if bane_index > 31 {
 			return Err(FuryError::InvalidSingleBaneIndex);
@@ -103,6 +128,15 @@ impl Tower {
 			(self.single_banes & !(1 << bane_index)) | ((bane_value as u32) << bane_index);
 		Ok(())
 	}
+
+	fn get_multi_bane(&self, bane_index: Index) -> Result<u8, FuryError> {
+		if bane_index > 15 {
+			return Err(FuryError::InvalidMultiBaneIndex);
+		};
+
+		Ok(((self.multi_banes >> bane_index) & 3) as u8)
+	}
+
 
 	fn set_multi_bane(&mut self, bane_index: Index, bane_value: u8) -> Result<(), FuryError> {
 		if bane_index > 15 {
@@ -118,9 +152,53 @@ impl Tower {
 		Ok(())
 	}
 
-	// fn get_all_boons(&self) -> Vec<BonusType> {
-	//
-	// }
+	fn get_all_boons(&self) -> Vec<(BonusType, Level)> {
+		let mut vec: Vec<(BonusType, Level)> = Vec::new();
+
+		for index in 0..32 {
+			let value = self.get_single_boon(index).unwrap_or_default();
+			if value != 0 {
+				// skip BonusType::None values
+				let boon = BonusType::from(index as u32);
+				vec.push((boon, 1))
+			}
+		}
+
+		for index in 0..16 {
+			let value = self.get_multi_boon(index).unwrap_or_default();
+			if value != 0 {
+				// skip BonusType::None values
+				let boon = BonusType::from(index as u32);
+				vec.push((boon, value))
+			}
+		}
+
+		vec
+	}
+
+	fn get_all_banes(&self) -> Vec<(MalusType, Level)> {
+		let mut vec: Vec<(MalusType, Level)> = Vec::new();
+
+		for index in 0..32 {
+			let value = self.get_single_bane(index).unwrap_or_default();
+			if value != 0 {
+				// skip BonusType::None values
+				let bane = MalusType::from(index as u32);
+				vec.push((bane, 1))
+			}
+		}
+
+		for index in 0..16 {
+			let value = self.get_multi_bane(index).unwrap_or_default();
+			if value != 0 {
+				// skip BonusType::None values
+				let bane = MalusType::from(index as u32);
+				vec.push((bane, value))
+			}
+		}
+
+		vec
+	}
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
