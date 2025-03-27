@@ -3,7 +3,7 @@ use crate::{
 	error::FuryError,
 	rules::ensure_account_has_no_asset_of_type,
 	types::{
-		deck::{Deck, Hand},
+		deck::{Deck},
 		game::{Attack, Boss, Game, GameState, LevelState},
 		tower::Tower,
 		AssetId, AssetType, BaseAsset,
@@ -20,7 +20,7 @@ use sp_core::H256;
 use sp_runtime::traits::{AtLeast32BitUnsigned, BlockNumber as BlockNumberT, Member};
 use sp_std::{marker::PhantomData, vec, vec::Vec};
 use TransitionOutput::*;
-use crate::effects::context::{card_ctx, round_ctx};
+use crate::effects::context::{card_ctx, level_ctx, round_ctx};
 
 pub type TransitionConfig = ();
 
@@ -351,10 +351,22 @@ where
 
 				let (deck_id, mut deck_asset) =
 					assets.pop().ok_or_else(|| TransitionError::AssetLength)?;
+				let mut deck = Deck::decode(&mut deck_asset.fury_asset.as_slice())
+					.map_err(|_e| TransitionError::AssetCouldNotBeDecoded)?;
+
+				let (tower_id, mut tower_asset) =
+					assets.pop().ok_or_else(|| TransitionError::AssetLength)?;
+				let mut tower = Tower::decode(&mut tower_asset.fury_asset.as_slice())
+					.map_err(|_e| TransitionError::AssetCouldNotBeDecoded)?;
+
+				let fx_manager = FxManager::new(tower);
 
 				game.clear_attack();
 
-				game.level = game.level.saturating_add(1);
+				let new_level = game.level.saturating_add(1);
+				game.level = new_level;
+				// Todo: Cedric: why add the level context, when it is in the game too?
+				fx_manager.trigger_event(GameEvent::OnLevelStart, &mut game, &mut deck, &mut tower, Some(level_ctx(new_level)));
 
 				game.boss = Boss {
 					// convert u8 to u32 to prevent early saturation.
@@ -375,8 +387,10 @@ where
 					game.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
 				deck_asset.fury_asset =
 					deck.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
+				tower_asset.fury_asset =
+					tower.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
 
-				vec![Mutated(game_id, game_asset), Mutated(deck_id, deck_asset)]
+				vec![Mutated(game_id, game_asset), Mutated(deck_id, deck_asset), Mutated(tower_id, tower_asset)]
 			},
 		};
 

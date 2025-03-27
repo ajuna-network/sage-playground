@@ -6,6 +6,7 @@ use sp_std::vec::Vec;
 pub enum EffectContext {
 	Modify(ModifyContext),
 	Attack(AttackContext),
+	Level(u8),
 	Round(u8),
 	Cards(Vec<CardIndex>),
 }
@@ -31,6 +32,10 @@ impl AttackContext {
 
 pub fn round_ctx(round: u8) -> EffectContext {
 	EffectContext::Round(round)
+}
+
+pub fn level_ctx(level: u8) -> EffectContext {
+	EffectContext::Level(level)
 }
 
 pub fn card_ctx(cards: Vec<CardIndex>) -> EffectContext {
