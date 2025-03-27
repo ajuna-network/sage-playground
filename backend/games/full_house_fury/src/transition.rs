@@ -158,6 +158,7 @@ where
 				}
 
 				if game.level > 1 {
+					// Todo: Cedric: I have trouble understanding the original code here.
 					// let maybe_position =
 					// 	hand_positions.as_ref().and_then(|mut h| h.first().cloned());
 					// let actual_position;
