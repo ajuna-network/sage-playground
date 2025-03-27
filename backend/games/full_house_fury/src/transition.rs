@@ -2,9 +2,11 @@ use crate::{
 	error::FuryError,
 	rules::ensure_account_has_no_asset_of_type,
 	types::{
-		deck::Deck,
+		deck::{Deck, Hand},
 		game::{Attack, Boss, Game, GameState, LevelState},
-		AssetId, AssetType, BaseAsset,
+		tower::Tower,
+		AssetId, AssetType,
+		BaseAsset,
 	},
 };
 use ajuna_primitives::sage_api::SageApi;
@@ -17,6 +19,7 @@ use sage_api::{rules::*, traits::TransitionOutput, SageGameTransition, Transitio
 use sp_core::H256;
 use sp_runtime::traits::{AtLeast32BitUnsigned, BlockNumber as BlockNumberT, Member};
 use sp_std::{marker::PhantomData, vec, vec::Vec};
+use TransitionOutput::*;
 
 pub type TransitionConfig = ();
 
@@ -101,6 +104,7 @@ where
 
 				let game = Game::start_new();
 				let deck = Deck::new_deck();
+				let tower = Tower::new();
 
 				let game_asset = BaseAsset {
 					id: Self::generate_asset_id()?,
@@ -118,7 +122,15 @@ where
 					fury_asset: deck.encode().try_into().unwrap(),
 				};
 
-				vec![TransitionOutput::Minted(game_asset), TransitionOutput::Minted(deck_asset)]
+				let tower_asset = BaseAsset {
+					id: Self::generate_asset_id()?,
+					collection_id: 0,
+					genesis: current_block,
+					asset_type: AssetType::Tower,
+					fury_asset: tower.encode().try_into().unwrap(),
+				};
+
+				vec![Minted(game_asset), Minted(deck_asset), Minted(tower_asset)]
 			},
 			TransitionIdentifier::Preparation => {
 				let (game_id, mut game_asset) =
@@ -131,6 +143,11 @@ where
 				let mut deck = Deck::decode(&mut deck_asset.fury_asset.as_slice())
 					.map_err(|_e| TransitionError::AssetCouldNotBeDecoded)?;
 
+				let (tower_id, mut tower_asset) =
+					assets.pop().ok_or_else(|| TransitionError::AssetLength)?;
+				let mut tower = Tower::decode(&mut tower_asset.fury_asset.as_slice())
+					.map_err(|_e| TransitionError::AssetCouldNotBeDecoded)?;
+
 				if game.game_sate != GameState::Running {
 					return Err(FuryError::GameNotInRunningPhase.into());
 				}
@@ -140,7 +157,19 @@ where
 				}
 
 				if game.level > 1 {
-					// todo: implement level preparation logic.
+					// let maybe_position =
+					// 	hand_positions.as_ref().and_then(|mut h| h.first().cloned());
+					// let actual_position;
+					//
+					// if maybe_position.is_none() || maybe_position.unwrap() > 2 {
+					// 	let hash = Sage::random_hash(&(b"prepare").encode()).0;
+					// 	actual_position = hash[0] % 3;
+					// } else {
+					// 	actual_position = maybe_position.unwrap();
+					// }
+					//
+					// let choice = tower.get_boon_and_bane(actual_position)?;
+					// let boon = tower.get_boo
 				}
 
 				game.round = 1;
@@ -159,8 +188,8 @@ where
 					deck.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
 
 				vec![
-					TransitionOutput::Mutated(game_id, game_asset),
-					TransitionOutput::Mutated(deck_id, deck_asset),
+					Mutated(game_id, game_asset),
+					Mutated(deck_id, deck_asset),
 				]
 			},
 			TransitionIdentifier::Battle => {
@@ -217,8 +246,8 @@ where
 					deck.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
 
 				vec![
-					TransitionOutput::Mutated(game_id, game_asset),
-					TransitionOutput::Mutated(deck_id, deck_asset),
+					Mutated(game_id, game_asset),
+					Mutated(deck_id, deck_asset),
 				]
 			},
 			TransitionIdentifier::Discard => {
@@ -265,8 +294,8 @@ where
 					deck.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
 
 				vec![
-					TransitionOutput::Mutated(game_id, game_asset),
-					TransitionOutput::Mutated(deck_id, deck_asset),
+					Mutated(game_id, game_asset),
+					Mutated(deck_id, deck_asset),
 				]
 			},
 			TransitionIdentifier::Score => {
@@ -303,8 +332,8 @@ where
 					deck.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
 
 				vec![
-					TransitionOutput::Mutated(game_id, game_asset),
-					TransitionOutput::Mutated(deck_id, deck_asset),
+					Mutated(game_id, game_asset),
+					Mutated(deck_id, deck_asset),
 				]
 			},
 		};
