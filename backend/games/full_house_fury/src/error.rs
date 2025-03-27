@@ -19,6 +19,19 @@ pub enum FuryError {
 	LevelStateIsNotBattle = 22,
 	NoHandPositionsFound = 23,
 	DiscardLimitReached = 24,
+	InvalidBoonAndBanePosition = 25,
+	/// Single boon index must in [0, 31].
+	InvalidSingleBoonIndex = 26,
+	/// Single boon index must in [0, 15].
+	InvalidMultiBoonIndex = 27,
+	/// Single boon index must in [0, 3].
+	InvalidMultiBoonValue = 28,
+	/// Single bane index must in [0, 31].
+	InvalidSingleBaneIndex = 29,
+	/// Single bane index must in [0, 15].
+	InvalidMultiBaneIndex = 30,
+	/// Single bane index must in [0, 3].
+	InvalidMultiBaneValue = 31,
 }
 
 impl FuryError {

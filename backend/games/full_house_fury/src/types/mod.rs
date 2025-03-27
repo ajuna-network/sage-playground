@@ -10,6 +10,7 @@ pub mod card;
 pub mod deck;
 pub mod game;
 pub mod random_number_generator;
+pub mod tower;
 
 #[derive(Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
 pub struct BaseAsset<BlockNumber> {
