@@ -20,7 +20,7 @@ pub trait Effect {
 		deck: &mut Deck,
 		tower: &mut Tower,
 		level: u8,
-		context: EffectContext,
+		context: Option<EffectContext>,
 	);
 }
 

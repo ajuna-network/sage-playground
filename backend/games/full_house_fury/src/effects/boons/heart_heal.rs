@@ -37,13 +37,13 @@ impl Effect for HeartHeal {
 		_deck: &mut Deck,
 		_tower: &mut Tower,
 		_level: u8,
-		context: EffectContext,
+		context: Option<EffectContext>,
 	) {
 		if game_event != GameEvent::OnAttack {
 			return;
 		}
 
-		if let EffectContext::Attack(att) = context {
+		if let Some(EffectContext::Attack(att)) = context {
 			let heal_amount = att
 				.cards
 				.into_iter()

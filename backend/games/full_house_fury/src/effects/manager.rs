@@ -38,7 +38,7 @@ impl FxManager<BoonsAndBanes> {
 		game: &mut Game,
 		deck: &mut Deck,
 		tower: &mut Tower,
-		context: EffectContext,
+		context: Option<EffectContext>,
 	) {
 		for (effect, level) in self.effects.iter() {
 			effect.apply(game_event, game, deck, tower, *level, context.clone());

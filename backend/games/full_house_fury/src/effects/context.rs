@@ -6,6 +6,8 @@ use sp_std::vec::Vec;
 pub enum EffectContext {
 	Modify(ModifyContext),
 	Attack(AttackContext),
+	Round(u8),
+	Cards(Vec<CardIndex>),
 }
 
 #[derive(Copy, Clone, Default, Debug, PartialEq, Eq, Encode, Decode, TypeInfo)]
@@ -17,6 +19,26 @@ pub struct ModifyContext {
 #[derive(Clone, Debug, PartialEq, Eq, Encode, Decode, TypeInfo)]
 pub struct AttackContext {
 	pub poker_hand: PokerHand,
-	pub score: u16,
+	pub score: u32,
 	pub cards: Vec<CardIndex>,
+}
+
+impl AttackContext {
+	pub fn new(poker_hand: PokerHand, score: u32, cards: Vec<CardIndex>) -> Self {
+		Self { poker_hand, score, cards }
+	}
+}
+
+pub fn round_ctx(round: u8) -> EffectContext {
+	EffectContext::Round(round)
+}
+
+pub fn card_ctx(cards: Vec<CardIndex>) -> EffectContext {
+	EffectContext::Cards(cards)
+}
+
+impl From<AttackContext> for EffectContext {
+	fn from(value: AttackContext) -> Self {
+		EffectContext::Attack(value)
+	}
 }

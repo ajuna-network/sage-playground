@@ -1,12 +1,12 @@
 use crate::{
+	effects::{context::AttackContext, manager::FxManager, traits::GameEvent},
 	error::FuryError,
 	rules::ensure_account_has_no_asset_of_type,
 	types::{
 		deck::{Deck, Hand},
 		game::{Attack, Boss, Game, GameState, LevelState},
 		tower::Tower,
-		AssetId, AssetType,
-		BaseAsset,
+		AssetId, AssetType, BaseAsset,
 	},
 };
 use ajuna_primitives::sage_api::SageApi;
@@ -20,6 +20,7 @@ use sp_core::H256;
 use sp_runtime::traits::{AtLeast32BitUnsigned, BlockNumber as BlockNumberT, Member};
 use sp_std::{marker::PhantomData, vec, vec::Vec};
 use TransitionOutput::*;
+use crate::effects::context::{card_ctx, round_ctx};
 
 pub type TransitionConfig = ();
 
@@ -187,10 +188,7 @@ where
 				deck_asset.fury_asset =
 					deck.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
 
-				vec![
-					Mutated(game_id, game_asset),
-					Mutated(deck_id, deck_asset),
-				]
+				vec![Mutated(game_id, game_asset), Mutated(deck_id, deck_asset)]
 			},
 			TransitionIdentifier::Battle => {
 				let (game_id, mut game_asset) =
@@ -201,6 +199,11 @@ where
 				let (deck_id, mut deck_asset) =
 					assets.pop().ok_or_else(|| TransitionError::AssetLength)?;
 				let mut deck = Deck::decode(&mut deck_asset.fury_asset.as_slice())
+					.map_err(|_e| TransitionError::AssetCouldNotBeDecoded)?;
+
+				let (tower_id, mut tower_asset) =
+					assets.pop().ok_or_else(|| TransitionError::AssetLength)?;
+				let mut tower = Tower::decode(&mut tower_asset.fury_asset.as_slice())
 					.map_err(|_e| TransitionError::AssetCouldNotBeDecoded)?;
 
 				if game.game_sate != GameState::Running {
@@ -216,7 +219,24 @@ where
 
 				let attack_cards = deck.hand.pick_multiple_cards(attack_positions)?;
 
-				game.attack = Attack::create(&attack_cards)?;
+				let attack = Attack::create(&attack_cards)?;
+				game.attack = attack.clone();
+
+				let fx_manager = FxManager::new(tower);
+				fx_manager.trigger_event(
+					GameEvent::OnAttack,
+					&mut game,
+					&mut deck,
+					&mut tower,
+					Some(
+						// Todo: Cedric: why pass round in the context, when it is in the game asset??
+						AttackContext::new(
+						attack.attack_type.unwrap(),
+						attack.score,
+						attack_cards,
+					)
+					.into())
+				);
 
 				game.boss.add_damage(game.attack.score);
 
@@ -226,11 +246,28 @@ where
 				if game.boss.is_alive() && game.player.is_alive() {
 					game.level_state = LevelState::Battle;
 
-					game.round = game.round.saturating_add(1);
+					let new_round = game.round.saturating_add(1);
+					game.round = new_round;
+
+					fx_manager.trigger_event(
+						GameEvent::OnRoundStart,
+						&mut game,
+						&mut deck,
+						&mut tower,
+						// Todo: Cedric: why pass round in the context, when it is in the game asset??
+						Some(round_ctx(new_round)),
+					);
 
 					let subject = (&account_id, &game_id, &deck_id);
 					let random_hash = Sage::random_hash(subject.encode().as_slice());
-					deck.draw(game.player.hand_size, random_hash)?;
+					let drawn_cards = deck.draw(game.player.hand_size, random_hash)?;
+					fx_manager.trigger_event(
+						GameEvent::OnRoundStart,
+						&mut game,
+						&mut deck,
+						&mut tower,
+						Some(card_ctx(drawn_cards)),
+					);
 				} else {
 					game.level_state = LevelState::Score;
 				}
@@ -245,10 +282,7 @@ where
 				deck_asset.fury_asset =
 					deck.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
 
-				vec![
-					Mutated(game_id, game_asset),
-					Mutated(deck_id, deck_asset),
-				]
+				vec![Mutated(game_id, game_asset), Mutated(deck_id, deck_asset)]
 			},
 			TransitionIdentifier::Discard => {
 				let (game_id, mut game_asset) =
@@ -293,10 +327,7 @@ where
 				deck_asset.fury_asset =
 					deck.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
 
-				vec![
-					Mutated(game_id, game_asset),
-					Mutated(deck_id, deck_asset),
-				]
+				vec![Mutated(game_id, game_asset), Mutated(deck_id, deck_asset)]
 			},
 			TransitionIdentifier::Score => {
 				let (game_id, mut game_asset) =
@@ -331,10 +362,7 @@ where
 				deck_asset.fury_asset =
 					deck.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
 
-				vec![
-					Mutated(game_id, game_asset),
-					Mutated(deck_id, deck_asset),
-				]
+				vec![Mutated(game_id, game_asset), Mutated(deck_id, deck_asset)]
 			},
 		};
 

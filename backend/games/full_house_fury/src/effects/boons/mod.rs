@@ -45,7 +45,7 @@ impl Effect for Boons {
 		deck: &mut Deck,
 		tower: &mut Tower,
 		level: u8,
-		context: EffectContext,
+		context: Option<EffectContext>,
 	) {
 		match self {
 			Boons::HeartHeal(boon) => boon.apply(game_event, game, deck, tower, level, context),

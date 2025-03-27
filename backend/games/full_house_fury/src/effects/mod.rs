@@ -14,7 +14,7 @@ use crate::{
 pub mod banes;
 pub mod boons;
 pub mod context;
-mod manager;
+pub mod manager;
 pub mod traits;
 
 pub enum BoonsAndBanes {
@@ -53,7 +53,7 @@ impl Effect for BoonsAndBanes {
 		deck: &mut Deck,
 		tower: &mut Tower,
 		level: u8,
-		context: EffectContext,
+		context: Option<EffectContext>,
 	) {
 		match self {
 			BoonsAndBanes::Boons(boons) =>

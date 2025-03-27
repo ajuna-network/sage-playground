@@ -78,11 +78,12 @@ impl Deck {
 		}
 	}
 
-	pub fn draw(&mut self, hand_size: u8, random_hash: H256) -> Result<(), FuryError> {
+	pub fn draw(&mut self, hand_size: u8, random_hash: H256) -> Result<Vec<CardIndex>, FuryError> {
 		if hand_size > HAND_LIMIT_SIZE {
 			return Err(FuryError::InvalidHandSize)
 		}
 
+		let mut new_cards = Vec::new();
 		let mut current_count = self.hand.cards_count();
 		let mut rng = RandomNumberGenerator::<BlakeTwo256>::new(random_hash);
 
@@ -95,10 +96,11 @@ impl Deck {
 				let drawn_card = self.draw_card(&mut rng)?;
 				self.hand.set_card(hand_position, drawn_card)?;
 				current_count = current_count + 1;
+				new_cards.push(drawn_card);
 			}
 		}
 
-		Ok(())
+		Ok(new_cards)
 	}
 
 	pub fn draw_card(
