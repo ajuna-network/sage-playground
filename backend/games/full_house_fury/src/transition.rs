@@ -1,9 +1,13 @@
 use crate::{
-	effects::{context::AttackContext, manager::FxManager, traits::GameEvent},
+	effects::{
+		context::{card_ctx, level_ctx, round_ctx, AttackContext},
+		manager::FxManager,
+		traits::GameEvent,
+	},
 	error::FuryError,
 	rules::ensure_account_has_no_asset_of_type,
 	types::{
-		deck::{Deck},
+		deck::Deck,
 		game::{Attack, Boss, Game, GameState, LevelState},
 		tower::Tower,
 		AssetId, AssetType, BaseAsset,
@@ -20,7 +24,6 @@ use sp_core::H256;
 use sp_runtime::traits::{AtLeast32BitUnsigned, BlockNumber as BlockNumberT, Member};
 use sp_std::{marker::PhantomData, vec, vec::Vec};
 use TransitionOutput::*;
-use crate::effects::context::{card_ctx, level_ctx, round_ctx};
 
 pub type TransitionConfig = ();
 
@@ -231,13 +234,11 @@ where
 					&mut deck,
 					&mut tower,
 					Some(
-						// Todo: Cedric: why pass round in the context, when it is in the game asset??
-						AttackContext::new(
-						attack.attack_type.unwrap(),
-						attack.score,
-						attack_cards,
-					)
-					.into())
+						// Todo: Cedric: why pass round in the context, when it is in the game
+						// asset??
+						AttackContext::new(attack.attack_type.unwrap(), attack.score, attack_cards)
+							.into(),
+					),
 				);
 
 				game.boss.add_damage(game.attack.score);
@@ -256,7 +257,8 @@ where
 						&mut game,
 						&mut deck,
 						&mut tower,
-						// Todo: Cedric: why pass round in the context, when it is in the game asset??
+						// Todo: Cedric: why pass round in the context, when it is in the game
+						// asset??
 						Some(round_ctx(new_round)),
 					);
 
@@ -286,7 +288,11 @@ where
 				tower_asset.fury_asset =
 					tower.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
 
-				vec![Mutated(game_id, game_asset), Mutated(deck_id, deck_asset), Mutated(tower_id, tower_asset)]
+				vec![
+					Mutated(game_id, game_asset),
+					Mutated(deck_id, deck_asset),
+					Mutated(tower_id, tower_asset),
+				]
 			},
 			TransitionIdentifier::Discard => {
 				let (game_id, mut game_asset) =
@@ -326,7 +332,13 @@ where
 
 				// this step does also remove them from the hand, so we can simply ignore them.
 				let discard_cards = deck.hand.pick_multiple_cards(discard_positions)?;
-				fx_manager.trigger_event(GameEvent::OnDiscard, &mut game, &mut deck, &mut tower, Some(card_ctx(discard_cards)));
+				fx_manager.trigger_event(
+					GameEvent::OnDiscard,
+					&mut game,
+					&mut deck,
+					&mut tower,
+					Some(card_ctx(discard_cards)),
+				);
 
 				// draw new cards for the discarded cards
 				let subject = (&account_id, &game_id, &deck_id);
@@ -341,7 +353,11 @@ where
 				tower_asset.fury_asset =
 					tower.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
 
-				vec![Mutated(game_id, game_asset), Mutated(deck_id, deck_asset), Mutated(tower_id, tower_asset)]
+				vec![
+					Mutated(game_id, game_asset),
+					Mutated(deck_id, deck_asset),
+					Mutated(tower_id, tower_asset),
+				]
 			},
 			TransitionIdentifier::Score => {
 				let (game_id, mut game_asset) =
@@ -366,7 +382,13 @@ where
 				let new_level = game.level.saturating_add(1);
 				game.level = new_level;
 				// Todo: Cedric: why add the level context, when it is in the game too?
-				fx_manager.trigger_event(GameEvent::OnLevelStart, &mut game, &mut deck, &mut tower, Some(level_ctx(new_level)));
+				fx_manager.trigger_event(
+					GameEvent::OnLevelStart,
+					&mut game,
+					&mut deck,
+					&mut tower,
+					Some(level_ctx(new_level)),
+				);
 
 				game.boss = Boss {
 					// convert u8 to u32 to prevent early saturation.
@@ -390,7 +412,11 @@ where
 				tower_asset.fury_asset =
 					tower.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
 
-				vec![Mutated(game_id, game_asset), Mutated(deck_id, deck_asset), Mutated(tower_id, tower_asset)]
+				vec![
+					Mutated(game_id, game_asset),
+					Mutated(deck_id, deck_asset),
+					Mutated(tower_id, tower_asset),
+				]
 			},
 		};
 

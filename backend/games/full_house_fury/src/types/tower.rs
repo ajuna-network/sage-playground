@@ -79,7 +79,11 @@ impl Tower {
 		Ok(((self.single_boons >> boon_index) & 1) as u8)
 	}
 
-	pub fn set_single_boon(&mut self, boon_index: Index, boon_value: bool) -> Result<(), FuryError> {
+	pub fn set_single_boon(
+		&mut self,
+		boon_index: Index,
+		boon_value: bool,
+	) -> Result<(), FuryError> {
 		if boon_index > 31 {
 			return Err(FuryError::InvalidSingleBoonIndex);
 		};
@@ -119,7 +123,11 @@ impl Tower {
 		Ok(((self.single_banes >> bane_index) & 1) as u8)
 	}
 
-	pub fn set_single_bane(&mut self, bane_index: Index, bane_value: bool) -> Result<(), FuryError> {
+	pub fn set_single_bane(
+		&mut self,
+		bane_index: Index,
+		bane_value: bool,
+	) -> Result<(), FuryError> {
 		if bane_index > 31 {
 			return Err(FuryError::InvalidSingleBaneIndex);
 		};
