@@ -207,6 +207,8 @@ where
 				let mut tower = Tower::decode(&mut tower_asset.fury_asset.as_slice())
 					.map_err(|_e| TransitionError::AssetCouldNotBeDecoded)?;
 
+				let fx_manager = FxManager::new(tower);
+
 				if game.game_sate != GameState::Running {
 					return Err(TransitionError::Transition { code: 0 });
 				}
@@ -223,7 +225,6 @@ where
 				let attack = Attack::create(&attack_cards)?;
 				game.attack = attack.clone();
 
-				let fx_manager = FxManager::new(tower);
 				fx_manager.trigger_event(
 					GameEvent::OnAttack,
 					&mut game,
@@ -298,6 +299,13 @@ where
 				let mut deck = Deck::decode(&mut deck_asset.fury_asset.as_slice())
 					.map_err(|_e| TransitionError::AssetCouldNotBeDecoded)?;
 
+				let (tower_id, mut tower_asset) =
+					assets.pop().ok_or_else(|| TransitionError::AssetLength)?;
+				let mut tower = Tower::decode(&mut tower_asset.fury_asset.as_slice())
+					.map_err(|_e| TransitionError::AssetCouldNotBeDecoded)?;
+
+				let fx_manager = FxManager::new(tower);
+
 				if game.game_sate != GameState::Running {
 					return Err(FuryError::GameNotInRunningPhase)?;
 				}
@@ -317,7 +325,8 @@ where
 					.ok_or_else(|| TransitionError::Transition { code: 0 })?;
 
 				// this step does also remove them from the hand, so we can simply ignore them.
-				let _discard_cards = deck.hand.pick_multiple_cards(discard_positions)?;
+				let discard_cards = deck.hand.pick_multiple_cards(discard_positions)?;
+				fx_manager.trigger_event(GameEvent::OnDiscard, &mut game, &mut deck, &mut tower, Some(card_ctx(discard_cards)));
 
 				// draw new cards for the discarded cards
 				let subject = (&account_id, &game_id, &deck_id);
@@ -329,8 +338,10 @@ where
 					game.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
 				deck_asset.fury_asset =
 					deck.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
+				tower_asset.fury_asset =
+					tower.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
 
-				vec![Mutated(game_id, game_asset), Mutated(deck_id, deck_asset)]
+				vec![Mutated(game_id, game_asset), Mutated(deck_id, deck_asset), Mutated(tower_id, tower_asset)]
 			},
 			TransitionIdentifier::Score => {
 				let (game_id, mut game_asset) =
