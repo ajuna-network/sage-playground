@@ -191,8 +191,10 @@ where
 					game.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
 				deck_asset.fury_asset =
 					deck.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
+				tower_asset.fury_asset =
+					tower.encode().try_into().map_err(|_e| TransitionError::AssetDataTooLong)?;
 
-				vec![Mutated(game_id, game_asset), Mutated(deck_id, deck_asset)]
+				vec![Mutated(game_id, game_asset), Mutated(deck_id, deck_asset), Mutated(tower_id, tower_asset)]
 			},
 			TransitionIdentifier::Battle => {
 				let (game_id, mut game_asset) =
