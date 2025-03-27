@@ -81,7 +81,7 @@ pub enum Rank {
 }
 
 impl Rank {
-	fn symbol(self) -> &'static str {
+	pub fn symbol(self) -> &'static str {
 		match self {
 			Rank::Ace => "A",
 			Rank::Two => "2",
@@ -97,6 +97,10 @@ impl Rank {
 			Rank::Queen => "Q",
 			Rank::King => "K",
 		}
+	}
+
+	pub fn as_value(&self) -> u32 {
+		*self as u32
 	}
 }
 
