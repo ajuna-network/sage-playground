@@ -254,10 +254,10 @@ mod runtime {
 
 	#[runtime::pallet_index(30)]
 	pub type SageFullHouseFury = pallet_sage<Instance3>;
-	#[runtime::pallet_index(31)]
-	pub type SageFullHouseFuryAffiliates = pallet_ajuna_affiliates<Instance3>;
+	// #[runtime::pallet_index(31)]
+	// pub type SageFullHouseFuryAffiliates = pallet_ajuna_affiliates<Instance3>;
 	#[runtime::pallet_index(32)]
 	pub type SageFullHouseFurySeasons = pallet_ajuna_seasons<Instance3>;
-	#[runtime::pallet_index(33)]
-	pub type SageFullHouseFuryTournament = pallet_ajuna_tournament<Instance3>;
+	// #[runtime::pallet_index(33)]
+	// pub type SageFullHouseFuryTournament = pallet_ajuna_tournament<Instance3>;
 }

@@ -96,7 +96,7 @@ dependencies = [
 [[package]]
 name = "ajuna-payment-handler"
 version = "0.15.0"
-source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=cl/improve-transition-error#ca1948b9460c46f9d4e02bd8c62760abed8e44cd"
+source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=cl/add-sage-test-runtime#09547a3b034bd8a6f58310926d92775e44a2f332"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -112,7 +112,7 @@ dependencies = [
 [[package]]
 name = "ajuna-primitives"
 version = "0.15.0"
-source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=cl/improve-transition-error#ca1948b9460c46f9d4e02bd8c62760abed8e44cd"
+source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=cl/add-sage-test-runtime#09547a3b034bd8a6f58310926d92775e44a2f332"
 dependencies = [
  "ajuna-payment-handler",
  "frame-support",
@@ -1974,7 +1974,7 @@ dependencies = [
 [[package]]
 name = "example-transition"
 version = "0.15.0"
-source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=cl/improve-transition-error#ca1948b9460c46f9d4e02bd8c62760abed8e44cd"
+source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=cl/add-sage-test-runtime#09547a3b034bd8a6f58310926d92775e44a2f332"
 dependencies = [
  "ajuna-primitives",
  "frame-support",
@@ -5253,7 +5253,7 @@ checksum = "b15813163c1d831bf4a13c3610c05c0d03b39feb07f7e09fa234dac9b15aaf39"
 [[package]]
 name = "pallet-ajuna-affiliates"
 version = "0.15.0"
-source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=cl/improve-transition-error#ca1948b9460c46f9d4e02bd8c62760abed8e44cd"
+source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=cl/add-sage-test-runtime#09547a3b034bd8a6f58310926d92775e44a2f332"
 dependencies = [
  "ajuna-primitives",
  "frame-benchmarking",
@@ -5270,7 +5270,7 @@ dependencies = [
 [[package]]
 name = "pallet-ajuna-seasons"
 version = "0.15.0"
-source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=cl/improve-transition-error#ca1948b9460c46f9d4e02bd8c62760abed8e44cd"
+source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=cl/add-sage-test-runtime#09547a3b034bd8a6f58310926d92775e44a2f332"
 dependencies = [
  "ajuna-primitives",
  "frame-benchmarking",
@@ -5288,7 +5288,7 @@ dependencies = [
 [[package]]
 name = "pallet-ajuna-tournament"
 version = "0.15.0"
-source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=cl/improve-transition-error#ca1948b9460c46f9d4e02bd8c62760abed8e44cd"
+source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=cl/add-sage-test-runtime#09547a3b034bd8a6f58310926d92775e44a2f332"
 dependencies = [
  "ajuna-primitives",
  "frame-benchmarking",
@@ -5408,7 +5408,7 @@ dependencies = [
 [[package]]
 name = "pallet-sage"
 version = "0.15.0"
-source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=cl/improve-transition-error#ca1948b9460c46f9d4e02bd8c62760abed8e44cd"
+source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=cl/add-sage-test-runtime#09547a3b034bd8a6f58310926d92775e44a2f332"
 dependencies = [
  "ajuna-primitives",
  "example-transition",
@@ -6901,7 +6901,7 @@ dependencies = [
 [[package]]
 name = "sage-api"
 version = "0.15.0"
-source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=cl/improve-transition-error#ca1948b9460c46f9d4e02bd8c62760abed8e44cd"
+source = "git+https://github.com/ajuna-network/ajuna-pallets.git?branch=cl/add-sage-test-runtime#09547a3b034bd8a6f58310926d92775e44a2f332"
 dependencies = [
  "ajuna-primitives",
  "frame-support",

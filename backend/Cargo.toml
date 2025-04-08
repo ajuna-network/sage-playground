@@ -96,17 +96,17 @@ game-casino-jam  = { path = "games/casino_jam", default-features = false }
 game-full-house-fury  = { path = "games/full_house_fury", default-features = false }
 
 # Ajuna Primitives
-ajuna-payment-handler = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/improve-transition-error", default-features = false }
-ajuna-primitives      = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/improve-transition-error", default-features = false }
+ajuna-payment-handler = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/add-sage-test-runtime", default-features = false }
+ajuna-primitives      = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/add-sage-test-runtime", default-features = false }
 
 # Ajuna Pallets
-pallet-ajuna-affiliates = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/improve-transition-error", default-features = false }
-pallet-ajuna-seasons    = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/improve-transition-error", default-features = false }
-pallet-ajuna-tournament = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/improve-transition-error", default-features = false }
+pallet-ajuna-affiliates = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/add-sage-test-runtime", default-features = false }
+pallet-ajuna-seasons    = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/add-sage-test-runtime", default-features = false }
+pallet-ajuna-tournament = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/add-sage-test-runtime", default-features = false }
 
 # SAGE
-pallet-sage = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/improve-transition-error", default-features = false }
-sage-api    = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/improve-transition-error", default-features = false }
+pallet-sage = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/add-sage-test-runtime", default-features = false }
+sage-api    = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/add-sage-test-runtime", default-features = false }
 
 [profile.production]
 codegen-units = 1

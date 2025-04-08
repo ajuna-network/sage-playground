@@ -21,12 +21,10 @@ mod full_house_fury;
 mod fee_handler {
 	use crate::{AccountId, Balance, Balances};
 
-	use ajuna_payment_handler::{
-		AllowAllAssets, AssetGameFeeHandler, VoucherHandler, WithdrawCreditOrVoucher,
-		WithdrawFungibles, WithdrawWhitelistedCredit,
-	};
+	use ajuna_payment_handler::{AllowAllAssets, AssetGameFeeHandler, VoucherHandler, WithdrawCreditOrVoucher, WithdrawFungibles, WithdrawWhitelistedCredit, TakeNoFeeHandler, WithdrawKind};
 
 	use frame_support::traits::fungible::{NativeFromLeft, NativeOrWithId, UnionOf};
+	use pallet_sage::AffiliateMethods;
 	use sp_runtime::DispatchError;
 
 	pub type NativeAndAssets<Assets, AssetId> =
@@ -53,6 +51,19 @@ mod fee_handler {
 		Affiliates,
 		AffiliateMaxLevel,
 		Tournament,
+	>;
+
+	/// Fee handler facilitating payment in the native currency and with whitelisted types.
+	pub type AjunaTakeNoFeeHandler<
+		AssetId,
+		TransitionId,
+		TournamentId,
+	> = TakeNoFeeHandler<
+		AccountId,
+		WithdrawKind<NativeOrWithId<AssetId>>,
+		Balance,
+		AffiliateMethods<TransitionId>,
+		TournamentId,
 	>;
 
 	/*pub type FungiblesAssetId = WithdrawKind<NativeOrWithId<SageAssetId>>;

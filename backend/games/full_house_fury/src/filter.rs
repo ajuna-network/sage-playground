@@ -1,8 +1,8 @@
 use ajuna_primitives::trade_manager::*;
 
+use crate::types::BaseAsset;
 use sp_runtime::traits::BlockNumber as BlockNumberT;
 use sp_std::marker::PhantomData;
-use crate::types::BaseAsset;
 
 #[derive(Default)]
 pub struct GameFilter<BlockNumber>(PhantomData<BlockNumber>);

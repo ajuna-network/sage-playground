@@ -1,13 +1,14 @@
 use ajuna_primitives::payment_handler::WithdrawKind;
 use sage_api::benchmarks::SageBenchmarkHelper;
 
+use crate::{
+	transition::TransitionIdentifier,
+	types::{game::Game, AssetId, AssetType, BaseAsset},
+};
 use frame_support::traits::fungible::NativeOrWithId;
 use parity_scale_codec::Encode;
 use sp_runtime::traits::BlockNumber as BlockNumberT;
 use sp_std::{marker::PhantomData, vec::Vec};
-use crate::transition::TransitionIdentifier;
-use crate::types::{AssetId, AssetType, BaseAsset};
-use crate::types::game::Game;
 
 pub struct GameBenchmarkHelper<BlockNumber>(PhantomData<BlockNumber>);
 
