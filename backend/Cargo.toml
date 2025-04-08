@@ -14,7 +14,10 @@ resolver = "2"
 members = [
     "node",
     "runtime",
-    "games/*",
+    "games/battle_mogs",
+    "games/casino_jam",
+    "games/full_house_fury",
+    "games/tests/full_house_fury_test"
 ]
 
 [workspace.dependencies]
@@ -90,6 +93,7 @@ sage-playground-runtime = { path = "runtime" }
 # Games
 game-battle-mogs = { path = "games/battle_mogs", default-features = false }
 game-casino-jam  = { path = "games/casino_jam", default-features = false }
+game-full-house-fury  = { path = "games/full_house_fury", default-features = false }
 
 # Ajuna Primitives
 ajuna-payment-handler = { git = "https://github.com/ajuna-network/ajuna-pallets.git", branch = "cl/improve-transition-error", default-features = false }

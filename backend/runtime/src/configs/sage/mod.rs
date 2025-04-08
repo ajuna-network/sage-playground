@@ -16,6 +16,7 @@
 
 mod battle_mogs;
 mod casino_jam;
+mod full_house_fury;
 
 mod fee_handler {
 	use crate::{AccountId, Balance, Balances};

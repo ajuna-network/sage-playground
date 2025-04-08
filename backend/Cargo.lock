@@ -2479,6 +2479,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "full-house-fury-test"
+version = "0.1.0"
+dependencies = [
+ "sage-playground-runtime",
+]
+
+[[package]]
 name = "funty"
 version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6963,6 +6970,7 @@ dependencies = [
  "frame-try-runtime",
  "game-battle-mogs",
  "game-casino-jam",
+ "game-full-house-fury",
  "pallet-ajuna-affiliates",
  "pallet-ajuna-seasons",
  "pallet-ajuna-tournament",

@@ -25,7 +25,7 @@ use sp_runtime::traits::{AtLeast32BitUnsigned, BlockNumber as BlockNumberT, Memb
 use sp_std::{marker::PhantomData, vec, vec::Vec};
 use TransitionOutput::*;
 
-pub type TransitionConfig = ();
+pub type FullHouseFuryTransitionConfig = ();
 
 /// The extra stands for the hand positions of the cards chosen for an attack.
 pub type HandPositions = Option<BoundedVec<u8, ConstU32<10>>>;
@@ -55,7 +55,7 @@ where
 		Asset = BaseAsset<BlockNumber>,
 		Balance = Balance,
 		BlockNumber = BlockNumber,
-		TransitionConfig = TransitionConfig,
+		TransitionConfig = FullHouseFuryTransitionConfig,
 		HashOutput = H256,
 	>,
 {
@@ -438,12 +438,12 @@ where
 		Asset = BaseAsset<BlockNumber>,
 		Balance = Balance,
 		BlockNumber = BlockNumber,
-		TransitionConfig = TransitionConfig,
+		TransitionConfig =FullHouseFuryTransitionConfig,
 		HashOutput = H256,
 	>,
 {
 	type TransitionId = TransitionIdentifier;
-	type TransitionConfig = TransitionConfig;
+	type TransitionConfig = FullHouseFuryTransitionConfig;
 	type AccountId = AccountId;
 	type AssetId = AssetId;
 	type Asset = BaseAsset<BlockNumber>;

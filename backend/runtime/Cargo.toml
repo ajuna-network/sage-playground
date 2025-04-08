@@ -66,6 +66,7 @@ sage-api           = { workspace = true }
 # Games
 game-battle-mogs = { workspace = true }
 game-casino-jam  = { workspace = true }
+game-full-house-fury = { workspace = true }
 
 [features]
 default = ["std"]
@@ -113,6 +114,7 @@ std = [
 	"sage-api/std",
 	"game-battle-mogs/std",
 	"game-casino-jam/std",
+	"game-full-house-fury/std",
 ]
 
 runtime-benchmarks = [
