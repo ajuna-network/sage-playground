@@ -9,22 +9,18 @@ This guide shows you how to define and display a **Consumable** asset (Fish) in 
 ```
 YourUnityProject/
 │
-├── Assets/
-│   ├── Scripts/
-│   │   ├── GameEngine/            # Core game logic library
-│   │   │   ├── BaseAsset.cs
-│   │   │   ├── Enum.cs            # AssetType enum (Player, Consumable)
-│   │   │   ├── PlayerAsset.cs     # Player asset
-│   │   │   └── ConsumableAsset.cs # Consumable asset
-│   │   ├── PenguinSpawner.cs      # Spawns and displays Penguin
-│   │   └── FishSpawner.cs         # Spawns and displays Fish
-│   ├── Plugins/                   # Ajuna.SAGE.Core DLLs
-│   └── Scenes/                    # Unity scenes
-│       └── MainScene.unity        # Example scene with Penguin & Fish
-├── docs/
-│   └── unity/
-│       └── fish_asset.md          # This tutorial
-└── <other files>
+└── Assets/
+    ├── Scripts/
+    │   ├── GameEngine/            # Core game logic library
+    │   │   ├── BaseAsset.cs
+    │   │   ├── Enum.cs            # AssetType enum (Player, Consumable)
+    │   │   ├── PlayerAsset.cs     # Player asset
+    │   │   └── ConsumableAsset.cs # Consumable asset
+    │   ├── PenguinSpawner.cs      # Spawns and displays Penguin
+    │   └── FishSpawner.cs         # Spawns and displays Fish
+    ├── Plugins/                   # Ajuna.SAGE.Core DLLs
+    └── Scenes/                    # Unity scenes
+        └── MainScene.unity        # Example scene with Penguin & Fish
 ```
 
 ---
@@ -162,8 +158,8 @@ public class FishSpawner : MonoBehaviour
 
 | Stage      | Commit Description                     | Git Ref                 |
 | ---------- | -------------------------------------- | ----------------------- |
-| 🟢 Start   | Before Fish asset is added             | `replace-this-start`    |
-| ✅ Complete | Fish asset created and placed in scene | `replace-this-complete` |
+| 🟢 Start   | Before Fish asset is added             | [ff5c0831399646de87f813ad0f226fd195a88715](https://github.com/ajuna-network/sage-playground/commit/ff5c0831399646de87f813ad0f226fd195a88715) |
+| ✅ Complete | Fish asset created and placed in scene | [a656f6633f5e25f53f4140e2687a0bfd7d748678](https://github.com/ajuna-network/sage-playground/commit/a656f6633f5e25f53f4140e2687a0bfd7d748678) |
 
 > Use:
 >
