@@ -258,8 +258,8 @@ We'll define the available actions, how to identify each transition, and validat
 
 | Stage      | Commit Description                | Git Ref                 |
 | ---------- | --------------------------------- | ----------------------- |
-| 🟢 Start   | Before engine foundation is added | `replace-this-start`    |
-| ✅ Complete | Core engine implemented and wired | `replace-this-complete` |
+| 🟢 Start   | Before engine foundation is added | [c1337867d0f8ec98c7e138f5d6056f40247d8aa7](https://github.com/ajuna-network/sage-playground/commit/c1337867d0f8ec98c7e138f5d6056f40247d8aa7)    |
+| ✅ Complete | Core engine implemented and wired | [17d7281eb0ea36b03c6cb00192e9d49f47b89b20](https://github.com/ajuna-network/sage-playground/commit/17d7281eb0ea36b03c6cb00192e9d49f47b89b20) |
 
 Congratulations! You now have a solid engine setup to power asset registration and transition execution. Next: implement the **EAT** transition logic and integrate it into your scene.
 
