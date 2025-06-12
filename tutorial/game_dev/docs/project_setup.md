@@ -121,14 +121,14 @@ Optionally, take a screenshot of your **Project** window showing the `Assets/Plu
 
 | Stage      | Commit Description                    | Git Ref                 |
 | ---------- | ------------------------------------- | ----------------------- |
-| 🟢 Start   | Empty Unity project initialized       | `replace-this-start`    |
-| ✅ Complete | SAGE.dll integrated, project compiles | `replace-this-complete` |
+| 🟢 Start   | Empty Unity project initialized       | [8aff0e95f4bb4aef3db50320a4165cc004e3fd22](https://github.com/ajuna-network/sage-playground/commit/8aff0e95f4bb4aef3db50320a4165cc004e3fd22)    |
+| ✅ Complete | SAGE.dll integrated, project compiles | [2adba118123b21ed0f6abbd3ea417f7b33ee8a75](https://github.com/ajuna-network/sage-playground/commit/2adba118123b21ed0f6abbd3ea417f7b33ee8a75) |
 
 > Link both commits so team members can easily check out each stage:
 >
 > ```bash
-> git checkout replace-this-start
-> git checkout replace-this-complete
+> git checkout 8aff0e95f4bb4aef3db50320a4165cc004e3fd22
+> git checkout 2adba118123b21ed0f6abbd3ea417f7b33ee8a75
 > ```
 
 ---
