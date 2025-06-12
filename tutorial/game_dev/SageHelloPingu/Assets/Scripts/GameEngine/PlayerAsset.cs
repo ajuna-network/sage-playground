@@ -12,7 +12,7 @@ namespace SageUnityLib
         }
 
         /// <summary>
-        /// Current health of the Penguin.
+        /// Current health of the Asset.
         /// Stored as a byte allowing a range of 0 - 255.
         /// </summary>
         public byte Health
