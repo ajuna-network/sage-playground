@@ -1,7 +1,6 @@
 using UnityEngine;
 using SageUnityLib;
 using TMPro;
-using UnityEngine.UI;
 
 public class FishSpawner : MonoBehaviour
 {
@@ -15,7 +14,6 @@ public class FishSpawner : MonoBehaviour
         // Create a new fish asset
         _fish = new ConsumableAsset(1); // we use for now ownerId = 1
         Debug.Log($"Spawned Fish that restores: {_fish.HealthValue} Health");
-
     }
 
     void Update()

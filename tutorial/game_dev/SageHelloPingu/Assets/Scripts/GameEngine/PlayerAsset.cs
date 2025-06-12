@@ -4,7 +4,7 @@ namespace SageUnityLib
 {
     public class PlayerAsset : BaseAsset
     {
-        public PlayerAsset(uint ownerId, uint score = 0, uint genesis = 0) 
+        public PlayerAsset(uint ownerId, uint score = 0, uint genesis = 0)
             : base(ownerId, score, genesis)
         {
             AssetType = AssetType.Player;
@@ -20,6 +20,5 @@ namespace SageUnityLib
             get => Data.Read<byte>(1);
             set => Data.Set<byte>(1, value);
         }
-
     }
 }

@@ -1,5 +1,5 @@
 using Ajuna.SAGE.Core.Model;
-using UnityEngine;
+
 namespace SageUnityLib
 {
     public class ConsumableAsset : BaseAsset

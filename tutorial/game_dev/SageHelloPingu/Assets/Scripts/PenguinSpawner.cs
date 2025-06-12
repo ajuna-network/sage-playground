@@ -18,7 +18,6 @@ public class PenguinSpawner : MonoBehaviour
         // Create a new Penguin asset
         _player = new PlayerAsset(1); // we use for now ownerId = 1
         Debug.Log($"Spawned Penguin with Health: {_player.Health}");
-
     }
 
     void Update()
