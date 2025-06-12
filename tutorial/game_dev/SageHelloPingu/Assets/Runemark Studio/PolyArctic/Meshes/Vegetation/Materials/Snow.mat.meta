@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 06293117e885ece40a55831130559e02
+timeCreated: 1538146197
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 129842
+  packageName: POLYArctic
+  packageVersion: 1.1
+  assetPath: Assets/Runemark Studio/PolyArctic/Meshes/Vegetation/Materials/Snow.mat
+  uploadId: 305647

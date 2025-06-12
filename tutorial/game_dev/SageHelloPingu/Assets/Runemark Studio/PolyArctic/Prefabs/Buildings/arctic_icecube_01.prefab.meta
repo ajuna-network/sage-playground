@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 9b3c29c2593a5ec48b46758a721f8256
+timeCreated: 1538146772
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 129842
+  packageName: POLYArctic
+  packageVersion: 1.1
+  assetPath: Assets/Runemark Studio/PolyArctic/Prefabs/Buildings/arctic_icecube_01.prefab
+  uploadId: 305647

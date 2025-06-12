@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: f98cf6e9f0dcef14c8eaf0eebfc6bbac
+timeCreated: 1555321953
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 129842
+  packageName: POLYArctic
+  packageVersion: 1.1
+  assetPath: Assets/Runemark Studio/PolyArctic/Meshes/Misc/Materials/defaultMat.mat
+  uploadId: 305647

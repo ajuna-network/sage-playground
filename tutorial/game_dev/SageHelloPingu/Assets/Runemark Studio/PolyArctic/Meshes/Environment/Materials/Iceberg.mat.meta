@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 92a73160f69cfef4583945d76cbebab0
+timeCreated: 1538146145
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 129842
+  packageName: POLYArctic
+  packageVersion: 1.1
+  assetPath: Assets/Runemark Studio/PolyArctic/Meshes/Environment/Materials/Iceberg.mat
+  uploadId: 305647

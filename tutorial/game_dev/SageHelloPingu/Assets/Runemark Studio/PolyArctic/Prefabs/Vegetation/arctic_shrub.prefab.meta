@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: a932500e01f4ecd46a0569576a1f2f99
+timeCreated: 1538147810
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 129842
+  packageName: POLYArctic
+  packageVersion: 1.1
+  assetPath: Assets/Runemark Studio/PolyArctic/Prefabs/Vegetation/arctic_shrub.prefab
+  uploadId: 305647

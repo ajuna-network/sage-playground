@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 60824d29e38876a4e9a8350d46a7a23d
+timeCreated: 1538146372
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 129842
+  packageName: POLYArctic
+  packageVersion: 1.1
+  assetPath: Assets/Runemark Studio/PolyArctic/Meshes/Misc/Backdrop.prefab
+  uploadId: 305647

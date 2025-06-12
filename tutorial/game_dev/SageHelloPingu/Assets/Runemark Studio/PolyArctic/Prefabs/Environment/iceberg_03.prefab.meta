@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 92953189ad65f28478a8185464295a85
+timeCreated: 1538147206
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 129842
+  packageName: POLYArctic
+  packageVersion: 1.1
+  assetPath: Assets/Runemark Studio/PolyArctic/Prefabs/Environment/iceberg_03.prefab
+  uploadId: 305647

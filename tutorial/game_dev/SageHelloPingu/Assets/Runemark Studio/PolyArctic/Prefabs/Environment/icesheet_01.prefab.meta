@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 6778e704cd5a1e2438349be6ba8ca403
+timeCreated: 1538147256
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 129842
+  packageName: POLYArctic
+  packageVersion: 1.1
+  assetPath: Assets/Runemark Studio/PolyArctic/Prefabs/Environment/icesheet_01.prefab
+  uploadId: 305647

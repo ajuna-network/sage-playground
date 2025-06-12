@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: dff567d2626044244b7f16fb1b6aaab5
+timeCreated: 1538146302
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 129842
+  packageName: POLYArctic
+  packageVersion: 1.1
+  assetPath: Assets/Runemark Studio/PolyArctic/Meshes/Misc/Materials/Backdrop.mat
+  uploadId: 305647

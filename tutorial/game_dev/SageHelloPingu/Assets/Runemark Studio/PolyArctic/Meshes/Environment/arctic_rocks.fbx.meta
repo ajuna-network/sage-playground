@@ -1,0 +1,146 @@
+fileFormatVersion: 2
+guid: d3cab922db71c9349ac44c9866b4ddda
+timeCreated: 1538146156
+licenseType: Store
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: snow
+    100004: snow.001
+    100006: snow.002
+    100008: snow.003
+    100010: snow.004
+    100012: snow.005
+    100014: snowy_rock
+    100016: snowy_rock.001
+    100018: snowy_rock.002
+    100020: snowy_rock.003
+    100022: snowy_rock.004
+    100024: snowy_rock.005
+    400000: //RootNode
+    400002: snow
+    400004: snow.001
+    400006: snow.002
+    400008: snow.003
+    400010: snow.004
+    400012: snow.005
+    400014: snowy_rock
+    400016: snowy_rock.001
+    400018: snowy_rock.002
+    400020: snowy_rock.003
+    400022: snowy_rock.004
+    400024: snowy_rock.005
+    2300000: snow
+    2300002: snow.001
+    2300004: snow.002
+    2300006: snow.003
+    2300008: snow.004
+    2300010: snow.005
+    2300012: snowy_rock
+    2300014: snowy_rock.001
+    2300016: snowy_rock.002
+    2300018: snowy_rock.003
+    2300020: snowy_rock.004
+    2300022: snowy_rock.005
+    3300000: snow
+    3300002: snow.001
+    3300004: snow.002
+    3300006: snow.003
+    3300008: snow.004
+    3300010: snow.005
+    3300012: snowy_rock
+    3300014: snowy_rock.001
+    3300016: snowy_rock.002
+    3300018: snowy_rock.003
+    3300020: snowy_rock.004
+    3300022: snowy_rock.005
+    4300000: snowy_rock.005
+    4300002: snow.005
+    4300004: snowy_rock.004
+    4300006: snow.004
+    4300008: snowy_rock.003
+    4300010: snow.003
+    4300012: snowy_rock.002
+    4300014: snow.002
+    4300016: snowy_rock.001
+    4300018: snow.001
+    4300020: snowy_rock
+    4300022: snow
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 129842
+  packageName: POLYArctic
+  packageVersion: 1.1
+  assetPath: Assets/Runemark Studio/PolyArctic/Meshes/Environment/arctic_rocks.fbx
+  uploadId: 305647

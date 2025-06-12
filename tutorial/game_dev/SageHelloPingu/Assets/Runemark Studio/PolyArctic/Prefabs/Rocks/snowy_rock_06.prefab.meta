@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: f2507ddcda98bc64c8743a8634c6bafd
+timeCreated: 1538147523
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 129842
+  packageName: POLYArctic
+  packageVersion: 1.1
+  assetPath: Assets/Runemark Studio/PolyArctic/Prefabs/Rocks/snowy_rock_06.prefab
+  uploadId: 305647

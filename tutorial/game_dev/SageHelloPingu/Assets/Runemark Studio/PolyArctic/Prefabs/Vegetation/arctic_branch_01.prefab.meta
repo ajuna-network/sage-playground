@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: cd3c6d15fcde5534c8fe02ade2c5fe17
+timeCreated: 1538147760
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 129842
+  packageName: POLYArctic
+  packageVersion: 1.1
+  assetPath: Assets/Runemark Studio/PolyArctic/Prefabs/Vegetation/arctic_branch_01.prefab
+  uploadId: 305647
