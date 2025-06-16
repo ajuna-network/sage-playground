@@ -100,6 +100,8 @@ We recommend using a quick .NET Core class library to pull in **Ajuna.SAGE.Core*
    Ajuna.SAGE.Core version: 0.0.6.0
    ```
 
+![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/game_dev/docs/images/Screenshot%202025-06-12%20093010.png?raw=true)
+
 > **Tip:** Replace `Transaction` with any other public type exposed by `Ajuna.SAGE.Core` if desired. The key is calling `typeof(<Type>).Assembly.GetName().Version` to fetch the assembly version.
 
 ---
