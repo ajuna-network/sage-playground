@@ -202,8 +202,8 @@ Now all asset instantiation flows through the SAGE engine, guaranteeing consiste
 
 | Stage      | Commit Description                                  | Git Ref                 |
 | ---------- | --------------------------------------------------- | ----------------------- |
-| 🟢 Start   | Spawners manually `new`-ing assets                  | `replace-this-start`    |
-| ✅ Complete | CREATE transitions implemented; spawners use engine | `replace-this-complete` |
+| 🟢 Start   | Spawners manually `new`-ing assets                  | [423a965856938e58e4584c2878c1213f3b168b31](https://github.com/ajuna-network/sage-playground/commit/423a965856938e58e4584c2878c1213f3b168b31)    |
+| ✅ Complete | CREATE transitions implemented; spawners use engine | [1d819b535ce5e2d4272db14b468a669758851e4c](https://github.com/ajuna-network/sage-playground/commit/1d819b535ce5e2d4272db14b468a669758851e4c) |
 
 Congratulations! You’ve enforced proper asset creation via SAGE `CREATE` transitions. Next: integrate persistent backend or mock as needed for demo/testing.
 
