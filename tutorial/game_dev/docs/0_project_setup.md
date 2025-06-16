@@ -74,6 +74,8 @@ We recommend using a quick .NET Core class library to pull in **Ajuna.SAGE.Core*
 
 > Unity will automatically load all `.dll` files located under `Assets/Plugins/`.
 
+![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/game_dev/docs/images/Screenshot%202025-06-12%20093103.png?raw=true)
+
 ---
 
 ## 🧪 Step 3: Verify SAGE Types in Unity
