@@ -291,6 +291,8 @@ YourUnityProject/
 - **Before** pressing the button: check Penguin’s health (e.g., 10) and Fish exists.
 - **After** pressing: console should log new health; health UI updates; Fish GameObject is destroyed.
 
+![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/game_dev/docs/images/Screenshot%202025-06-16%20135253.png?raw=true)
+
 ---
 
 ## 🟢 Git Tutorial Checkpoints
