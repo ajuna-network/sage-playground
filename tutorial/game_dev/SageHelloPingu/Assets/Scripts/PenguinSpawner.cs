@@ -3,13 +3,14 @@ using SageUnityLib;
 using TMPro;
 using UnityEngine.UI;
 using Ajuna.SAGE.Core.Model;
+using SageUnityLib.Model;
 
 public class PenguinSpawner : MonoBehaviour
 {
     public PlayerAsset Penguin { get; set; }
 
     [SerializeField]
-    private GameEngine _gameEngine;
+    private GameEngineService _gameEngine;
 
     [SerializeField]
     private Image _playerAvatarImg;

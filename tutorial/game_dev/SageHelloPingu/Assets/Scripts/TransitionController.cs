@@ -1,14 +1,12 @@
 using Ajuna.SAGE.Core.Model;
-using Ajuna.SAGE.Core;
 using SageUnityLib;
 using UnityEngine;
-using NUnit.Framework;
-using static UnityEngine.UIElements.UxmlAttributeDescription;
+using SageUnityLib.Model;
 
 public class TransitionController : MonoBehaviour
 {
     [SerializeField]
-    private GameEngine _gameEngine;
+    private GameEngineService _gameEngine;
     
     [SerializeField]
     private PenguinSpawner _penguin;
@@ -31,7 +29,7 @@ public class TransitionController : MonoBehaviour
     public void OnEatButton()
     {
         var inputAssets = new IAsset[] { _penguin.Penguin, _fish.Fish };
-        var identifier = new GameIdentifier((byte)GameAction.Eat);
+        var identifier = new GameIdentifier((byte)GameAction.DoEat);
 
         // Execute the EAT transition
         var successFlag = _gameEngine.Engine.Transition(

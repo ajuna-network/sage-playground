@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SageUnityLib.Test")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2f4fbae277b289ddc8ff670d398dedbdc065c4f9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+836bec60fe0786db7e95a62b812d00a630f166d0")]
 [assembly: System.Reflection.AssemblyProductAttribute("SageUnityLib.Test")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SageUnityLib.Test")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

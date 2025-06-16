@@ -2,13 +2,14 @@ using UnityEngine;
 using SageUnityLib;
 using TMPro;
 using Ajuna.SAGE.Core.Model;
+using SageUnityLib.Model;
 
 public class FishSpawner : MonoBehaviour
 {
     public ConsumableAsset Fish { get; set; }
 
     [SerializeField]
-    private GameEngine _gameEngine;
+    private GameEngineService _gameEngine;
 
     [SerializeField]
     private TMP_Text _fishHealthTxt;
