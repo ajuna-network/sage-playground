@@ -140,6 +140,8 @@ YourUnityProject/
    - `Create` spawners instantiate assets via SAGE engine.
    - `Eat` button continues to work using `DoEat`.
 
+![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/game_dev/docs/images/Screenshot%202025-06-16%20174939.png?raw=true)
+
 ---
 
 ## 🟢 Git Tutorial Checkpoints
