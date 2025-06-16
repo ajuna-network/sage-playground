@@ -429,8 +429,8 @@ dotnet test
 
 | Stage      | Commit Description                                              | Git Ref              |
 | ---------- | --------------------------------------------------------------- | -------------------- |
-| 🟢 Start   | EAT logic embedded in Unity project                             | `replace-this-start` |
-| ✅ Complete| Logic extracted into `SageUnityLib` with NUnit tests running     | `replace-this-complete` |
+| 🟢 Start   | EAT logic embedded in Unity project                             | [2f4fbae277b289ddc8ff670d398dedbdc065c4f9](https://github.com/ajuna-network/sage-playground/commit/2f4fbae277b289ddc8ff670d398dedbdc065c4f9) |
+| ✅ Complete| Logic extracted into `SageUnityLib` with NUnit tests running     | [996e9af75c62667e4578c2456daf4ec50adc2ad1](https://github.com/ajuna-network/sage-playground/commit/996e9af75c62667e4578c2456daf4ec50adc2ad1) |
 
 
 Congratulations! You now have a fully decoupled, testable game logic library ready for integration into Unity or other game engines.
