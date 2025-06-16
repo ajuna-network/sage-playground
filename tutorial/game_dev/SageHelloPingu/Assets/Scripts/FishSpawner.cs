@@ -1,6 +1,7 @@
 using UnityEngine;
 using SageUnityLib;
 using TMPro;
+using Ajuna.SAGE.Core.Model;
 
 public class FishSpawner : MonoBehaviour
 {
@@ -14,9 +15,16 @@ public class FishSpawner : MonoBehaviour
 
     void Start()
     {
-        // Create a new fish asset
-        Fish = new ConsumableAsset(_gameEngine.User.Id);
-        Debug.Log($"Spawned Fish that restores: {Fish.HealthValue} Health");
+        var ok = _gameEngine.Engine.Transition(_gameEngine.User, new GameIdentifier((byte)GameAction.CreateFish), null, out IAsset[] outAssets);
+        if (!ok)
+        { 
+            Debug.LogError("Failed to create Fish"); 
+            return; 
+        }
+
+        // Assign newly created fish asset
+        Fish = outAssets[0] as ConsumableAsset;
+        Debug.Log($"Created Fish (Value: {Fish.HealthValue}, Genesis: {Fish.Genesis})");
     }
 
     void Update()

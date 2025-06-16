@@ -2,6 +2,7 @@ using UnityEngine;
 using SageUnityLib;
 using TMPro;
 using UnityEngine.UI;
+using Ajuna.SAGE.Core.Model;
 
 public class PenguinSpawner : MonoBehaviour
 {
@@ -18,9 +19,16 @@ public class PenguinSpawner : MonoBehaviour
 
     void Start()
     {
-        // Create a new Penguin asset
-        Penguin = new PlayerAsset(_gameEngine.User.Id);
-        Debug.Log($"Spawned Penguin with Health: {Penguin.Health}");
+        var ok = _gameEngine.Engine.Transition(_gameEngine.User, new GameIdentifier((byte)GameAction.CreatePenguin), null, out IAsset[] outAssets);
+        if (!ok)
+        {
+            Debug.Log($"Failed to spawn penguin!");
+            return;
+        }
+
+        // Assign newly created penguin asset
+        Penguin = outAssets[0] as PlayerAsset;
+        Debug.Log($"Created Penguin (Health: {Penguin.Health}, Genesis: {Penguin.Genesis})");
     }
 
     void Update()

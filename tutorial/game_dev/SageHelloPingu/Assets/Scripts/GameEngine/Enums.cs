@@ -10,7 +10,9 @@ namespace SageUnityLib
     public enum GameAction : byte
     {
         None = 0,
-        Eat = 1,
+        CreatePenguin = 1,
+        CreateFish = 2,
+        Eat = 3,
     }
 
     public enum GameRuleType : byte

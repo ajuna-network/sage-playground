@@ -129,10 +129,44 @@ public class GameEngine : MonoBehaviour
     {
         var result = new List<(GameIdentifier, GameRule[], ITransitioFee?, TransitionFunction<GameRule>)>
         {
+            CreatePenguin(),
+            CreateFish(),
             EatTransition(),
         };
 
         return result;
+    }
+
+    private static (GameIdentifier, GameRule[], ITransitioFee, TransitionFunction<GameRule>) CreatePenguin()
+    {
+        var identifier = GameConfig.CreatePenguin(out GameRule[] rules, out ITransitioFee fee);
+
+        TransitionFunction<GameRule> function = (e, r, f, a, h, b, c, m) =>
+        {
+            var penguin = new PlayerAsset(e.Id, 0, b);
+
+            var result = new IAsset[] { penguin };
+
+            return result;
+        };
+
+        return (identifier, rules, fee, function);
+    }
+
+    private static (GameIdentifier, GameRule[], ITransitioFee, TransitionFunction<GameRule>) CreateFish()
+    {
+        var identifier = GameConfig.CreateFish(out GameRule[] rules, out ITransitioFee fee);
+
+        TransitionFunction<GameRule> function = (e, r, f, a, h, b, c, m) =>
+        {
+            var fish = new ConsumableAsset(e.Id, 0, b);
+
+            var result = new IAsset[] { fish };
+
+            return result;
+        };
+
+        return (identifier, rules, fee, function);
     }
 
     private static (GameIdentifier, GameRule[], ITransitioFee, TransitionFunction<GameRule>) EatTransition()
