@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35919.96 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SageUnityLib", "SageUnityLib.csproj", "{29902227-5E9D-0EDA-FFC4-EE284A43ECEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SageUnityLib.Test", "..\SageUnityLib.Test\SageUnityLib.Test.csproj", "{9F7DE926-2D24-4636-8B36-C259BE274F57}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{29902227-5E9D-0EDA-FFC4-EE284A43ECEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29902227-5E9D-0EDA-FFC4-EE284A43ECEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29902227-5E9D-0EDA-FFC4-EE284A43ECEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29902227-5E9D-0EDA-FFC4-EE284A43ECEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F7DE926-2D24-4636-8B36-C259BE274F57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F7DE926-2D24-4636-8B36-C259BE274F57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F7DE926-2D24-4636-8B36-C259BE274F57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F7DE926-2D24-4636-8B36-C259BE274F57}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8C034DD5-110E-46C3-A08E-FAADF75AA584}
+	EndGlobalSection
+EndGlobal
