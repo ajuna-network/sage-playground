@@ -152,6 +152,8 @@ public class FishSpawner : MonoBehaviour
 3. Drag **Fill & Text** to the **Fish** GameObject’s `FishSpawner` inspector slots.
 4. Press **Play**. You should see **100** for your Health and a full bar (or your chosen start value).
 
+![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/game_dev/docs/images/Screenshot%202025-06-12%20121159.png?raw=true)
+
 ---
 
 ## 🟢 Git Tutorial Checkpoints
