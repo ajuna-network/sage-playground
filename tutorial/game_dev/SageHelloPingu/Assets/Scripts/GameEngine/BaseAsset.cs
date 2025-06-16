@@ -10,6 +10,10 @@ namespace SageUnityLib
         {
         }
 
+        public BaseAsset(IAsset asset)
+            : base(asset.Id, asset.OwnerId, asset.CollectionId, asset.Score, asset.Genesis, asset.Data)
+        { }
+
         public AssetType AssetType
         {
             get => (AssetType)Data.Read<byte>(0);

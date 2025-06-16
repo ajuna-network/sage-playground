@@ -8,8 +8,11 @@ namespace SageUnityLib
             : base(ownerId, score, genesis)
         {
             AssetType = AssetType.Player;
-            Health = 100;
+            Health = 95;
         }
+
+        public PlayerAsset(IAsset asset)
+            : base(asset) { }
 
         /// <summary>
         /// Current health of the Asset.

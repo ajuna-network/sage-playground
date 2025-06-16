@@ -4,7 +4,10 @@ using TMPro;
 
 public class FishSpawner : MonoBehaviour
 {
-    private ConsumableAsset _fish;
+    public ConsumableAsset Fish { get; set; }
+
+    [SerializeField]
+    private GameEngine _gameEngine;
 
     [SerializeField]
     private TMP_Text _fishHealthTxt;
@@ -12,16 +15,30 @@ public class FishSpawner : MonoBehaviour
     void Start()
     {
         // Create a new fish asset
-        _fish = new ConsumableAsset(1); // we use for now ownerId = 1
-        Debug.Log($"Spawned Fish that restores: {_fish.HealthValue} Health");
+        Fish = new ConsumableAsset(_gameEngine.User.Id);
+        Debug.Log($"Spawned Fish that restores: {Fish.HealthValue} Health");
     }
 
     void Update()
     {
         // Update the health value text in the UI
-        if (_fish != null && _fishHealthTxt != null)
+        if (Fish != null && _fishHealthTxt != null)
         {
-            _fishHealthTxt.text = $"{_fish.HealthValue} HP";
+            _fishHealthTxt.text = $"{Fish.HealthValue} HP";
         }
     }
+
+    private void OnMouseDown()
+    {
+        Debug.Log("Fish clicked!");
+
+        // Example interaction: Consume the fish or increase health
+        if (Fish != null)
+        {
+            Debug.Log($"You clicked the fish. It gives {Fish.HealthValue} health!");
+            // Do something like apply the health or destroy the fish
+            // Destroy(gameObject);
+        }
+    }
+
 }

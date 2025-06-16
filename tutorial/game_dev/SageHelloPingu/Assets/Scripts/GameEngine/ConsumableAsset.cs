@@ -7,12 +7,15 @@ namespace SageUnityLib
         /// <summary>
         /// Constructs a Fish with a specified health value.
         /// </summary>
-        public ConsumableAsset(uint ownerId)
-            : base(ownerId)
+        public ConsumableAsset(uint ownerId, uint score = 0, uint genesis = 0)
+            : base(ownerId, score, genesis)
         {
             AssetType = AssetType.Consumable;
             HealthValue = 5;
         }
+
+        public ConsumableAsset(IAsset asset)
+            : base(asset) { }
 
         /// <summary>
         /// Health value returned on consumation of the Asset.

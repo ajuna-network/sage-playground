@@ -1,7 +1,7 @@
 using Ajuna.SAGE.Core.Model;
 namespace SageUnityLib
 {
-    public class GameIdentifier : ITransitionIdentifier
+    public struct GameIdentifier : ITransitionIdentifier
     {
         public byte TransitionType { get; set; }
         public byte TransitionSubType { get; set; }
