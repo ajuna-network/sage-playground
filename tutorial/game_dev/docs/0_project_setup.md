@@ -96,7 +96,7 @@ We recommend using a quick .NET Core class library to pull in **Ajuna.SAGE.Core*
         }
    }
    ```
-2. Attach `` to any GameObject in your active Scene.
+2. Attach `HelloSage.cs` to any GameObject in your active Scene.
 3. Press **Play**. In the Console, you should see:
    ```
    Ajuna.SAGE.Core version: 0.0.6.0

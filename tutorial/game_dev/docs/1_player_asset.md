@@ -120,7 +120,7 @@ namespace SageUnityLib
         /// Stored in Data[0].
         /// </summary>
         public AssetType AssetType
-n        {
+        {
             get => (AssetType)Data.Read<byte>(0);
             set => Data.Set<byte>(0, (byte)value);
         }
@@ -142,7 +142,7 @@ using Ajuna.SAGE.Core;
 using Ajuna.SAGE.Core.Model;
 using UnityEngine;
 
-namespace Ajuna.SAGE.Game.FullHouseFury.Model
+namespace SageUnityLib
 {
     /// <summary>
     /// Penguin Player asset with health.
@@ -174,10 +174,10 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
 ## 6️⃣ Step 6: Instantiate in Scene
 
 1. Open **Assets/Scenes/MainScene.unity** (or create a new scene).
-2. In **Hierarchy**, right‑click → **Create Empty** → rename to ``.
+2. In **Hierarchy**, right‑click → **Create Empty** → rename to `Penguin`.
 3. Add a new script component:
    - Click **Add Component** on the `Penguin` GameObject.
-   - Select **New Script** → name ``.
+   - Select **New Script** → name `PenguinSpawner.cs`.
 4. Edit **PenguinSpawner.cs**:
 
 ```csharp
@@ -186,13 +186,13 @@ using SageUnityLib;
 
 public class PenguinSpawner : MonoBehaviour
 {
-    private PlayerAsset _player;
+    private PenguinAsset _penguin;
 
     void Start()
     {
         // Create a new Penguin asset
-        _player = new PlayerAsset(1); // we use for now ownerId = 1
-        Debug.Log($"Spawned Penguin with Health: {_player.Health}");
+        _penguin = new PenguinrAsset(1); // we use for now ownerId = 1
+        Debug.Log($"Spawned Penguin with Health: {_penguin.Health}");
     }
 }
 ```
@@ -205,47 +205,54 @@ public class PenguinSpawner : MonoBehaviour
 
 1. **UI Setup**:
    - In **Hierarchy**, right‑click → **UI → Canvas**.
-   - Under the Canvas, right‑click → **UI → Text** (or **TextMeshPro**).
-   - Name it `` and position it.
-2. **Update PlayerAssset.cs** in `Assets/Scripts/`:
+     - Under the Canvas, right‑click → **UI → Text** (or **TextMeshPro**).
+     - Name it `PenguinHealthText` and position it.
+   - In **Hierarchy**, right‑click → **UI → Canvas**.
+     - Under the Canvas, right‑click → **UI → Image**
+     - Name it `PenguinImage` and position it.
+     - Import your favorite `2D Penguin Image` into the Unity Project
+       - Set the `PenguinImage`'s `Texture Type` to `Sprite (2D and UI)`
+       - Set the `PenguinImage`'s `Sprite Mode` to `Single`
+     - Drag the imported `2D Penguin Image` to the `Source Image` field of `PenguinImage`
+
+2. **Update PenguinAsset.cs** in `Assets/Scripts/`:
 
 ```csharp
 using UnityEngine;
 using UnityEngine.UI;
-using Ajuna.SAGE.Game.FullHouseFury.Model;
+using TMPro;
+using SageUnityLib;
 
 public class PenguinSpawner : MonoBehaviour
 {
-    private PlayerAsset _player;
-
+    private PenguinAsset _penguin;
+    
     [SerializeField]
-    private Image _playerAvatarImg;
-
+    private Image _penguinAvatarImg;
+    
     [SerializeField]
-    private TMP_Text _playerHealthTxt;
-
+    private TMP_Text _penguinHealthTxt;
     void Start()
     {
         // Create a new Penguin asset
-        _player = new PlayerAsset(1); // we use for now ownerId = 1
-        Debug.Log($"Spawned Penguin with Health: {_player.Health}");
-
+        _penguin = new PenguinAsset(1); // we use for now ownerId = 1
+        Debug.Log($"Spawned Penguin with Health: {_penguin.Health}");
     }
-
+    
     void Update()
     {
         // Update the health text in the UI
-        if (_player != null && _playerAvatarImg != null && _playerHealthTxt != null)
+        if (_penguin != null && _penguinAvatarImg != null && _penguinHealthTxt != null)
         {
-            // Update the player's health
-            _playerAvatarImg.fillAmount = _player.Health / 100f; // Assuming Health is between 0 and 100
-            _playerHealthTxt.text = _player.Health.ToString();
+            // Update the penguin's health
+            _penguinAvatarImg.fillAmount = _penguin.Health / 100f; // Assuming Health is between 0 and 100
+            _penguinHealthTxt.text = _penguin.Health.ToString();
         }
     }
 }
 ```
 
-3. Drag **Fill & Text** to the **Penguin** GameObject’s `PenguinSpawner` inspector slots.
+3. Drag **Image & Text** to the **Penguin** GameObject’s `PenguinSpawner` inspector slots.
 4. Press **Play**. You should see **100** for your Health and a full bar (or your chosen start value).
 
 ![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/game_dev/docs/images/Screenshot%202025-06-12%20113746.png?raw=true)
