@@ -75,6 +75,8 @@ namespace SageUnityLib
 
 > **Note:** `Utils.GenerateRandomId()` is provided by SAGE to create unique IDs.
 
+![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/game_dev/docs/images/Screenshot%202025-06-12%20094514.png?raw=true)
+
 ---
 
 ## 3️⃣ Step 3: Define AssetType Enum
@@ -195,6 +197,8 @@ public class PenguinSpawner : MonoBehaviour
 }
 ```
 
+![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/game_dev/docs/images/Screenshot%202025-06-12%20101406.png?raw=true)
+
 ---
 
 ## 7️⃣ (Optional) Step 7: Display Health in UI
@@ -243,6 +247,8 @@ public class PenguinSpawner : MonoBehaviour
 
 3. Drag **Fill & Text** to the **Penguin** GameObject’s `PenguinSpawner` inspector slots.
 4. Press **Play**. You should see **100** for your Health and a full bar (or your chosen start value).
+
+![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/game_dev/docs/images/Screenshot%202025-06-12%20113746.png?raw=true)
 
 ---
 

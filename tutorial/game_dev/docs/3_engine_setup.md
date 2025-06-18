@@ -252,6 +252,8 @@ We'll define the available actions, how to identify each transition, and validat
 3. Drag **Fill & Text** to the GameObject’s `GameEngine` inspector slots.
 4. Press **Play**. You should see **BLOCK: 1** for the actual blocknumber (or your chosen start value).
 
+![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/game_dev/docs/images/Screenshot%202025-06-12%20150057.png?raw=true)
+
 ---
 
 ## 🟢 Git Tutorial Checkpoints

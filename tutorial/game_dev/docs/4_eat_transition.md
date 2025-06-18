@@ -267,6 +267,8 @@ YourUnityProject/
    - Add a **Button** to the Canvas; in its Inspector, hook **OnClick → EatController.OnEatButton**.
    - Assign references: **GameEngine**, **Penguin** GameObject’s `PlayerAsset` component, and **Fish** GameObject’s `ConsumableAsset`.
 
+![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/game_dev/docs/images/Screenshot%202025-06-16%20135253.png?raw=true)
+
 3. Pressing the Button should lead to this console output:
    ```
    Transition succeed: Eat
@@ -283,6 +285,8 @@ YourUnityProject/
             Destroy(_fish.gameObject);
        }
    ```
+   
+![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/game_dev/docs/images/Screenshot%202025-06-16%20135405.png?raw=true)
 
 ---
 
