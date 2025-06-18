@@ -53,7 +53,9 @@ Transition: EAT
 Output‑1: Penguin (health = 100)
 ```
 
-The accompanying visual (see `docs/img/penguin_eats_fish.png`) illustrates how SAGE formalises this flow:
+![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/images/sage_visual.png?raw=true)
+
+The accompanying visual (see `tutorial/tutorial/images/sage_visual.png`) illustrates how SAGE formalises this flow:
 
 1. **Assets** are green boxes: two inputs and one output.
 2. **Transition** (EAT) is the mint‑green processor block.
