@@ -88,9 +88,9 @@ SAGE is designed to serve a wide range of audiences. Pick the journey that match
 
 | Journey                        | Audience                          | Languages & Tools             | Link                                             |
 | ------------------------------ | --------------------------------- | ----------------------------- | ------------------------------------------------ |
-| **Game Developer**             | Unity/C# authors                  | C#, Unity                     | [`/tutorial/game_dev/docs`](tutorial/game_dev/docs)      |
-| **Blockchain Developer**       | Substrate & pallet authors        | Rust, Substrate               | [`/tutorial/blockchain_dev/docs`](tutorial/blockchain_dev/docs) |
-| **Research & Analytics**       | Academics, analysts & researchers | Any (DSL, JSON, TypeScript)   | [`/docs/researcher_guide.md`](docs/researcher_guide.md)        |
+| **Game Developer**             | Unity/C# authors                  | C#, Unity                     | [`/tutorial/game_dev/docs`](game_dev/docs)      |
+| **Blockchain Developer**       | Substrate & pallet authors        | Rust, Substrate               | [`/tutorial/blockchain_dev/docs`](blockchain_dev/docs) |
+| **Research & Analytics**       | Academics, analysts & researchers | Any (DSL, JSON, TypeScript)   | [`/docs/researcher_guide.md`](researcher_guide.md)        |
 
 ### 8.1 Game Developer Journey (C# & Unity)
 
