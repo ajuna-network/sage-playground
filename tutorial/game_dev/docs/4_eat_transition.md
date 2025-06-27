@@ -65,6 +65,7 @@ YourUnityProject/
        {
            None = 0,
            IsOwnerOf = 1,
+           // Add this line
            AssetTypesAt = 2,
        }
 
@@ -72,12 +73,13 @@ YourUnityProject/
        {
            None = 0,
            Index = 1,
+           // Add this line
            Composite = 2,
        }
    }
    ```
 
-2. **GameConfig.cs** - add an `Eat` helper to produce identifier, rules, and fee:
+2. Create **GameConfig.cs** under the **Assets/Scripts** directory - add an `Eat` helper to produce identifier, rules, and fee:
 
    ```csharp
    using Ajuna.SAGE.Core.Model;
@@ -85,9 +87,9 @@ YourUnityProject/
 
    public static class GameConfig
    {
-       internal static GameIdentifier Eat(out GameRule[] rules, out ITransitionFee fee)
+       internal static GameIdentifier Eat(out GameRule[] rules, out ITransitioFee fee)
        {
-           byte playerAsset = (byte)AssetType.Player;
+           byte penguinAsset = (byte)AssetType.Player;
            byte fishAsset  = (byte)AssetType.Consumable;
 
            rules = new [] {
@@ -95,7 +97,7 @@ YourUnityProject/
                new GameRule(GameRuleType.IsOwnerOf, GameRuleOp.Index, new byte[]{ 0x00 }),
                new GameRule(GameRuleType.IsOwnerOf, GameRuleOp.Index, new byte[]{ 0x01 }),
                // Ensure types: first Player, then Consumable
-               new GameRule(GameRuleType.AssetTypesAt, GameRuleOp.Composite, new byte[]{ playerAsset, fishAsset })
+               new GameRule(GameRuleType.AssetTypesAt, GameRuleOp.Composite, new byte[]{ penguinAsset, fishAsset })
            };
 
            fee = default; // no fee for this demo
@@ -115,19 +117,19 @@ YourUnityProject/
    private static (
        GameIdentifier,
        GameRule[],
-       ITransitionFee,
+       ITransitioFee,
        TransitionFunction<GameRule>)
    EatTransition()
    {
        // Get identifier, rules, fee
-       var identifier = GameConfig.Eat(out GameRule[] rules, out ITransitionFee fee);
+       var identifier = GameConfig.Eat(out GameRule[] rules, out ITransitioFee fee);
 
        // Define the transition function
        TransitionFunction<GameRule> function = (account, ruleSet, assets, balance, payload, balanceMgr, assetMgr) =>
        {
            // Assets array: [0] = Penguin, [1] = Fish
-           var penguin = assetMgr.Get<PlayerAsset>(assets[0].Id);
-           var fish    = assetMgr.Get<ConsumableAsset>(assets[1].Id);
+           var penguin = assetMgr.Get<PenguinAsset>(assets[0].Id);
+           var fish    = assetMgr.Get<FishAsset>(assets[1].Id);
 
            // Update health (clamp 0–100)
            penguin.Health = (uint) Mathf.Clamp(
@@ -159,13 +161,13 @@ YourUnityProject/
             ...
         }
    ```
-3. Ensure that we now as we have the user that we use the correct ID on our Asset spawners and we allow access to the asset through a getter and setter:
+3. As we have the `User`, ensure that we use the correct ID on our Asset spawners and we allow access to the asset through a getter and setter:
   
    ```csharp
     public class PenguinSpawner : MonoBehaviour
     {
         ...
-        public PlayerAsset Penguin { get; set; } // make sure to replace old _player ref., with Penguin
+        public PlayerAsset Penguin { get; set; } // make sure to replace old _penguin ref., with Penguin
         ...
         [SerializeField]
         private GameEngine _gameEngine;
