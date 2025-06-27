@@ -17,11 +17,13 @@ namespace SageUnityLib
     {
         None = 0,
         IsOwnerOf = 1,
+        AssetTypesAt = 2,
     }
 
     public enum GameRuleOp : byte
     {
         None = 0,
         Index = 1,
+        Composite = 2,
     }
 }

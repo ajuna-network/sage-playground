@@ -5,28 +5,31 @@ using SageUnityLib;
 
 public class PenguinSpawner : MonoBehaviour
 {
-  private PenguinAsset _penguin;
+  public PenguinAsset Penguin { get; set; }
 
   [SerializeField]
   private Image _penguinAvatarImg;
 
   [SerializeField]
   private TMP_Text _penguinHealthTxt;
-  void Start()
+
+  [SerializeField]
+  private GameEngine _gameEngine;
+  void Awake()
   {
     // Create a new Penguin asset
-    _penguin = new PenguinAsset(1); // we use for now ownerId = 1
-    Debug.Log($"Spawned Penguin with Health: {_penguin.Health}");
+    Penguin = new PenguinAsset(_gameEngine.User.Id); // we use for now ownerId = 1
+    Debug.Log($"Spawned Penguin with Health: {Penguin.Health}");
   }
 
   void Update()
   {
     // Update the health text in the UI
-    if (_penguin != null && _penguinAvatarImg != null && _penguinHealthTxt != null)
+    if (Penguin != null && _penguinAvatarImg != null && _penguinHealthTxt != null)
     {
       // Update the penguin's health
-      _penguinAvatarImg.fillAmount = _penguin.Health / 100f; // Assuming Health is between 0 and 100
-      _penguinHealthTxt.text = _penguin.Health.ToString();
+      _penguinAvatarImg.fillAmount = Penguin.Health / 100f; // Assuming Health is between 0 and 100
+      _penguinHealthTxt.text = Penguin.Health.ToString();
     }
   }
 }

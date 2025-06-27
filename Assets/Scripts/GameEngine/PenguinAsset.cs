@@ -13,7 +13,13 @@ namespace SageUnityLib
         : base(ownerId)
     {
       AssetType = AssetType.Player;
-      Health = 100;
+      Health = (byte)initialHealth;
+    }
+
+    public PenguinAsset(Asset existingAsset) : base(existingAsset.OwnerId)
+    {
+      AssetType = AssetType.Player;
+      Health = existingAsset.Data.Read<byte>(1);
     }
 
     /// <summary>
