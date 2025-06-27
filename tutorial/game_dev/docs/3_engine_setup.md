@@ -40,7 +40,7 @@ YourUnityProject/
 
 We'll define the available actions, how to identify each transition, and validation rules.
 
-1. **Action Enum** (`HelloPinguAction`): Add to **Enums.cs**:
+1. **Action Enum** (`GameAction`): Add to **Enums.cs**:
 
    ```csharp
    namespace SageUnityLib
