@@ -6,4 +6,22 @@ namespace SageUnityLib
     Player = 1,
     Consumable = 2,
   }
+
+    public enum GameAction : byte
+    {
+        None = 0,
+        Eat = 1,
+    }
+
+   public enum GameRuleType : byte
+    {
+        None = 0,
+        IsOwnerOf = 1,
+    }
+
+    public enum GameRuleOp : byte
+    {
+        None = 0,
+        Index = 1,
+    }
 }
