@@ -191,7 +191,7 @@ public class PenguinSpawner : MonoBehaviour
     void Start()
     {
         // Create a new Penguin asset
-        _penguin = new PenguinrAsset(1); // we use for now ownerId = 1
+        _penguin = new PenguinAsset(1); // we use for now ownerId = 1
         Debug.Log($"Spawned Penguin with Health: {_penguin.Health}");
     }
 }
@@ -215,7 +215,7 @@ public class PenguinSpawner : MonoBehaviour
        - Set the `PenguinImage`'s `Sprite Mode` to `Single`
      - Drag the imported `2D Penguin Image` to the `Source Image` field of `PenguinImage`
 
-2. **Update PenguinAsset.cs** in `Assets/Scripts/`:
+2. **Update PenguinSpawner.cs** in `Assets/Scripts/`:
 
 ```csharp
 using UnityEngine;

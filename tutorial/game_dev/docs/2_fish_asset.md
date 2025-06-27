@@ -14,7 +14,7 @@ YourUnityProject/
     │   ├── GameEngine/            # Core game logic library
     │   │   ├── BaseAsset.cs
     │   │   ├── Enum.cs            # AssetType enum (Player, Consumable)
-    │   │   ├── PlayerAsset.cs     # Player asset
+    │   │   ├── PenguinAsset.cs     # Player asset
     │   │   └── FishAsset.cs       # Consumable asset
     │   ├── PenguinSpawner.cs      # Spawns and displays Penguin
     │   └── FishSpawner.cs         # Spawns and displays Fish
@@ -36,7 +36,7 @@ YourUnityProject/
 
 ## 1️⃣ Step 1: Define `FishAsset` Class
 
-1. In **Assets/Scripts/**, create **FishAsset.cs** (or under **GameEngine/**).
+1. In **Assets/Scripts/GameEngine**, create **FishAsset.cs**.
 2. Add the following code:
 
 ```csharp
@@ -94,12 +94,7 @@ using SageUnityLib;
 public class FishSpawner : MonoBehaviour
 {
     private FishAsset _fish;
-    
-    [SerializeField]
-    private Image _fishAvatarImg;
-    
-    [SerializeField]
-    private TMP_Text _fishHealthTxt;
+
     void Start()
     {
         // Create a new Penguin asset
@@ -107,34 +102,16 @@ public class FishSpawner : MonoBehaviour
         Debug.Log($"Spawned Fish that restores: {_fish.HealthValue} Health");
     }
     
-    void Update()
-    {
-        // Update the health text in the UI
-        if (_fish != null && _fishAvatarImg != null && _fishHealthTxt != null)
-        {
-            // Update the fish's health
-            _fishAvatarImg.fillAmount = _fish.HealthValue / 100f; // Assuming Health is between 0 and 100
-            _fishHealthTxt.text = _fish.HealthValue.ToString();
-        }
-    }
 }
 ```
 
 ---
 
-## 3️⃣ Step 3: Visual Differentiation (Optional)
-
-1. Add a **Sprite Renderer** or **Mesh Renderer** to the `Fish` GameObject.
-2. Assign a fish sprite or 3D model to make it visually distinct from the Penguin.
-
----
-
-## 4 (Optional) Step 7: Display Health in UI
-
+## 3️⃣ Step 3: Visual Differentiation
 1. **UI Setup**:
    - In **Hierarchy**, right‑click → **UI → Canvas**.
-   - Under the Canvas, right‑click → **UI → Text** (or **TextMeshPro**).
-   - Name it `SardineHealthText` and position it.
+      - Under the Canvas, right‑click → **UI → Text** (or **TextMeshPro**).
+      - Name it `SardineHealthText` and position it.
    - In **Hierarchy**, right‑click → **UI → Canvas**.
      - Under the Canvas, right‑click → **UI → Image**
      - Name it `SardineImage` and position it.
@@ -163,15 +140,26 @@ public class FishSpawner : MonoBehaviour
     
     void Start()
     {
-        // Create a new Fish asset
+        // Create a new Penguin asset
         _fish = new FishAsset(1); // we use for now ownerId = 1
         Debug.Log($"Spawned Fish that restores: {_fish.HealthValue} Health");
+    }
+    
+    void Update()
+    {
+        // Update the health text in the UI
+        if (_fish != null && _fishAvatarImg != null && _fishHealthTxt != null)
+        {
+            // Update the fish's health
+            _fishAvatarImg.fillAmount = _fish.HealthValue / 100f; // Assuming Health is between 0 and 100
+            _fishHealthTxt.text = _fish.HealthValue.ToString();
+        }
     }
 }
 ```
 
 3. Drag **Image & Text** to the **Fish** GameObject’s `FishSpawner` inspector slots.
-4. Press **Play**. You should see **5** for your Health (or your chosen start value).
+4. Press **Play**. You should see **5** for your `Sardine`'s Health (or your chosen start value).
 
 ![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/game_dev/docs/images/Screenshot%202025-06-12%20121159.png?raw=true)
 
