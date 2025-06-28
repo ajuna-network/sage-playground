@@ -82,70 +82,101 @@ YourUnityProject/
 2. Create **GameConfig.cs** under the **Assets/Scripts** directory - add an `Eat` helper to produce identifier, rules, and fee:
 
    ```csharp
-   using Ajuna.SAGE.Core.Model;
-   using SageUnityLib;
+    using Ajuna.SAGE.Core.Model;
+    using SageUnityLib;
 
-   public static class GameConfig
-   {
-       internal static GameIdentifier Eat(out GameRule[] rules, out ITransitioFee fee)
-       {
-           byte penguinAsset = (byte)AssetType.Player;
-           byte fishAsset  = (byte)AssetType.Consumable;
+    public static class GameConfig
+    {
+        internal static GameIdentifier Eat(out GameRule[] rules, out ITransitioFee fee)
+        {
+            byte playerAsset = (byte)AssetType.Player;
+            byte fishAsset  = (byte)AssetType.Consumable;
 
-           rules = new [] {
-               // Validate ownership of both assets
-               new GameRule(GameRuleType.IsOwnerOf, GameRuleOp.Index, new byte[]{ 0x00 }),
-               new GameRule(GameRuleType.IsOwnerOf, GameRuleOp.Index, new byte[]{ 0x01 }),
-               // Ensure types: first Player, then Consumable
-               new GameRule(GameRuleType.AssetTypesAt, GameRuleOp.Composite, new byte[]{ penguinAsset, fishAsset })
-           };
+            rules = new [] {
+                // Validate ownership of both assets
+                new GameRule(GameRuleType.IsOwnerOf, GameRuleOp.Index, new byte[]{ 0x00 }),
+                new GameRule(GameRuleType.IsOwnerOf, GameRuleOp.Index, new byte[]{ 0x01 }),
+                // Ensure types: first Player, then Consumable
+                new GameRule(GameRuleType.AssetTypesAt, GameRuleOp.Composite, new byte[]{ playerAsset, fishAsset })
+            };
 
-           fee = default; // no fee for this demo
+            fee = default; // no fee for this demo
 
-           return new GameIdentifier((byte)GameAction.Eat);
-       }
-   }
+            return new GameIdentifier((byte)GameAction.Eat);
+        }
+    }
    ```
 
 ---
 
-## 2️⃣ Step 2: Implement the Eat Transition Function
+## 2️⃣ Step 2: Additional Constructor's and Eat Transition Function
 
-1. In **GameEngine.cs**, locate the `EatTransition()` stub and replace with:
+1. Add these constructores to the **PenguinAsset.cs** and **FishAsset.cs** classes
+
+    ```csharp
+    // Add this constructor to PenguinAsset.cs
+    public PenguinAsset(Asset existingAsset) : base(existingAsset.OwnerId)
+    {
+      AssetType = AssetType.Player;
+      Health = existingAsset.Data.Read<byte>(1);
+    }
+    ```
+
+    ```csharp
+    // Add this constructor to FishAsset.cs
+    public FishAsset(Asset existingAsset) : base(existingAsset.OwnerId)
+    {
+      AssetType = AssetType.Player;
+      Health = existingAsset.Data.Read<byte>(1);
+    }
+    ```
+
+2. Update **PenguinSpawner.cs** and **FishSpawner.cs** access:
 
    ```csharp
-   private static (
-       GameIdentifier,
-       GameRule[],
-       ITransitioFee,
-       TransitionFunction<GameRule>)
-   EatTransition()
-   {
-       // Get identifier, rules, fee
-       var identifier = GameConfig.Eat(out GameRule[] rules, out ITransitioFee fee);
-
-       // Define the transition function
-       TransitionFunction<GameRule> function = (account, ruleSet, assets, balance, payload, balanceMgr, assetMgr) =>
-       {
-           // Assets array: [0] = Penguin, [1] = Fish
-           var penguin = assetMgr.Get<PenguinAsset>(assets[0].Id);
-           var fish    = assetMgr.Get<FishAsset>(assets[1].Id);
-
-           // Update health (clamp 0–100)
-           penguin.Health = (uint) Mathf.Clamp(
-               penguin.Health + fish.HealthValue,
-               0, 100
-           );
-
-           // Return ONLY the updated Penguin (Fish is consumed)
-           return new IAsset[]{ penguin };
-       };
-
-       return (identifier, rules, fee, function);
-   }
+    public PenguinAsset Penguin { get; set; }
    ```
 
-2. Also in **GameEngine.cs**, ensure that we initially create a user account:
+   ```csharp
+    public FishAsset Fish { get; set; }
+
+    [SerializeField]
+    public Image _fishAvatarImg;
+
+    [SerializeField]
+    public TMP_Text _fishHealthTxt;
+     ```
+
+3. In **GameEngine.cs**, locate the `EatTransition()` stub and replace with:
+
+   ```csharp
+
+    // Add import for `System.Linq`
+    using System.Linq;
+
+    // Add implementation for EatTransition()
+    private static (GameIdentifier, GameRule[], ITransitioFee?, TransitionFunction<GameRule>) EatTransition()
+        {
+          var identifier = GameConfig.Eat(out GameRule[] rules, out ITransitioFee fee);
+          Debug.Log($"[EatTransition] Identifier: ({identifier.TransitionType}, {identifier.TransitionSubType})");
+          TransitionFunction<GameRule> function = (e, r, f, a, h, b, c, m) =>
+          {
+            var assetsList = a.ToList();
+
+            var penguin = new PenguinAsset((Asset)assetsList[0]);
+            var fish = new FishAsset((Asset)assetsList[1]);
+
+            penguin.Health = (byte)Math.Clamp(penguin.Health + fish.HealthValue, 0, 100);
+
+            return new IAsset[] { penguin };
+          };
+
+          return (identifier, rules, fee, function);
+        }
+    ```
+
+4. Also in **GameEngine.cs**, ensure that we initially create a user account:
+
    ```csharp
     public class GameEngine : MonoBehaviour
     {
@@ -154,14 +185,25 @@ YourUnityProject/
         ...
         private void Awake()
         {
-            ...
-            // Create a user account and add some balance to it
-            User = Engine.AccountManager.Account(Engine.AccountManager.Create());
-            User.Balance.Deposit(1_000_000);
-            ...
+          BlockchainInfoProvider = new BlockchainInfoProvider(1234);
+          var builder = new EngineBuilder<GameIdentifier, GameRule>(BlockchainInfoProvider);
+          builder.SetVerifyFunction(GetVerifyFunction());
+
+          // Register all transitions
+          foreach (var (id, rules, fee, transition) in GetRulesAndTransitionSets())
+          {
+            builder.AddTransition(id, rules, fee, transition);
+          }
+
+          Engine = builder.Build(); // ✅ Engine is ready here
+
+          // Now safe to create the User
+          User = Engine.AccountManager.Account(Engine.AccountManager.Create());
+          User.Balance.Deposit(1_000_000);
         }
    ```
-3. As we have the `User`, ensure that we use the correct ID on our Asset spawners and we allow access to the asset through a getter and setter:
+
+5. As we have the `User`, ensure that we use the correct ID on our Asset spawners and we allow access to the asset through a getter and setter:
   
    ```csharp
     public class PenguinSpawner : MonoBehaviour
@@ -201,8 +243,7 @@ YourUnityProject/
         }
    ```
 
-
-4. Ensure in add the EatTransition:
+6. Ensure this is added along with the EatTransition:
 
    ```csharp
     private static IEnumerable<(GameIdentifier, GameRule[], ITransitioFee?, TransitionFunction<GameRule>)> GetRulesAndTranstionSets()
@@ -225,69 +266,87 @@ YourUnityProject/
 1. Create **TransitionController.cs**:
 
    ```csharp
-   using UnityEngine;
-   using SageUnityLib;
+    using Ajuna.SAGE.Core.Model;
+    using UnityEngine;
+    using SageUnityLib;
 
-   public class TransitionController : MonoBehaviour
-   {
-       [SerializeField]
-       private GameEngine _gameEngine;
-    
-       [SerializeField]
-       private PenguinSpawner _penguin;
+    public class TransitionController : MonoBehaviour
+    {
+      [SerializeField]
+      private GameEngine _gameEngine;
 
-       [SerializeField]
-       private FishSpawner _fish;
+      [SerializeField]
+      private PenguinSpawner _penguin;
 
-       public void OnEatButton()
-       {
-           var inputAssets = new IAsset[] { _penguin.Penguin, _fish.Fish };
-           var identifier = new GameIdentifier((byte)GameAction.Eat);
+      [SerializeField]
+      private FishSpawner _fish;
 
-           // Execute the EAT transition
-           var successFlag = _gameEngine.Engine.Transition(
-               _gameEngine.User, // User account
-               new GameIdentifier((byte)GameAction.Eat),
-               inputAssets,
-               out IAsset[] outAssets
-           );
+      public void OnEatButton()
+      {
+        var inputAssets = new IAsset[] { _penguin.Penguin, _fish.Fish };
+        var identifier = GameConfig.Eat(out _, out _);
+        Debug.Log($"[OnEatButton] Trying transition: ({identifier.TransitionType}, {identifier.TransitionSubType})");
+        // Execute the EAT transition
+        var successFlag = _gameEngine.Engine.Transition(
+            _gameEngine.User, // User account
+            new GameIdentifier((byte)GameAction.Eat),
+            inputAssets,
+            out IAsset[] outAssets
+        );
 
-           if (!successFlag)
-           {
-               Debug.LogError("Transition failed: " + (GameAction)identifier.TransitionType);
-               return;
-           }
+        if (!successFlag)
+        {
+          Debug.LogError("Transition failed: " + (GameAction)identifier.TransitionType);
+          return;
+        }
 
-           Debug.Log("Transition succeed: " + (GameAction)identifier.TransitionType);
+        Debug.Log("Transition succeed: " + (GameAction)identifier.TransitionType);
 
-       }
-   }
+      }
+    }
    ```
 
 2. **Scene Setup**:
 
-   - Add a **Button** to the Canvas; in its Inspector, hook **OnClick → EatController.OnEatButton**.
+   - Add a **Button** to the Canvas; in its Inspector, hook **OnClick → TransitionController.OnEatButton** buy dragging the TransitionController into the **OnClick** section in the inspector and hooking the **OnEatButton** function. 
    - Assign references: **GameEngine**, **Penguin** GameObject’s `PlayerAsset` component, and **Fish** GameObject’s `ConsumableAsset`.
 
 ![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/game_dev/docs/images/Screenshot%202025-06-16%20135253.png?raw=true)
 
 3. Pressing the Button should lead to this console output:
+
    ```
    Transition succeed: Eat
    ```
-   If that is done, then let's also make sure the the Penguin's health increases.
+
+   If that is done, then let's also make sure the the Penguin's health increases and that the Sardine is removed from the screen.
 
    ```csharp
-       
-       public void OnEatButton()
-       {
-            ...
-            // Handle the output assets
-            _penguin.Penguin = outAssets[0] as PlayerAsset;
-            Destroy(_fish.gameObject);
-       }
+    if (!successFlag)
+    {
+      Debug.LogError("Transition failed: " + (GameAction)identifier.TransitionType);
+      return;
+    }
+    else
+    {
+      _penguin.Penguin = outAssets[0] as PenguinAsset;
+      Destroy(_fish._fishAvatarImg.gameObject);
+      Destroy(_fish._fishHealthTxt.gameObject);
+      Destroy(_fish.gameObject); // optional: only if you want to remove the spawner
+    }
    ```
-   
+
+   Also in **PenguinAsset.cs** ensure the constructor sets health from value passed in signature:
+
+   ```csharp
+       public PenguinAsset(uint ownerId, uint initialHealth = 10)
+        : base(ownerId)
+    {
+      AssetType = AssetType.Player;
+      Health = (byte)initialHealth;
+    }
+    ```
+
 ![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/game_dev/docs/images/Screenshot%202025-06-16%20135405.png?raw=true)
 
 ---
@@ -307,4 +366,3 @@ YourUnityProject/
 | ✅ Complete | EAT transition implemented & visually tested  | [71f77320f70805d9ceaa8c0f22bde727b51e73de](https://github.com/ajuna-network/sage-playground/commit/71f77320f70805d9ceaa8c0f22bde727b51e73de) |
 
 Congratulations! You've implemented the **EAT** transition, leveraging SAGE to validate, update asset state, and manage scene objects. Next: extend with animations and integrate backend persistence.
-
