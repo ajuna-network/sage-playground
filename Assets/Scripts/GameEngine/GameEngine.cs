@@ -17,7 +17,7 @@ namespace SageUnityLib
     public Engine<GameIdentifier, GameRule> Engine { get; private set; }
 
     public IAccount User { get; private set; }
-    
+
     private void Awake()
     {
       BlockchainInfoProvider = new BlockchainInfoProvider(1234);
@@ -101,9 +101,52 @@ namespace SageUnityLib
     {
       var result = new List<(GameIdentifier, GameRule[], ITransitioFee?, TransitionFunction<GameRule>)>
     {
+        CreatePenguin(),
+        CreateFish(),
         EatTransition(),
     };
       return result;
+    }
+
+    private static (
+      GameIdentifier,
+      GameRule[],
+      ITransitioFee,
+      TransitionFunction<GameRule>)
+      CreatePenguin()
+    {
+      var id = GameConfig.CreatePenguin(out GameRule[] rules, out ITransitioFee fee);
+      TransitionFunction<GameRule> fn = (account, ruleSet, assets, balance, payload, bm, am, mm) =>
+      {
+        // 'account' holds creator info, 'bm.CurrentBlockNumber' as genesis
+        var penguin = new PenguinAsset(
+          account.Id,                 // ownerId from IAccount
+          initialHealth: 10,           // default health
+          genesis: bm
+          );
+        return new IAsset[] { penguin };
+      };
+      return (id, rules, fee, fn);
+    }
+
+    private static (
+      GameIdentifier,
+      GameRule[],
+      ITransitioFee,
+      TransitionFunction<GameRule>)
+      CreateFish()
+    {
+      var id = GameConfig.CreateFish(out GameRule[] rules, out ITransitioFee fee);
+      TransitionFunction<GameRule> fn = (account, ruleSet, assets, balance, payload, bm, am, mm) =>
+      {
+        var fish = new FishAsset(
+          account.Id,
+          healthValue: 5,
+          genesis: bm
+          );
+        return new IAsset[] { fish };
+      };
+      return (id, rules, fee, fn);
     }
 
     /// <summary>

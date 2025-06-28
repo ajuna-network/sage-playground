@@ -3,6 +3,19 @@ using SageUnityLib;
 
 public static class GameConfig
 {
+    internal static GameIdentifier CreatePenguin(out GameRule[] rules, out ITransitioFee fee)
+    {
+        rules = new GameRule[] { };
+        fee   = default;
+        return new GameIdentifier((byte)GameAction.CreatePenguin);
+    }
+
+    internal static GameIdentifier CreateFish(out GameRule[] rules, out ITransitioFee fee)
+    {
+        rules = new GameRule[] { };
+        fee   = default;
+        return new GameIdentifier((byte)GameAction.CreateFish);
+    }
     internal static GameIdentifier Eat(out GameRule[] rules, out ITransitioFee fee)
     {
         byte playerAsset = (byte)AssetType.Player;

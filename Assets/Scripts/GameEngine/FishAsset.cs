@@ -11,11 +11,12 @@ namespace SageUnityLib
     /// <summary>
     /// Constructs a Fish with a specified health value.
     /// </summary>
-    public FishAsset(uint ownerId, uint healthValue = 5)
-        : base(ownerId)
+    public FishAsset(uint ownerId, uint? healthValue = null, uint genesis = 0)
+       : base(ownerId)
     {
       AssetType = AssetType.Consumable;
-      HealthValue = 5;
+      HealthValue = (byte)(healthValue ?? 5);
+      GenesisBlock = genesis;
     }
 
     /// <summary>
@@ -25,6 +26,7 @@ namespace SageUnityLib
     {
       AssetType = AssetType.Consumable;
       HealthValue = existingAsset.Data.Read<byte>(1);
+      GenesisBlock = existingAsset.Data.Read<uint>(2);
     }
 
     /// <summary>
@@ -35,6 +37,15 @@ namespace SageUnityLib
     {
       get => Data.Read<byte>(1);
       set => Data.Set(1, value);
+    }
+
+    /// <summary>
+    /// Genesis block number stored at index 2.
+    /// </summary>
+    public uint GenesisBlock
+    {
+      get => Data.Read<uint>(2);
+      set => Data.Set<uint>(2, value);
     }
   }
 }

@@ -7,11 +7,13 @@ namespace SageUnityLib
     Consumable = 2,
   }
 
-    public enum GameAction : byte
-    {
-        None = 0,
-        Eat = 1,
-    }
+   public enum GameAction : byte
+   {
+       None           = 0,
+       CreatePenguin  = 1,
+       CreateFish     = 2,
+       Eat            = 3,  // moved from 1 to 3
+   }
 
    public enum GameRuleType : byte
     {

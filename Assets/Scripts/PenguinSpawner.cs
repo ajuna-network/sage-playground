@@ -1,3 +1,4 @@
+using Ajuna.SAGE.Core.Model;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -18,8 +19,23 @@ public class PenguinSpawner : MonoBehaviour
   void Awake()
   {
     // Create a new Penguin asset
-    Penguin = new PenguinAsset(_gameEngine.User.Id); // we use for now ownerId = 1
-    Debug.Log($"Spawned Penguin with Health: {Penguin.Health}");
+    // Penguin = new PenguinAsset(_gameEngine.User.Id); // we use for now ownerId = 1
+    // Debug.Log($"Spawned Penguin with Health: {Penguin.Health}");
+  }
+  
+  void Start()
+  {
+    // Execute CREATE transition
+    bool ok = _gameEngine.Engine.Transition(
+      _gameEngine.User,
+      new GameIdentifier((byte)GameAction.CreatePenguin),
+      null,
+      out IAsset[] outAssets
+    );
+    if (!ok) { Debug.LogError("Failed to create Penguin"); return; }
+
+    Penguin = outAssets[0] as PenguinAsset;
+    Debug.Log($"Created Penguin (Health: {Penguin.Health}, Genesis: {Penguin.Genesis})");
   }
 
   void Update()

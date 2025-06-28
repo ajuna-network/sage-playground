@@ -9,17 +9,19 @@ namespace SageUnityLib
   /// </summary>
   public class PenguinAsset : BaseAsset
   {
-    public PenguinAsset(uint ownerId, uint initialHealth = 10)
+    public PenguinAsset(uint ownerId, uint? initialHealth = null, uint genesis = 0)
         : base(ownerId)
     {
       AssetType = AssetType.Player;
-      Health = (byte)initialHealth;
+      Health = (byte)(initialHealth ?? 10); // If null, use 10
+      GenesisBlock = genesis;
     }
 
     public PenguinAsset(Asset existingAsset) : base(existingAsset.OwnerId)
     {
       AssetType = AssetType.Player;
       Health = existingAsset.Data.Read<byte>(1);
+      GenesisBlock = existingAsset.Data.Read<uint>(2);
     }
 
     /// <summary>
@@ -30,6 +32,15 @@ namespace SageUnityLib
     {
       get => Data.Read<byte>(1);
       set => Data.Set<byte>(1, value);
+    }
+
+    /// <summary>
+    /// Genesis block number stored at index 2.
+    /// </summary>
+    public uint GenesisBlock
+    {
+      get => Data.Read<uint>(2);
+      set => Data.Set<uint>(2, value);
     }
   }
 }

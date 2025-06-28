@@ -1,3 +1,4 @@
+using Ajuna.SAGE.Core.Model;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -19,8 +20,22 @@ public class FishSpawner : MonoBehaviour
   void Awake()
   {
     // Create a new Penguin asset
-    Fish = new FishAsset(_gameEngine.User.Id);
-    Debug.Log($"Spawned Fish that restores: {Fish.HealthValue} Health");
+    // Fish = new FishAsset(_gameEngine.User.Id);
+    // Debug.Log($"Spawned Fish that restores: {Fish.HealthValue} Health");
+  }
+
+	void Start()
+	{
+  	  bool ok = _gameEngine.Engine.Transition(
+  	      _gameEngine.User,
+  	      new GameIdentifier((byte)GameAction.CreateFish),
+  	      null,
+  	      out IAsset[] outAssets
+ 	   );
+ 	   if (!ok) { Debug.LogError("Failed to create Fish"); return; }
+
+ 	   Fish = outAssets[0] as FishAsset;
+ 	   Debug.Log($"Created Fish (Value: {Fish.HealthValue}, Genesis: {Fish.Genesis})");
   }
 
   void Update()
