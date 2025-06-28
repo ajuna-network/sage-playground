@@ -1,7 +1,7 @@
 using Ajuna.SAGE.Core.Model;
 using System;
 
-namespace SageUnityLib
+namespace SageUnityLib.Model
 {
     public struct GameRule : ITransitionRule
     {
