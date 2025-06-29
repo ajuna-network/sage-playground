@@ -1,11 +1,12 @@
 using Ajuna.SAGE.Core.Model;
 using UnityEngine;
 using SageUnityLib;
+using SageUnityLib.Model;
 
 public class TransitionController : MonoBehaviour
 {
   [SerializeField]
-  private GameEngine _gameEngine;
+  private GameEngineService _gameEngine;
 
   [SerializeField]
   private PenguinSpawner _penguin;

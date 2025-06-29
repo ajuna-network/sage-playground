@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using SageUnityLib;
+using SageUnityLib.Model;
 
 public class PenguinSpawner : MonoBehaviour
 {
@@ -15,7 +16,7 @@ public class PenguinSpawner : MonoBehaviour
   private TMP_Text _penguinHealthTxt;
 
   [SerializeField]
-  private GameEngine _gameEngine;
+  private GameEngineService _gameEngine;  
   void Awake()
   {
     // Create a new Penguin asset

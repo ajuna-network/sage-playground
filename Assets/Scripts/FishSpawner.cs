@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using SageUnityLib;
+using SageUnityLib.Model;
+
 
 public class FishSpawner : MonoBehaviour
 {
@@ -15,7 +17,7 @@ public class FishSpawner : MonoBehaviour
   public TMP_Text _fishHealthTxt;
 
   [SerializeField]
-  private GameEngine _gameEngine;
+  private GameEngineService _gameEngine;
 
   void Awake()
   {
