@@ -263,8 +263,8 @@ public class PenguinSpawner : MonoBehaviour
 
 | Stage      | Commit Description                  | Git Ref                 |
 | ---------- | ----------------------------------- | ----------------------- |
-| 🟢 Start   | Before Penguin asset is added       | [22ddcd08415cedc40543959314dae77c0dec7844](https://github.com/ajuna-network/sage-playground/commit/22ddcd08415cedc40543959314dae77c0dec7844)    |
-| ✅ Complete | Penguin asset created and displayed | [be2b6a861210ce86cf8a7749e30c14d8c709a08a](https://github.com/ajuna-network/sage-playground/commit/be2b6a861210ce86cf8a7749e30c14d8c709a08a) |
+| 🟢 Start   | SAGE.dll integrated, project compiles      | [0915430547bde0591555f5f672ec7f708aec98d2](https://github.com/ajuna-network/sage-playground/commit/0915430547bde0591555f5f672ec7f708aec98d2)    |
+| ✅ Complete | Penguin asset created and displayed | [30b56f4a993175677f09578e36712dd39bba918b](https://github.com/ajuna-network/sage-playground/commit/30b56f4a993175677f09578e36712dd39bba918b) |
 
 Congratulations! You’ve defined a SAGE-backed **Player** asset in Unity and displayed its health. Next up: create the **Fish** consumable, define the **EAT** transition, and hook it into your scene!
 

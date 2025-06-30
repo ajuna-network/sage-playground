@@ -362,7 +362,7 @@ YourUnityProject/
 
 | Stage      | Commit Description                            | Git Ref                 |
 | ---------- | --------------------------------------------- | ----------------------- |
-| 🟢 Start   | Engine foundation + assets in scene, no logic | [ba618197652c2bdcf350c371c634b0cca1ac564a](https://github.com/ajuna-network/sage-playground/commit/ba618197652c2bdcf350c371c634b0cca1ac564a) |
-| ✅ Complete | EAT transition implemented & visually tested  | [71f77320f70805d9ceaa8c0f22bde727b51e73de](https://github.com/ajuna-network/sage-playground/commit/71f77320f70805d9ceaa8c0f22bde727b51e73de) |
+| 🟢 Start   | Core engine implemented and wired | [fb92aa199b990fde3fa67f45959f79e85184a868](https://github.com/ajuna-network/sage-playground/commit/fb92aa199b990fde3fa67f45959f79e85184a868) |
+| ✅ Complete | EAT transition implemented & visually tested  | [71f77320f70805d9ceaa8c0f22bde727b51e73de](https://github.com/ajuna-network/sage-playground/commit/bc183dadf0d4b34d5f1b355bf4d16fec66ae3b59) |
 
 Congratulations! You've implemented the **EAT** transition, leveraging SAGE to validate, update asset state, and manage scene objects. Next: extend with animations and integrate backend persistence.

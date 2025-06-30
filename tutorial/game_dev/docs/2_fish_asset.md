@@ -169,8 +169,8 @@ public class FishSpawner : MonoBehaviour
 
 | Stage      | Commit Description                     | Git Ref                 |
 | ---------- | -------------------------------------- | ----------------------- |
-| 🟢 Start   | Before Fish asset is added             | [ff5c0831399646de87f813ad0f226fd195a88715](https://github.com/ajuna-network/sage-playground/commit/ff5c0831399646de87f813ad0f226fd195a88715) |
-| ✅ Complete | Fish asset created and placed in scene | [a656f6633f5e25f53f4140e2687a0bfd7d748678](https://github.com/ajuna-network/sage-playground/commit/a656f6633f5e25f53f4140e2687a0bfd7d748678) |
+| 🟢 Start   | Penguin asset created and displayed          | [30b56f4a993175677f09578e36712dd39bba918b](https://github.com/ajuna-network/sage-playground/commit/30b56f4a993175677f09578e36712dd39bba918b) |
+| ✅ Complete | Fish asset created and placed in scene | [a656f6633f5e25f53f4140e2687a0bfd7d748678](https://github.com/ajuna-network/sage-playground/commit/d174b5103b270f8434bb06583bd4f4824f829aef) |
 
 > Use:
 >

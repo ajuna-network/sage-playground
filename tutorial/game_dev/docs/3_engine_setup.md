@@ -274,8 +274,8 @@ We'll define the available actions, how to identify each transition, and validat
 
 | Stage      | Commit Description                | Git Ref                 |
 | ---------- | --------------------------------- | ----------------------- |
-| 🟢 Start   | Before engine foundation is added | [c1337867d0f8ec98c7e138f5d6056f40247d8aa7](https://github.com/ajuna-network/sage-playground/commit/c1337867d0f8ec98c7e138f5d6056f40247d8aa7)    |
-| ✅ Complete | Core engine implemented and wired | [17d7281eb0ea36b03c6cb00192e9d49f47b89b20](https://github.com/ajuna-network/sage-playground/commit/17d7281eb0ea36b03c6cb00192e9d49f47b89b20) |
+| 🟢 Start   | Fish asset created and placed in scene | [d174b5103b270f8434bb06583bd4f4824f829aef](https://github.com/ajuna-network/sage-playground/commit/d174b5103b270f8434bb06583bd4f4824f829aef)    |
+| ✅ Complete | Core engine implemented and wired | [fb92aa199b990fde3fa67f45959f79e85184a868](https://github.com/ajuna-network/sage-playground/commit/fb92aa199b990fde3fa67f45959f79e85184a868) |
 
 Congratulations! You now have a solid engine setup to power asset registration and transition execution. Next: implement the **EAT** transition logic and integrate it into your scene.
 

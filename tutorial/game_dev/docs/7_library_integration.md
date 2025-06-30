@@ -254,7 +254,7 @@ YourUnityProject/
 
 | Stage      | Commit Description                                        | Git Ref                 |
 | ---------- | --------------------------------------------------------- | ----------------------- |
-| 🟢 Start   | Game logic still inside Unity (GameEngine folder present) | [836bec60fe0786db7e95a62b812d00a630f166d0](https://github.com/ajuna-network/sage-playground/commit/836bec60fe0786db7e95a62b812d00a630f166d0) |
-| ✅ Complete | Logic moved to SageUnityLib.dll, Unity scripts updated    | [5e0edbd75eb6930b6fd4e259743a381b565193de](https://github.com/ajuna-network/sage-playground/commit/5e0edbd75eb6930b6fd4e259743a381b565193de) |
+| 🟢 Start   | Logic extracted into `SageUnityLib` with NUnit tests running | [e831f70a396659ee9c5de4ee085d762fae4d997e](https://github.com/ajuna-network/sage-playground/commit/e831f70a396659ee9c5de4ee085d762fae4d997e) |
+| ✅ Complete | Logic moved to SageUnityLib.dll, Unity scripts updated    | [5e0edbd75eb6930b6fd4e259743a381b565193de](https://github.com/ajuna-network/sage-playground/commit/bd00ec0cc475fafaffcff87e7139daa23c26515e) |
 
 Congratulations! Your Unity project now leverages the external **SageUnityLib** for all game logic, keeping the scene clean and testable.
