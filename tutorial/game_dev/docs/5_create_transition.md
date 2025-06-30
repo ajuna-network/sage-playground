@@ -41,123 +41,187 @@ YourUnityProject/
 
 ## 1️⃣ Step 1: Update `GameAction` Enum
 
-In **GameEngine/Enums.cs**, modify `GameAction` to include creation actions:
+1. In **GameEngine/Enums.cs**, modify `GameAction` to include creation actions:
 
-```csharp
-namespace SageUnityLib
-{
-    public enum GameAction : byte
+    ```csharp
+    namespace SageUnityLib
     {
-        None           = 0,
-        CreatePenguin  = 1,
-        CreateFish     = 2,
-        Eat            = 3,  // moved from 1 to 3
+        public enum GameAction : byte
+        {
+            None           = 0,
+            CreatePenguin  = 1,
+            CreateFish     = 2,
+            Eat            = 3,  // moved from 1 to 3
+        }
     }
-}
-```
+    ```
 
 ---
 
 ## 2️⃣ Step 2: Add CREATE Identifiers to `GameConfig`
 
-In **GameEngine/GameConfig.cs**, add two static helpers:
+ 1. In **GameEngine/GameConfig.cs**, add two static helpers:
 
-```csharp
-using Ajuna.SAGE.Core.Model;
-using SageUnityLib;
+    ```csharp
+    using Ajuna.SAGE.Core.Model;
+    using SageUnityLib;
 
-public static class GameConfig
-{
-    internal static GameIdentifier CreatePenguin(out GameRule[] rules, out ITransitionFee fee)
+    public static class GameConfig
     {
-        rules = new GameRule[] { };
-        fee   = default;
-        return new GameIdentifier((byte)GameAction.CreatePenguin);
-    }
+        internal static GameIdentifier CreatePenguin(out GameRule[] rules, out ITransitionFee fee)
+        {
+            rules = new GameRule[] { };
+            fee   = default;
+            return new GameIdentifier((byte)GameAction.CreatePenguin);
+        }
 
-    internal static GameIdentifier CreateFish(out GameRule[] rules, out ITransitionFee fee)
-    {
-        rules = new GameRule[] { };
-        fee   = default;
-        return new GameIdentifier((byte)GameAction.CreateFish);
-    }
+        internal static GameIdentifier CreateFish(out GameRule[] rules, out ITransitionFee fee)
+        {
+            rules = new GameRule[] { };
+            fee   = default;
+            return new GameIdentifier((byte)GameAction.CreateFish);
+        }
 
-    // Existing Eat helper remains here...
-}
-```
+        // Existing Eat helper remains here...
+    }
+    ```
 
 ---
 
 ## 3️⃣ Step 3: Implement CREATE Transitions in `GameEngine`
 
-In **GameEngine/GameEngine.cs**, define two new transition functions alongside `EatTransition()`:
+ 1. In **GameEngine/GameEngine.cs**, define two new transition functions alongside `EatTransition()`:
 
-```csharp
-private static (
-    GameIdentifier,
-    GameRule[],
-    ITransitionFee,
-    TransitionFunction<GameRule>)
-CreatePenguin()
-{
-    var id = GameConfig.CreatePenguin(out GameRule[] rules, out ITransitionFee fee);
-    TransitionFunction<GameRule> fn = (account, ruleSet, assets, balance, payload, bm, am) =>
-    {
-        // 'account' holds creator info, 'bm.CurrentBlockNumber' as genesis
-        var penguin = new PlayerAsset(
-            account.Id,                 // ownerId from IAccount
-            initialHealth: 0,           // default health
-            genesis: bm.CurrentBlockNumber  // block number
-        );
-        return new IAsset[]{ penguin };
-    };
-    return (id, rules, fee, fn);
-}
+    ```csharp
+    private static (
+          GameIdentifier,
+          GameRule[],
+          ITransitioFee,
+          TransitionFunction<GameRule>)
+          CreatePenguin()
+        {
+          var id = GameConfig.CreatePenguin(out GameRule[] rules, out ITransitioFee fee);
+          TransitionFunction<GameRule> fn = (account, ruleSet, assets, balance, payload, bm, am, mm) =>
+          {
+            // 'account' holds creator info, 'bm' as genesis
+            var penguin = new PenguinAsset(
+              account.Id,                 // ownerId from IAccount
+              initialHealth: 10,           // default health
+              genesis: bm
+              );
+            return new IAsset[] { penguin };
+          };
+          return (id, rules, fee, fn);
+        }
 
-private static (
-    GameIdentifier,
-    GameRule[],
-    ITransitionFee,
-    TransitionFunction<GameRule>)
-CreateFish()
-{
-    var id = GameConfig.CreateFish(out GameRule[] rules, out ITransitionFee fee);
-    TransitionFunction<GameRule> fn = (account, ruleSet, assets, balance, payload, bm, am) =>
-    {
-        var fish = new ConsumableAsset(
-            account.Id,
-            healthValue: 0,
-            genesis: bm.CurrentBlockNumber
-        );
-        return new IAsset[]{ fish };
-    };
-    return (id, rules, fee, fn);
-}
-```
+        private static (
+          GameIdentifier,
+          GameRule[],
+          ITransitioFee,
+          TransitionFunction<GameRule>)
+          CreateFish()
+        {
+          var id = GameConfig.CreateFish(out GameRule[] rules, out ITransitioFee fee);
+          TransitionFunction<GameRule> fn = (account, ruleSet, assets, balance, payload, bm, am, mm) =>
+          {
+            var fish = new FishAsset(
+              account.Id,
+              healthValue: 5,
+              genesis: bm
+              );
+            return new IAsset[] { fish };
+          };
+          return (id, rules, fee, fn);
+        }
+    ```
 
-Then update your registration in `Awake()` / `GetRulesAndTransitionSets()`:
+ 2. Then update your registration in `GetRulesAndTransitionSets()`:
 
-```csharp
-var transitions = new List<(GameIdentifier, GameRule[], ITransitionFee?, TransitionFunction<GameRule>)>
-{
-    CreatePenguin(),
-    CreateFish(),
-    EatTransition(),
-};
-builder.AddTransitions(transitions);
-```
+    ```csharp
+        var result = new List<(GameIdentifier, GameRule[], ITransitioFee?, TransitionFunction<GameRule>)>
+        {
+            CreatePenguin(),
+            CreateFish(),
+            EatTransition(),
+        };
+    ```
 
 *(Or if using **`foreach`**, include these calls before **`EatTransition()`**.)*
 
 ---
 
-## 4️⃣ Step 4: Refactor Spawners to Use CREATE
+## 4️⃣ Step 4: Refactor Assets to for use with CREATE
+
+ 1. Update the PenguinAsset constructor in **PenguinAsset.cs** and add GenesisBlock:
+
+    ```csharp
+        public PenguinAsset(uint ownerId, uint? initialHealth = null, uint genesis = 0)
+            : base(ownerId)
+        {
+          AssetType = AssetType.Player;
+          Health = (byte)(initialHealth ?? 10); // If null, use 10
+          GenesisBlock = genesis;
+        }
+
+        public PenguinAsset(Asset existingAsset) : base(existingAsset.OwnerId)
+        {
+          AssetType = AssetType.Player;
+          Health = existingAsset.Data.Read<byte>(1);
+          GenesisBlock = existingAsset.Data.Read<uint>(2);
+        }
+
+        /// <summary>
+        /// Genesis block number stored at index 2.
+        /// </summary>
+        public uint GenesisBlock
+        {
+          get => Data.Read<uint>(2);
+          set => Data.Set<uint>(2, value);
+        }
+
+    ```
+
+ 2. Update the FishAsset constructor in **FishAsset.cs** and add GenesisBlock:
+
+    ```csharp
+      public FishAsset(uint ownerId, uint? healthValue = null, uint genesis = 0)
+          : base(ownerId)
+        {
+          AssetType = AssetType.Consumable;
+          HealthValue = (byte)(healthValue ?? 5);
+          GenesisBlock = genesis;
+        }
+
+        public FishAsset(Asset existingAsset) : base(existingAsset.OwnerId)
+        {
+          AssetType = AssetType.Consumable;
+          HealthValue = existingAsset.Data.Read<byte>(1);
+          GenesisBlock = existingAsset.Data.Read<uint>(2);
+        }
+
+        /// <summary>
+        /// Genesis block number stored at index 2.
+        /// </summary>
+        public uint GenesisBlock
+        {
+          get => Data.Read<uint>(2);
+          set => Data.Set<uint>(2, value);
+        }
+    ```
+
+---
+
+## 5️⃣ Step 5: Refactor Spawners to Use CREATE
 
 ### PenguinSpawner.cs
 
 Replace manual `new PenguinAsset(...)` with:
 
 ```csharp
+// Add import for Ajuna.SAGE.Core.Model
+using Ajuna.SAGE.Core.Model;
+
+// Replace Awake() method with this:
 void Start()
 {
     // Execute CREATE transition
@@ -179,6 +243,10 @@ void Start()
 Similarly:
 
 ```csharp
+// Add import for Ajuna.SAGE.Core.Model
+using Ajuna.SAGE.Core.Model;
+
+// Replace Awake() method with this:
 void Start()
 {
     bool ok = _gameEngine.Engine.Transition(
@@ -202,8 +270,7 @@ Now all asset instantiation flows through the SAGE engine, guaranteeing consiste
 
 | Stage      | Commit Description                                  | Git Ref                 |
 | ---------- | --------------------------------------------------- | ----------------------- |
-| 🟢 Start   | Spawners manually `new`-ing assets                  | [423a965856938e58e4584c2878c1213f3b168b31](https://github.com/ajuna-network/sage-playground/commit/423a965856938e58e4584c2878c1213f3b168b31)    |
-| ✅ Complete | CREATE transitions implemented; spawners use engine | [1d819b535ce5e2d4272db14b468a669758851e4c](https://github.com/ajuna-network/sage-playground/commit/1d819b535ce5e2d4272db14b468a669758851e4c) |
+| 🟢 Start   | EAT transition implemented & visually tested                 | [bc183dadf0d4b34d5f1b355bf4d16fec66ae3b59](https://github.com/ajuna-network/sage-playground/commit/bc183dadf0d4b34d5f1b355bf4d16fec66ae3b59)    |
+| ✅ Complete | CREATE transitions implemented; spawners use engine | [17d057d11cd47454f2caaab84e8ab95e55a27a4d](https://github.com/ajuna-network/sage-playground/commit/17d057d11cd47454f2caaab84e8ab95e55a27a4d) |
 
 Congratulations! You’ve enforced proper asset creation via SAGE `CREATE` transitions. Next: integrate persistent backend or mock as needed for demo/testing.
-

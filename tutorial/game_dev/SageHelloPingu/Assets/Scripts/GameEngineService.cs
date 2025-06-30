@@ -3,11 +3,12 @@ using Ajuna.SAGE.Core.Model;
 using SageUnityLib;
 using TMPro;
 using UnityEngine;
+using SageUnityLib.Model;
 
 public class GameEngineService : MonoBehaviour
 {
     public IBlockchainInfoProvider BlockchainInfoProvider { get; private set; }
-    
+ 
     public Engine<GameIdentifier, GameRule> Engine { get; private set; }
 
     public IAccount User { get; private set; }

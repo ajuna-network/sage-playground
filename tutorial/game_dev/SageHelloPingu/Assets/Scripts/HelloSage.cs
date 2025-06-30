@@ -10,5 +10,4 @@ public class HelloSage : MonoBehaviour
         Version sageVersion = sageCoreAssembly.GetName().Version;
         Debug.Log($"Ajuna.SAGE.Core version: {sageVersion}");
     }
-
 }

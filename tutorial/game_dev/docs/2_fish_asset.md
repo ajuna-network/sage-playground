@@ -14,8 +14,8 @@ YourUnityProject/
     │   ├── GameEngine/            # Core game logic library
     │   │   ├── BaseAsset.cs
     │   │   ├── Enum.cs            # AssetType enum (Player, Consumable)
-    │   │   ├── PlayerAsset.cs     # Player asset
-    │   │   └── ConsumableAsset.cs # Consumable asset
+    │   │   ├── PenguinAsset.cs     # Player asset
+    │   │   └── FishAsset.cs       # Consumable asset
     │   ├── PenguinSpawner.cs      # Spawns and displays Penguin
     │   └── FishSpawner.cs         # Spawns and displays Fish
     ├── Plugins/                   # Ajuna.SAGE.Core DLLs
@@ -36,7 +36,7 @@ YourUnityProject/
 
 ## 1️⃣ Step 1: Define `FishAsset` Class
 
-1. In **Assets/Scripts/**, create **ConsumableAsset.cs** (or under **GameEngine/**).
+1. In **Assets/Scripts/GameEngine**, create **FishAsset.cs**.
 2. Add the following code:
 
 ```csharp
@@ -48,7 +48,7 @@ namespace SageUnityLib
     /// <summary>
     /// Fish consumable asset that restores health.
     /// </summary>
-    public class ConsumableAsset : BaseAsset
+    public class FishAsset : BaseAsset
     {
         /// <summary>
         /// Constructs a Fish with a specified health value.
@@ -80,79 +80,88 @@ namespace SageUnityLib
 ## 2️⃣ Step 2: Spawn Fish in the Scene
 
 1. Open **MainScene.unity** (or your working scene).
-2. In the **Hierarchy**, create an Empty GameObject and name it ``.
-3. Add a new script component:
-   - Click **Add Component** → **New Script** → name ``.
+2. In the **Hierarchy**, create an `Empty GameObject` and name it `Sardine`.
+3. Add a new Script component to the newly created `Sardine` GameObject:
+   - Click **Add Component** → **New Script** → name `FishSpawner`.
 4. Edit **FishSpawner.cs**:
 
 ```csharp
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 using SageUnityLib;
 
 public class FishSpawner : MonoBehaviour
 {
-    private ConsumableAsset _fish;
+    private FishAsset _fish;
 
     void Start()
     {
         // Create a new Penguin asset
-        _fish = new ConsumableAsset(1); // we use for now ownerId = 1
+        _fish = new FishAsset(1); // we use for now ownerId = 1
         Debug.Log($"Spawned Fish that restores: {_fish.HealthValue} Health");
     }
+    
 }
 ```
 
 ---
 
-## 3️⃣ Step 3: Visual Differentiation (Optional)
-
-1. Add a **Sprite Renderer** or **Mesh Renderer** to the `Fish` GameObject.
-2. Assign a fish sprite or 3D model to make it visually distinct from the Penguin.
-
----
-
-## 4 (Optional) Step 7: Display Health in UI
-
+## 3️⃣ Step 3: Visual Differentiation
 1. **UI Setup**:
    - In **Hierarchy**, right‑click → **UI → Canvas**.
-   - Under the Canvas, right‑click → **UI → Text** (or **TextMeshPro**).
-   - Name it `` and position it.
+      - Under the Canvas, right‑click → **UI → Text** (or **TextMeshPro**).
+      - Name it `SardineHealthText` and position it.
+   - In **Hierarchy**, right‑click → **UI → Canvas**.
+     - Under the Canvas, right‑click → **UI → Image**
+     - Name it `SardineImage` and position it.
+     - Import your favorite `2D Sardine Image` into the Unity Project
+        - Set the `SardineImage`'s `Texture Type` to `Sprite (2D and UI)`
+        - Set the `SardineImage`'s `Sprite Mode` to `Single`
+     - Drag the imported `2D Sardine Image` to the `Source Image` field of `SardineImage`
+
 2. **Update FishSpawner.cs** in `Assets/Scripts/`:
 
 ```csharp
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using SageUnityLib;
 
 public class FishSpawner : MonoBehaviour
 {
-    private ConsumableAsset _fish;
-
+    private FishAsset _fish;
+    
+    [SerializeField]
+    private Image _fishAvatarImg;
+    
     [SerializeField]
     private TMP_Text _fishHealthTxt;
-
+    
     void Start()
     {
-        // Create a new fish asset
-        _fish = new ConsumableAsset(1); // we use for now ownerId = 1
+        // Create a new Penguin asset
+        _fish = new FishAsset(1); // we use for now ownerId = 1
         Debug.Log($"Spawned Fish that restores: {_fish.HealthValue} Health");
     }
-
+    
     void Update()
     {
-        // Update the health value text in the UI
-        if (_fish != null && _fishHealthTxt != null)
+        // Update the health text in the UI
+        if (_fish != null && _fishAvatarImg != null && _fishHealthTxt != null)
         {
-            _fishHealthTxt.text = $"{_fish.HealthValue} HP";
+            // Update the fish's health
+            _fishAvatarImg.fillAmount = _fish.HealthValue / 100f; // Assuming Health is between 0 and 100
+            _fishHealthTxt.text = _fish.HealthValue.ToString();
         }
     }
 }
 ```
 
-3. Drag **Fill & Text** to the **Fish** GameObject’s `FishSpawner` inspector slots.
-4. Press **Play**. You should see **100** for your Health and a full bar (or your chosen start value).
+3. Drag **Image & Text** to the **Fish** GameObject’s `FishSpawner` inspector slots.
+4. Press **Play**. You should see **5** for your `Sardine`'s Health (or your chosen start value).
 
-![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/game_dev/docs/images/Screenshot%202025-06-12%20121159.png?raw=true)
+![Unity Console](https://github.com/eca20/sage-playground/blob/battle-test/tutorial/game_dev/docs/images/Screenshot%202025-06-27%20at%205.00.23%E2%80%AFPM.png?raw=true)
 
 ---
 
@@ -160,8 +169,8 @@ public class FishSpawner : MonoBehaviour
 
 | Stage      | Commit Description                     | Git Ref                 |
 | ---------- | -------------------------------------- | ----------------------- |
-| 🟢 Start   | Before Fish asset is added             | [ff5c0831399646de87f813ad0f226fd195a88715](https://github.com/ajuna-network/sage-playground/commit/ff5c0831399646de87f813ad0f226fd195a88715) |
-| ✅ Complete | Fish asset created and placed in scene | [a656f6633f5e25f53f4140e2687a0bfd7d748678](https://github.com/ajuna-network/sage-playground/commit/a656f6633f5e25f53f4140e2687a0bfd7d748678) |
+| 🟢 Start   | Penguin asset created and displayed          | [30b56f4a993175677f09578e36712dd39bba918b](https://github.com/ajuna-network/sage-playground/commit/30b56f4a993175677f09578e36712dd39bba918b) |
+| ✅ Complete | Fish asset created and placed in scene | [a656f6633f5e25f53f4140e2687a0bfd7d748678](https://github.com/ajuna-network/sage-playground/commit/d174b5103b270f8434bb06583bd4f4824f829aef) |
 
 > Use:
 >

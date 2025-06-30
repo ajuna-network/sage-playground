@@ -40,11 +40,13 @@ YourUnityProject/
 
 We'll define the available actions, how to identify each transition, and validation rules.
 
-1. **Action Enum** (`HelloPinguAction`): Add to **Enums.cs**:
+1. **Action Enum** (`GameAction`): Add to **Enums.cs**:
 
    ```csharp
    namespace SageUnityLib
    {
+
+       // Add this block below the `AssetType` Enum
        public enum GameAction : byte
        {
            None = 0,
@@ -53,10 +55,10 @@ We'll define the available actions, how to identify each transition, and validat
    }
    ```
 
-2. **Transition Identifier** (`GameIdentifier`): Create **GameIdentifier.cs**:
+2. **Transition Identifier** (`GameIdentifier`): In **Assets/Scripts/GameEngine**, create **GameIdentifier.cs** :
 
    ```csharp
-   using Ajuna.SAGE.Core.Manager;
+   using Ajuna.SAGE.Core.Model;
 
    public class GameIdentifier : ITransitionIdentifier
    {
@@ -76,11 +78,13 @@ We'll define the available actions, how to identify each transition, and validat
    }
    ```
 
-3. **Rule Enums** (`GameRuleType`, `GameRuleOp`): Add to **Enums.cs**:
+3. Add **Rule Enums** (`GameRuleType`, `GameRuleOp`): Add to **Enums.cs**:
 
    ```csharp
    namespace SageUnityLib
    {
+
+       // Add these blocks below the `GameAction` Enums:
        public enum GameRuleType : byte
        {
            None = 0,
@@ -95,36 +99,39 @@ We'll define the available actions, how to identify each transition, and validat
    }
    ```
 
-4. **Transition Rule** (`GameRule`): Create **GameRule.cs**:
+4. **Transition Rule** (`GameRule`): In **Assets/Scripts/GameEngine**, create **GameRule.cs**:
 
    ```csharp
    using Ajuna.SAGE.Core.Model;
    using System;
 
-   public struct GameRule : ITransitionRule
+   namespace SageUnityLib
    {
-       public byte RuleType { get; set; }
-       public byte RuleOp { get; set; }
-       public byte[] RuleValue { get; set; }
-
-       /// <summary>
-       /// Helper to interpret the rule type.
-       /// </summary>
-       public GameRuleType RuleTypeEnum => (GameRuleType)RuleType;
-
-       /// <summary>
-       /// Helper to interpret the rule operator.
-       /// </summary>
-       public GameRuleOp RuleOpEnum => (GameRuleOp)RuleOp;
-
-       /// <summary>
-       /// Constructs a rule with specified type, operator, and value.
-       /// </summary>
-       public GameRule(GameRuleType type, GameRuleOp ruleOp, byte[] ruleValue)
+       public struct GameRule : ITransitionRule
        {
-           RuleType = (byte)type;
-           RuleOp = (byte)ruleOp;
-           RuleValue = ruleValue;
+           public byte RuleType { get; set; }
+           public byte RuleOp { get; set; }
+           public byte[] RuleValue { get; set; }
+
+           /// <summary>
+           /// Helper to interpret the rule type.
+           /// </summary>
+           public GameRuleType RuleTypeEnum => (GameRuleType)RuleType;
+
+           /// <summary>
+           /// Helper to interpret the rule operator.
+           /// </summary>
+           public GameRuleOp RuleOpEnum => (GameRuleOp)RuleOp;
+
+           /// <summary>
+           /// Constructs a rule with specified type, operator, and value.
+           /// </summary>
+           public GameRule(GameRuleType type, GameRuleOp ruleOp, byte[] ruleValue)
+           {
+               RuleType = (byte)type;
+               RuleOp = (byte)ruleOp;
+               RuleValue = ruleValue;
+           }
        }
    }
    ```
@@ -133,92 +140,95 @@ We'll define the available actions, how to identify each transition, and validat
 
 ## 2️⃣ Step 2: Initialize the GameEngine
 
-1. Create **GameEngine.cs** in **Assets/Scripts/**:
+1. Create **GameEngine.cs** in **Assets/Scripts/GameEngine**:
 
-   ```csharp
-   using Ajuna.SAGE.Core;
-   using Ajuna.SAGE.Core.Manager;
-   using Ajuna.SAGE.Core.Model;
-   using System;
-   using System.Collections.Generic;
-   using UnityEngine;
+    ```csharp
+    using Ajuna.SAGE.Core;
+    using Ajuna.SAGE.Core.Manager;
+    using Ajuna.SAGE.Core.Model;
+    using System;
+    using System.Collections.Generic;
+    using UnityEngine;
 
-   public class GameEngine : MonoBehaviour
-   {
-       public IBlockchainInfoProvider BlockchainInfoProvider { get; private set; }
-       public Engine<GameIdentifier, GameRule> Engine { get; private set; }
+    namespace SageUnityLib
+    {
+        public class GameEngine : MonoBehaviour
+        {
+            public IBlockchainInfoProvider BlockchainInfoProvider { get; private set; }
+            public Engine<GameIdentifier, GameRule> Engine { get; private set; }
 
-       private void Awake()
-       {
-           BlockchainInfoProvider = new BlockchainInfoProvider(1234);
-           var builder = new EngineBuilder<GameIdentifier, GameRule>(BlockchainInfoProvider);
-           builder.SetVerifyFunction(GetVerifyFunction());
+            private void Awake()
+            {
+                BlockchainInfoProvider = new BlockchainInfoProvider(1234);
+                var builder = new EngineBuilder<GameIdentifier, GameRule>(BlockchainInfoProvider);
+                builder.SetVerifyFunction(GetVerifyFunction());
 
-           // Register all transitions
-           foreach (var (id, rules, fee, transition) in GetRulesAndTransitionSets())
-           {
-               builder.AddTransition(id, rules, fee, transition);
-           }
+                // Register all transitions
+                foreach (var (id, rules, fee, transition) in GetRulesAndTransitionSets())
+                {
+                    builder.AddTransition(id, rules, fee, transition);
+                }
 
-           Engine = builder.Build();
-       }
+                Engine = builder.Build();
+            }
 
-       private void Start()
-       {
-           InvokeRepeating(nameof(UpdateBlockNumber), 0f, 6f);
-       }
+            private void Start()
+            {
+                InvokeRepeating(nameof(UpdateBlockNumber), 0f, 6f);
+            }
 
-       private void UpdateBlockNumber()
-       {
-           BlockchainInfoProvider.CurrentBlockNumber++;
-           Debug.Log($"Blocknumber: {BlockchainInfoProvider.CurrentBlockNumber}");
-       }
+            private void UpdateBlockNumber()
+            {
+                BlockchainInfoProvider.CurrentBlockNumber++;
+                Debug.Log($"Blocknumber: {BlockchainInfoProvider.CurrentBlockNumber}");
+            }
 
-       private Func<IAccount, GameRule, IAsset[], uint, object, IBalanceManager, IAssetManager, bool>
-           GetVerifyFunction()
-       {
-           return (account, rule, assets, balance, payload, bm, am) =>
-           {
-               switch (rule.RuleTypeEnum)
-               {
-                   case GameRuleType.IsOwnerOf:
-                       if (rule.RuleValue == null || rule.RuleValue.Length == 0) return false;
-                       var idx = rule.RuleValue[0];
-                       if (assets.Length <= idx) return false;
-                       return account.IsOwnerOf(assets[idx]);
+            private Func<IAccount, GameRule, IAsset[], uint, object, IBalanceManager, IAssetManager, bool>
+                GetVerifyFunction()
+            {
+                return (account, rule, assets, balance, payload, bm, am) =>
+                {
+                    switch (rule.RuleTypeEnum)
+                    {
+                        case GameRuleType.IsOwnerOf:
+                            if (rule.RuleValue == null || rule.RuleValue.Length == 0) return false;
+                            var idx = rule.RuleValue[0];
+                            if (assets.Length <= idx) return false;
+                            return account.IsOwnerOf(assets[idx]);
 
-                   default:
-                       throw new NotSupportedException($"Unsupported RuleType {rule.RuleType}");
-               }
-           };
-       }
+                        default:
+                            throw new NotSupportedException($"Unsupported RuleType {rule.RuleType}");
+                    }
+                };
+            }
 
-       private static IEnumerable<(
-           GameIdentifier,
-           GameRule[],
-           ITransitionFee,
-           TransitionFunction<GameRule>)>
-           GetRulesAndTransitionSets()
-       {
-           var result = new List<(GameIdentifier, GameRule[], ITransitioFee?, TransitionFunction<GameRule>)>
-           {
-              //EatTransition(),
-           };
-           return result;
-       }
+            private static IEnumerable<(
+                    GameIdentifier,
+                    GameRule[],
+                    ITransitioFee,
+                    TransitionFunction<GameRule>)>
+                GetRulesAndTransitionSets()
+            {
+                var result = new List<(GameIdentifier, GameRule[], ITransitioFee?, TransitionFunction<GameRule>)>
+                {
+                    //EatTransition(),
+                };
+                return result;
+            }
 
-       private static (
-           GameIdentifier,
-           GameRule[],
-           ITransitionFee,
-           TransitionFunction<GameRule>)
-           EatTransition()
-       {
-           // TODO: implement the actual transition function
-           throw new NotImplementedException();
-       }
-   }
-   ```
+            private static (
+                GameIdentifier,
+                GameRule[],
+                ITransitioFee,
+                TransitionFunction<GameRule>)
+                EatTransition()
+            {
+                // TODO: implement the actual transition function
+                throw new NotImplementedException();
+            }
+        }
+    }
+    ```
 
 2. In the Scene: Create an empty GameObject named `GameEngine` and attach the `GameEngine` component.
 
@@ -229,15 +239,19 @@ We'll define the available actions, how to identify each transition, and validat
 1. **UI Setup**:
    - In **Hierarchy**, right‑click → **UI → Canvas**.
    - Under the Canvas, right‑click → **UI → Text** (or **TextMeshPro**).
-   - Name it `` and position it.
+   - Name it `BlockNumberText` and position it.
 2. **Update GameEngine.cs** in `Assets/Scripts/`:
 
 ```csharp
+    // Add this line to your imports at the top of the file
+    using TMPro;
 ...
+    // Add these lines at the top of the GameEngine class:
     [SerializeField]
     private TMP_Text _blockNumberTxt;
 ...
-    private void UpdatedBlocknumber()
+    // Replace the existing UpdateBlockNumber function with this code block
+    private void UpdateBlockNumber()
     {
         BlockchainInfoProvider.CurrentBlockNumber++;
         Debug.Log($"Blocknumber: {BlockchainInfoProvider.CurrentBlockNumber}");
@@ -249,10 +263,10 @@ We'll define the available actions, how to identify each transition, and validat
 ...
 ```
 
-3. Drag **Fill & Text** to the GameObject’s `GameEngine` inspector slots.
-4. Press **Play**. You should see **BLOCK: 1** for the actual blocknumber (or your chosen start value).
+3. Drag the **BlockNumberText** GameObject to the `GameEngine` `Block Number Text` inspector slot.
+4. Press **Play**. You should see **BLOCK: 1** for the actual blocknumber (or your chosen start value). The value will incre
 
-![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/game_dev/docs/images/Screenshot%202025-06-12%20150057.png?raw=true)
+![Unity Console](https://github.com/eca20/sage-playground/blob/battle-test/tutorial/game_dev/docs/images/Screenshot%202025-06-27%20at%205.00.33%E2%80%AFPM.png?raw=true)
 
 ---
 
@@ -260,8 +274,8 @@ We'll define the available actions, how to identify each transition, and validat
 
 | Stage      | Commit Description                | Git Ref                 |
 | ---------- | --------------------------------- | ----------------------- |
-| 🟢 Start   | Before engine foundation is added | [c1337867d0f8ec98c7e138f5d6056f40247d8aa7](https://github.com/ajuna-network/sage-playground/commit/c1337867d0f8ec98c7e138f5d6056f40247d8aa7)    |
-| ✅ Complete | Core engine implemented and wired | [17d7281eb0ea36b03c6cb00192e9d49f47b89b20](https://github.com/ajuna-network/sage-playground/commit/17d7281eb0ea36b03c6cb00192e9d49f47b89b20) |
+| 🟢 Start   | Fish asset created and placed in scene | [d174b5103b270f8434bb06583bd4f4824f829aef](https://github.com/ajuna-network/sage-playground/commit/d174b5103b270f8434bb06583bd4f4824f829aef)    |
+| ✅ Complete | Core engine implemented and wired | [fb92aa199b990fde3fa67f45959f79e85184a868](https://github.com/ajuna-network/sage-playground/commit/fb92aa199b990fde3fa67f45959f79e85184a868) |
 
 Congratulations! You now have a solid engine setup to power asset registration and transition execution. Next: implement the **EAT** transition logic and integrate it into your scene.
 

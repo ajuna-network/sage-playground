@@ -1,0 +1,15 @@
+# Ignore build outputs
+bin/
+obj/
+
+# Ignore test result artifacts
+TestResult*/
+*.trx
+*.coverage
+*.coveragexml
+*.log
+
+# Ignore any cached or local settings
+.vscode/
+.idea/
+*.user

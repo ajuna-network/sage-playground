@@ -1,54 +1,46 @@
 using Ajuna.SAGE.Core.Model;
-using SageUnityLib;
 using UnityEngine;
+using SageUnityLib;
 using SageUnityLib.Model;
 
 public class TransitionController : MonoBehaviour
 {
-    [SerializeField]
-    private GameEngineService _gameEngine;
-    
-    [SerializeField]
-    private PenguinSpawner _penguin;
+  [SerializeField]
+  private GameEngineService _gameEngine;
 
-    [SerializeField]
-    private FishSpawner _fish;
+  [SerializeField]
+  private PenguinSpawner _penguin;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+  [SerializeField]
+  private FishSpawner _fish;
+
+  public void OnEatButton()
+  {
+    var inputAssets = new IAsset[] { _penguin.Penguin, _fish.Fish };
+    var identifier = GameConfig.Eat(out _, out _);
+    Debug.Log($"[OnEatButton] Trying transition: ({identifier.TransitionType}, {identifier.TransitionSubType})");
+    // Execute the EAT transition
+    var successFlag = _gameEngine.Engine.Transition(
+        _gameEngine.User, // User account
+        new GameIdentifier((byte)GameAction.Eat),
+        inputAssets,
+        out IAsset[] outAssets
+    );
+
+    if (!successFlag)
     {
-
+      Debug.LogError("Transition failed: " + (GameAction)identifier.TransitionType);
+      return;
+    }
+    else
+    {
+      _penguin.Penguin = outAssets[0] as PenguinAsset;
+      Destroy(_fish._fishAvatarImg.gameObject);
+      Destroy(_fish._fishHealthTxt.gameObject);
+      Destroy(_fish.gameObject); // optional: only if you want to remove the spawner
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    Debug.Log("Transition succeed: " + (GameAction)identifier.TransitionType);
 
-    public void OnEatButton()
-    {
-        var inputAssets = new IAsset[] { _penguin.Penguin, _fish.Fish };
-        var identifier = new GameIdentifier((byte)GameAction.DoEat);
-
-        // Execute the EAT transition
-        var successFlag = _gameEngine.Engine.Transition(
-            _gameEngine.User, // User account
-            identifier,
-            inputAssets,
-            out IAsset[] outAssets
-        );
-
-        if (!successFlag)
-        {
-            Debug.LogError("Transition failed: " + (GameAction)identifier.TransitionType);
-            return;
-        }
-
-        Debug.Log("Transition succeed: " + (GameAction)identifier.TransitionType);
-
-        // Handle the output assets
-        _penguin.Penguin = outAssets[0] as PlayerAsset;
-        Destroy(_fish.gameObject);
-    }
+  }
 }

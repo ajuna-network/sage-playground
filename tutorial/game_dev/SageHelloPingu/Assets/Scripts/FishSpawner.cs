@@ -1,53 +1,53 @@
-using UnityEngine;
-using SageUnityLib;
-using TMPro;
 using Ajuna.SAGE.Core.Model;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using SageUnityLib;
 using SageUnityLib.Model;
+
 
 public class FishSpawner : MonoBehaviour
 {
-    public ConsumableAsset Fish { get; set; }
+  public FishAsset Fish { get; set; }
 
-    [SerializeField]
-    private GameEngineService _gameEngine;
+  [SerializeField]
+  public Image _fishAvatarImg;
 
-    [SerializeField]
-    private TMP_Text _fishHealthTxt;
+  [SerializeField]
+  public TMP_Text _fishHealthTxt;
 
-    void Start()
+  [SerializeField]
+  private GameEngineService _gameEngine;
+
+  void Awake()
+  {
+    // Create a new Penguin asset
+    // Fish = new FishAsset(_gameEngine.User.Id);
+    // Debug.Log($"Spawned Fish that restores: {Fish.HealthValue} Health");
+  }
+
+	void Start()
+	{
+  	  bool ok = _gameEngine.Engine.Transition(
+  	      _gameEngine.User,
+  	      new GameIdentifier((byte)GameAction.CreateFish),
+  	      null,
+  	      out IAsset[] outAssets
+ 	   );
+ 	   if (!ok) { Debug.LogError("Failed to create Fish"); return; }
+
+ 	   Fish = outAssets[0] as FishAsset;
+ 	   Debug.Log($"Created Fish (Value: {Fish.HealthValue}, Genesis: {Fish.Genesis})");
+  }
+
+  void Update()
+  {
+    // Update the health text in the UI
+    if (Fish != null && _fishAvatarImg != null && _fishHealthTxt != null)
     {
-        var ok = _gameEngine.Engine.Transition(_gameEngine.User, new GameIdentifier((byte)GameAction.CreateFish), null, out IAsset[] outAssets);
-        if (!ok)
-        { 
-            Debug.LogError("Failed to create Fish"); 
-            return; 
-        }
-
-        // Assign newly created fish asset
-        Fish = outAssets[0] as ConsumableAsset;
-        Debug.Log($"Created Fish (Value: {Fish.HealthValue}, Genesis: {Fish.Genesis})");
+      // Update the fish's health
+      _fishAvatarImg.fillAmount = Fish.HealthValue / 100f; // Assuming Health is between 0 and 100
+      _fishHealthTxt.text = Fish.HealthValue.ToString();
     }
-
-    void Update()
-    {
-        // Update the health value text in the UI
-        if (Fish != null && _fishHealthTxt != null)
-        {
-            _fishHealthTxt.text = $"{Fish.HealthValue} HP";
-        }
-    }
-
-    private void OnMouseDown()
-    {
-        Debug.Log("Fish clicked!");
-
-        // Example interaction: Consume the fish or increase health
-        if (Fish != null)
-        {
-            Debug.Log($"You clicked the fish. It gives {Fish.HealthValue} health!");
-            // Do something like apply the health or destroy the fish
-            // Destroy(gameObject);
-        }
-    }
-
+  }
 }

@@ -69,8 +69,8 @@ YourSolution/
 Place these in `SageUnityLib/Model/`:
 
 - **BaseAsset.cs**
-- **PlayerAsset.cs**
-- **ConsumableAsset.cs**
+- **PenguinAsset.cs**
+- **FishAsset.cs**
 
 *(Use `SageUnityLib.Model` namespace and ensure they reference `Ajuna.SAGE.Core.Model`.)*
 
@@ -80,7 +80,7 @@ Place these in `SageUnityLib/Model/`:
 
 In root `SageUnityLib` namespace:
 
-- **Enums.cs**: define `AssetType`, `GameAction {CreatePenguin, CreateFish, DoEat}`, `GameRuleType`, `GameRuleOp`.
+- **Enums.cs**: define `AssetType`, `GameAction {CreatePenguin, CreateFish, Eat}`, `GameRuleType`, `GameRuleOp`.
 - **GameIdentifier.cs**:
   ```csharp
   public struct GameIdentifier : ITransitionIdentifier
@@ -88,13 +88,13 @@ In root `SageUnityLib` namespace:
       ...
       public static GameIdentifier CreatePenguin => new((byte)GameAction.CreatePenguin);
       public static GameIdentifier CreateFish    => new((byte)GameAction.CreateFish);
-      public static GameIdentifier DoEat         => new((byte)GameAction.DoEat);
+      public static GameIdentifier Eat         => new((byte)GameAction.Eat);
   }
   ```
 - **GameRule.cs**: implement `ITransitionRule` with ctor and `RuleTypeEnum`/`RuleOpEnum` helpers.
 - **GameConfig.cs**: static methods returning identifiers and rule arrays:
   - `CreatePenguin`, `CreateFish` (empty rules)
-  - `DoEat` (IsOwnerOf and AssetTypesAt rules)
+  - `Eat` (IsOwnerOf and AssetTypesAt rules)
 
 ---
 
@@ -107,7 +107,6 @@ using Ajuna.SAGE.Core;
 using Ajuna.SAGE.Core.Manager;
 using Ajuna.SAGE.Core.Model;
 using SageUnityLib;
-using SageUnityLib.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -115,127 +114,139 @@ using System.Linq;
 /// <summary>
 /// GameEngine is responsible for creating and managing the game engine instance.
 /// </summary>
-public class GameEngine
-{
-    /// <summary>
-    /// Creates a new game engine instance with the specified blockchain info provider.
-    /// </summary>
-    /// <param name="blockchainInfoProvider"></param>
-    /// <returns></returns>
-    public static Engine<GameIdentifier, GameRule> Create(IBlockchainInfoProvider blockchainInfoProvider)
-    {
-        var engineBuilder = new EngineBuilder<GameIdentifier, GameRule>(blockchainInfoProvider);
-        _ = engineBuilder.SetVerifyFunction(GetVerifyFunction());
 
-        var rulesAndTransitions = GetRulesAndTransitio**n**Sets();
-        foreach (var (identifier, rules, fee, transition) in rulesAndTransitions)
+namespace SageUnityLib.Model
+{
+    public class GameEngine
+    {
+        /// <summary>
+        /// Creates a new game engine instance with the specified blockchain info provider.
+        /// </summary>
+        /// <param name="blockchainInfoProvider"></param>
+        /// <returns></returns>
+        public static Engine<GameIdentifier, GameRule> Create(IBlockchainInfoProvider blockchainInfoProvider)
         {
-            engineBuilder.AddTransition(identifier, rules, fee, transition);
+            var engineBuilder = new EngineBuilder<GameIdentifier, GameRule>(blockchainInfoProvider);
+            _ = engineBuilder.SetVerifyFunction(GetVerifyFunction());
+
+            var rulesAndTransitions = GetRulesAndTransitionSets();
+            foreach (var (identifier, rules, fee, transition) in rulesAndTransitions)
+            {
+                engineBuilder.AddTransition(identifier, rules, fee, transition);
+            }
+
+            return engineBuilder.Build();
         }
 
-        return engineBuilder.Build();
-    }
-
-    /// <summary>
-    /// Returns a function that verifies if the game rules are satisfied for the given account, game rule, assets, block number, context, balance manager, and asset manager.
-    /// </summary>
-    /// <returns></returns>
-    /// <exception cref="NotSupportedException"></exception>
-    private static Func<IAccount, GameRule, IAsset[], uint, object?, IBalanceManager, IAssetManager, bool> GetVerifyFunction()
-    {
-        return (p, r, a, b, c, m, s) =>
+        /// <summary>
+        /// Returns a function that verifies if the game rules are satisfied for the given account, game rule, assets, block number, context, balance manager, and asset manager.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="NotSupportedException"></exception>
+        private static Func<IAccount, GameRule, IAsset[], uint, object?, IBalanceManager, IAssetManager, bool>
+            GetVerifyFunction()
         {
-            switch (r.RuleTypeEnum)
+            return (p, r, a, b, c, m, s) =>
             {
-                case GameRuleType.IsOwnerOf:
+                switch (r.RuleTypeEnum)
                 {
-                    if (r.RuleOpEnum != GameRuleOp.Index) return false;
-                    if (r.RuleValue == null || r.RuleValue.Length == 0) return false;
-                    var assetIndex = r.RuleValue[0];
-                    if (a.Length <= assetIndex) return false;
-                    return p.IsOwnerOf(a[assetIndex]);
+                    case GameRuleType.IsOwnerOf:
+                        {
+                            if (r.RuleOpEnum != GameRuleOp.Index) return false;
+                            if (r.RuleValue == null || r.RuleValue.Length == 0) return false;
+                            var assetIndex = r.RuleValue[0];
+                            if (a.Length <= assetIndex) return false;
+                            return p.IsOwnerOf(a[assetIndex]);
+                        }
+
+                    case GameRuleType.AssetTypesAt:
+                        {
+                            if (r.RuleOpEnum != GameRuleOp.Composite) return false;
+                            for (int i = 0; i < r.RuleValue.Length; i++)
+                            {
+                                byte assetType = r.RuleValue[i];
+                                if (assetType == 0) continue;
+                                if (a.Length <= i) return false;
+                                var baseAsset = a[i] as BaseAsset;
+                                if (baseAsset == null || (byte)baseAsset.AssetType != assetType)
+                                    return false;
+                            }
+
+                            return true;
+                        }
+
+                    default:
+                        throw new NotSupportedException($"Unsupported RuleType {r.RuleType}!");
                 }
+            };
+        }
 
-                case GameRuleType.AssetTypesAt:
-                {
-                    if (r.RuleOpEnum != GameRuleOp.Composite) return false;
-                    for (int i = 0; i < r.RuleValue.Length; i++)
-                    {
-                        byte assetType = r.RuleValue[i];
-                        if (assetType == 0) continue;
-                        if (a.Length <= i) return false;
-                        var baseAsset = a[i] as BaseAsset;
-                        if (baseAsset == null || (byte)baseAsset.AssetType != assetType)
-                            return false;
-                    }
-                    return true;
-                }
-
-                default:
-                    throw new NotSupportedException($"Unsupported RuleType {r.RuleType}!");
-            }
-        };
-    }
-
-    /// <summary>
-    /// Returns a collection of game rules and transition sets for the game engine.
-    /// </summary>
-    /// <returns></returns>
-    private static IEnumerable<(GameIdentifier, GameRule[], ITransitioFee?, TransitionFunction<GameRule>)> GetRulesAndTransitio**n**Sets()
-    {
-        return new List<(GameIdentifier, GameRule[], ITransitioFee?, TransitionFunction<GameRule>)>
+        /// <summary>
+        /// Returns a collection of game rules and transition sets for the game engine.
+        /// </summary>
+        /// <returns></returns>
+        private static IEnumerable<(GameIdentifier, GameRule[], ITransitioFee?, TransitionFunction<GameRule>)>
+            GetRulesAndTransitionSets()
+        {
+            return new List<(GameIdentifier, GameRule[], ITransitioFee?, TransitionFunction<GameRule>)>
         {
             CreatePenguin(),
             CreateFish(),
             EatTransition(),
         };
-    }
+        }
 
-    /// <summary>
-    /// Creates a penguin game rule and transition set.
-    /// </summary>
-    /// <returns></returns>
-    private static (GameIdentifier, GameRule[], ITransitioFee?, TransitionFunction<GameRule>) CreatePenguin()
-    {
-        var identifier = GameConfig.CreatePenguin(out GameRule[] rules, out ITransitioFee fee);
-        TransitionFunction<GameRule> function = (e, r, f, a, h, b, c, m) =>
+        /// <summary>
+        /// Creates a penguin game rule and transition set.
+        /// </summary>
+        /// <returns></returns>
+        private static (GameIdentifier, GameRule[], ITransitioFee?, TransitionFunction<GameRule>) CreatePenguin()
         {
-            var penguin = new PlayerAsset(e.Id, 0, b);
-            return new IAsset[] { penguin };
-        };
-        return (identifier, rules, fee, function);
-    }
+            var identifier = GameConfig.CreatePenguin(out GameRule[] rules, out ITransitioFee fee);
+            TransitionFunction<GameRule> function = (e, r, f, a, h, b, c, m) =>
+            {
+                var penguin = new PenguinAsset(e.Id, null, b);
+                return new IAsset[] { penguin };
+            };
+            return (identifier, rules, fee, function);
+        }
 
-    /// <summary>
-    /// Creates a fish game rule and transition set.
-    /// </summary>
-    /// <returns></returns>
-    private static (GameIdentifier, GameRule[], ITransitioFee?, TransitionFunction<GameRule>) CreateFish()
-    {
-        var identifier = GameConfig.CreateFish(out GameRule[] rules, out ITransitioFee fee);
-        TransitionFunction<GameRule> function = (e, r, f, a, h, b, c, m) =>
+        /// <summary>
+        /// Creates a fish game rule and transition set.
+        /// </summary>
+        /// <returns></returns>
+        private static (GameIdentifier, GameRule[], ITransitioFee?, TransitionFunction<GameRule>) CreateFish()
         {
-            var fish = new ConsumableAsset(e.Id, 0, b);
-            return new IAsset[] { fish };
-        };
-        return (identifier, rules, fee, function);
-    }
+            var identifier = GameConfig.CreateFish(out GameRule[] rules, out ITransitioFee fee);
+            TransitionFunction<GameRule> function = (e, r, f, a, h, b, c, m) =>
+            {
+                var fish = new FishAsset(e.Id, null, b);
+                return new IAsset[] { fish };
+            };
+            return (identifier, rules, fee, function);
+        }
 
-    /// <summary>
-    /// Creates a game rule and transition set for eating a fish.
-    /// </summary>
-    /// <returns></returns>
-    private static (GameIdentifier, GameRule[], ITransitioFee?, TransitionFunction<GameRule>) EatTransition()
-    {
-        var identifier = GameConfig.DoEat(out GameRule[] rules, out ITransitioFee fee);
-        TransitionFunction<GameRule> function = (e, r, f, a, h, b, c, m) =>
+        /// <summary>
+        /// Creates a game rule and transition set for eating a fish.
+        /// </summary>
+        /// <returns></returns>
+        private static (GameIdentifier, GameRule[], ITransitioFee?, TransitionFunction<GameRule>) EatTransition()
         {
-            var penguin = new PlayerAsset(a.ElementAt(0));
-            var fish    = new ConsumableAsset(a.ElementAt(1));
-            penguin.Health = (byte)Math.Clamp(penguin.Health + fish.HealthValue, 0, 100);
-            return new IAsset[] { penguin };
-        };
-        return (identifier, rules, fee, function);
+            var identifier = GameConfig.Eat(out GameRule[] rules, out ITransitioFee fee);
+            TransitionFunction<GameRule> function = (e, r, f, a, h, b, c, m) =>
+            {
+                var assetsList = a.ToList();
+
+                var penguin = new PenguinAsset((Asset)assetsList[0]);
+                var fish = new FishAsset((Asset)assetsList[1]);
+
+                penguin.Health = (byte)Math.Clamp(penguin.Health + fish.HealthValue, 0, 100);
+
+                return new IAsset[] { penguin };
+            };
+
+            return (identifier, rules, fee, function);
+        }
     }
 }
 ```
@@ -244,7 +255,7 @@ public class GameEngine
 
 ## 5️⃣ Step 5: Add NUnit Tests
 
-Create a new NUnit test project **SageUnityLib.Tests** and include the following test classes:
+Create a new NUnit test project **SageUnityLib.Tests** in the root folder and include the following test classes:
 
 ### BaseSetupTest.cs
 ```csharp
@@ -296,12 +307,12 @@ namespace SageUnityLib.Test.Model
     [TestFixture]
     public class PlayerAssetTest
     {
-        private PlayerAsset playerAsset;
+        private PenguinAsset playerAsset;
 
         [SetUp]
         public void Setup()
         {
-            playerAsset = new PlayerAsset(1, 0);
+            playerAsset = new PenguinAsset(1, null, 0);
         }
 
         [Test]
@@ -324,12 +335,12 @@ namespace SageUnityLib.Test.Model
     [TestFixture]
     public class ConsumableTest
     {
-        private ConsumableAsset consumableAsset;
+        private FishAsset consumableAsset;
 
         [SetUp]
         public void Setup()
         {
-            consumableAsset = new ConsumableAsset(1, 0);
+            consumableAsset = new FishAsset(1, null, 0);
         }
 
         [Test]
@@ -371,7 +382,7 @@ namespace SageUnityLib.Test
             Assert.That(BlockchainInfoProvider.CurrentBlockNumber, Is.EqualTo(2));
             bool resultFirst = Engine.Transition(_user, GameIdentifier.CreatePenguin, null, out IAsset[] outAssets, null);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
-            var penguin = outAssets[0] as PlayerAsset;
+            var penguin = outAssets[0] as PenguinAsset;
             Assert.That(penguin, Is.Not.Null);
             Assert.That(penguin.Health, Is.EqualTo(95));
         }
@@ -382,7 +393,7 @@ namespace SageUnityLib.Test
             Assert.That(BlockchainInfoProvider.CurrentBlockNumber, Is.EqualTo(2));
             bool resultFirst = Engine.Transition(_user, GameIdentifier.CreateFish, null, out IAsset[] outAssets, null);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
-            var fish = outAssets[0] as ConsumableAsset;
+            var fish = outAssets[0] as FishAsset;
             Assert.That(fish, Is.Not.Null);
             Assert.That(fish.HealthValue, Is.EqualTo(5));
         }
@@ -392,14 +403,14 @@ namespace SageUnityLib.Test
         {
             Assert.That(BlockchainInfoProvider.CurrentBlockNumber, Is.EqualTo(2));
             Engine.Transition(_user, GameIdentifier.CreatePenguin, null, out _, null);
-            Engine.Transition(_user, GameIdentifier.CreateFish,    null, out _, null);
-            bool result = Engine.Transition(_user, GameIdentifier.DoEat, new IAsset[] {
+            Engine.Transition(_user, GameIdentifier.CreateFish, null, out _, null);
+            bool result = Engine.Transition(_user, GameIdentifier.Eat, new IAsset[] {
                 Engine.AssetManager.AssetOf(_user).First(a => ((BaseAsset)a).AssetType == AssetType.Player),
                 Engine.AssetManager.AssetOf(_user).First(a => ((BaseAsset)a).AssetType == AssetType.Consumable)
             }, out IAsset[] outAssets, null);
             Assert.That(result, Is.True, "transition result should succeed.");
             Assert.That(outAssets.Length, Is.EqualTo(1), "should return one asset");
-            var updatedPenguin = outAssets[0] as PlayerAsset;
+            var updatedPenguin = outAssets[0] as PenguinAsset;
             Assert.That(updatedPenguin, Is.Not.Null, "updated penguin should not be null");
             Assert.That(updatedPenguin.Health, Is.EqualTo(100), "penguin health should be 100 after eating fish");
         }
@@ -429,8 +440,8 @@ dotnet test
 
 | Stage      | Commit Description                                              | Git Ref              |
 | ---------- | --------------------------------------------------------------- | -------------------- |
-| 🟢 Start   | EAT logic embedded in Unity project                             | [2f4fbae277b289ddc8ff670d398dedbdc065c4f9](https://github.com/ajuna-network/sage-playground/commit/2f4fbae277b289ddc8ff670d398dedbdc065c4f9) |
-| ✅ Complete| Logic extracted into `SageUnityLib` with NUnit tests running     | [996e9af75c62667e4578c2456daf4ec50adc2ad1](https://github.com/ajuna-network/sage-playground/commit/996e9af75c62667e4578c2456daf4ec50adc2ad1) |
+| 🟢 Start   | CREATE transitions implemented; spawners use engine                             | [17d057d11cd47454f2caaab84e8ab95e55a27a4d](https://github.com/ajuna-network/sage-playground/commit/17d057d11cd47454f2caaab84e8ab95e55a27a4d) |
+| ✅ Complete| Logic extracted into `SageUnityLib` with NUnit tests running     | [e831f70a396659ee9c5de4ee085d762fae4d997e](https://github.com/ajuna-network/sage-playground/commit/e831f70a396659ee9c5de4ee085d762fae4d997e) |
 
 
 Congratulations! You now have a fully decoupled, testable game logic library ready for integration into Unity or other game engines.

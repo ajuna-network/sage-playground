@@ -96,7 +96,7 @@ We recommend using a quick .NET Core class library to pull in **Ajuna.SAGE.Core*
         }
    }
    ```
-2. Attach `` to any GameObject in your active Scene.
+2. Attach `HelloSage.cs` to any GameObject in your active Scene.
 3. Press **Play**. In the Console, you should see:
    ```
    Ajuna.SAGE.Core version: 0.0.6.0
@@ -125,8 +125,8 @@ Optionally, take a screenshot of your **Project** window showing the `Assets/Plu
 
 | Stage      | Commit Description                    | Git Ref                 |
 | ---------- | ------------------------------------- | ----------------------- |
-| 🟢 Start   | Empty Unity project initialized       | [8aff0e95f4bb4aef3db50320a4165cc004e3fd22](https://github.com/ajuna-network/sage-playground/commit/8aff0e95f4bb4aef3db50320a4165cc004e3fd22)    |
-| ✅ Complete | SAGE.dll integrated, project compiles | [2adba118123b21ed0f6abbd3ea417f7b33ee8a75](https://github.com/ajuna-network/sage-playground/commit/2adba118123b21ed0f6abbd3ea417f7b33ee8a75) |
+| 🟢 Start   | Empty Unity project initialized       | [0915430547bde0591555f5f672ec7f708aec98d2](https://github.com/ajuna-network/sage-playground/commit/0915430547bde0591555f5f672ec7f708aec98d2)    |
+| ✅ Complete | SAGE.dll integrated, project compiles | [e9ccd9156ffd34819b901f6e004756d90c823ce1](https://github.com/ajuna-network/sage-playground/commit/e9ccd9156ffd34819b901f6e004756d90c823ce1) |
 
 > Link both commits so team members can easily check out each stage:
 >
