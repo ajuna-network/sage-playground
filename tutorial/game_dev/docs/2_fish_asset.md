@@ -161,7 +161,7 @@ public class FishSpawner : MonoBehaviour
 3. Drag **Image & Text** to the **Fish** GameObject’s `FishSpawner` inspector slots.
 4. Press **Play**. You should see **5** for your `Sardine`'s Health (or your chosen start value).
 
-![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/game_dev/docs/images/Screenshot%202025-06-12%20121159.png?raw=true)
+![Unity Console](https://github.com/eca20/sage-playground/blob/battle-test/tutorial/game_dev/docs/images/Screenshot%202025-06-27%20at%205.00.23%E2%80%AFPM.png?raw=true)
 
 ---
 

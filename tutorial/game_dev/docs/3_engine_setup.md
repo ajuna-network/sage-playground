@@ -266,7 +266,7 @@ We'll define the available actions, how to identify each transition, and validat
 3. Drag the **BlockNumberText** GameObject to the `GameEngine` `Block Number Text` inspector slot.
 4. Press **Play**. You should see **BLOCK: 1** for the actual blocknumber (or your chosen start value). The value will incre
 
-![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/game_dev/docs/images/Screenshot%202025-06-12%20150057.png?raw=true)
+![Unity Console](https://github.com/eca20/sage-playground/blob/battle-test/tutorial/game_dev/docs/images/Screenshot%202025-06-27%20at%205.00.33%E2%80%AFPM.png?raw=true)
 
 ---
 

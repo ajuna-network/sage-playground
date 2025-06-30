@@ -311,7 +311,7 @@ YourUnityProject/
    - Add a **Button** to the Canvas; in its Inspector, hook **OnClick → TransitionController.OnEatButton** buy dragging the TransitionController into the **OnClick** section in the inspector and hooking the **OnEatButton** function. 
    - Assign references: **GameEngine**, **Penguin** GameObject’s `PlayerAsset` component, and **Fish** GameObject’s `ConsumableAsset`.
 
-![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/game_dev/docs/images/Screenshot%202025-06-16%20135253.png?raw=true)
+![Unity Console](https://github.com/eca20/sage-playground/blob/battle-test/tutorial/game_dev/docs/images/Screenshot%202025-06-28%20at%203.40.47%E2%80%AFPM.png?raw=true)
 
 3. Pressing the Button should lead to this console output:
 

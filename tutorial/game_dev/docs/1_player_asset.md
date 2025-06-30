@@ -255,7 +255,7 @@ public class PenguinSpawner : MonoBehaviour
 3. Drag **Image & Text** to the **Penguin** GameObject’s `PenguinSpawner` inspector slots.
 4. Press **Play**. You should see **100** for your Health and a full bar (or your chosen start value).
 
-![Unity Console](https://github.com/ajuna-network/sage-playground/blob/tutorial/tutorial/game_dev/docs/images/Screenshot%202025-06-12%20113746.png?raw=true)
+![Unity Console](https://github.com/eca20/sage-playground/blob/battle-test/tutorial/game_dev/docs/images/Screenshot%202025-06-27%20at%203.29.16%E2%80%AFPM.png?raw=true)
 
 ---
 
